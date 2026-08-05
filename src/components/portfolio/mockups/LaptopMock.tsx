@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useInView } from "@/hooks/useInView";
 
 type Props = { url: string; accent?: string; className?: string };
 
@@ -16,6 +17,9 @@ function ytId(input: string): string {
  *  and slightly zoomed + click-locked so it reads as a plain product video,
  *  not a YouTube embed. */
 export function LaptopMock({ url, accent = "#6e56ff", className }: Props) {
+  // The YouTube player pulls ~1.1MB of third-party JS, so it only mounts
+  // once the visitor scrolls the device into view.
+  const [viewRef, inView] = useInView<HTMLDivElement>();
   const id = ytId(url);
   const src =
     `https://www.youtube-nocookie.com/embed/${id}` +
@@ -46,19 +50,21 @@ export function LaptopMock({ url, accent = "#6e56ff", className }: Props) {
             <div className="absolute left-1/2 top-[3px] z-20 h-1 w-1 -translate-x-1/2 rounded-full bg-white/25" />
 
             {/* screen glass */}
-            <div className="relative aspect-video overflow-hidden rounded-md bg-black">
-              <iframe
-                src={src}
-                title="Обзор проекта"
-                allow="autoplay; encrypted-media; picture-in-picture"
-                className="pointer-events-none absolute left-1/2 top-1/2"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  border: 0,
-                  transform: "translate(-50%,-50%) scale(1.2)",
-                }}
-              />
+            <div ref={viewRef} className="relative aspect-video overflow-hidden rounded-md bg-black">
+              {inView && (
+                <iframe
+                  src={src}
+                  title="Обзор проекта"
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  className="pointer-events-none absolute left-1/2 top-1/2"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: 0,
+                    transform: "translate(-50%,-50%) scale(1.2)",
+                  }}
+                />
+              )}
               {/* mask any residual top strip + add a subtle glass sheen */}
               <div
                 className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[14%]"

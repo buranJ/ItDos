@@ -34,6 +34,9 @@ export function CustomCursor() {
 
   useEffect(() => {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    // Hiding the native pointer is a real barrier for anyone who relies on
+    // it, and reduced-motion is the strongest signal we have for that.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const dot = dotRef.current;
     const ring = ringRef.current;
     const label = labelRef.current;

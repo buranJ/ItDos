@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="260" viewBox="0 0 1100 260" fill="none">
+  <title>Bilmont logo</title>
+  <g transform="translate(24 24)">
+    <path d="M0 12C0 5.373 5.373 0 12 0H92C126 0 160 27 160 55C160 83 126 110 92 110H12C5.373 110 0 104.627 0 98V12Z" fill="#7D9955"/>
+    <path d="M0 122C0 115.373 5.373 110 12 110H92C126 110 160 137 160 165C160 193 126 220 92 220H12C5.373 220 0 214.627 0 208V122Z" fill="#7D9955"/>
+    <text x="210" y="164" fill="#333334" font-family="SF Pro Display, SFUIDisplay, -apple-system, BlinkMacSystemFont, Inter, Arial, sans-serif" font-size="165" font-weight="500" letter-spacing="0">Bilmont</text>
+  </g>
+</svg>

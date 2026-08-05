@@ -1,22 +1,57 @@
-import { whatsappLink, telegramLink, defaultInquiry } from "@/lib/site";
+"use client";
 
-/** Always-available messenger quick-contact. Sits below the nav overlay
- *  (z-30) so it's hidden when the menu is open. */
+import { useEffect, useState } from "react";
+import { whatsappLink, telegramLink, defaultInquiry } from "@/lib/site";
+import { cn } from "@/lib/utils";
+
+/**
+ * Always-available messenger quick-contact. Sits below the nav overlay
+ * (z-30) so it's hidden when the menu is open.
+ *
+ * Hidden over the first screen: the hero ends with its own two CTAs at the
+ * bottom-right on phones, and these bubbles landed straight on top of
+ * "Смотреть работы". They fade in once the visitor scrolls past it, which is
+ * also when a persistent shortcut actually starts earning its place.
+ */
 export function FloatingContact() {
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShown(window.scrollY > window.innerHeight * 0.8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   return (
-    <div className="fixed bottom-5 right-5 z-30 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
+    <div
+      className={cn(
+        "fixed bottom-5 right-5 z-30 flex flex-col items-end gap-3 transition-all duration-300 sm:bottom-6 sm:right-6",
+        shown
+          ? "pointer-events-auto translate-y-0 opacity-100"
+          : "pointer-events-none translate-y-3 opacity-0",
+      )}
+      aria-hidden={!shown}
+      inert={!shown}
+    >
       <a
         href={whatsappLink(defaultInquiry)}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Написать в WhatsApp"
         data-cursor="link"
-        className="group flex h-12 w-12 items-center justify-center rounded-full shadow-lg shadow-black/40 transition-transform duration-200 hover:scale-110"
+        // `relative` so the ping below anchors to this button — without a
+        // positioned parent it fell back to its static position.
+        className="group relative flex h-12 w-12 items-center justify-center rounded-full shadow-lg shadow-black/40 transition-transform duration-200 hover:scale-110"
         style={{ background: "#25d366" }}
       >
         <span
           aria-hidden="true"
-          className="absolute h-12 w-12 animate-ping rounded-full opacity-30"
+          className="absolute inset-0 animate-ping rounded-full opacity-30"
           style={{ background: "#25d366" }}
         />
         <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" className="relative">

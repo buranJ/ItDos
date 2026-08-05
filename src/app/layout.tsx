@@ -1,12 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { CustomCursor } from "@/components/cursor/CustomCursor";
 import { LenisProvider } from "@/components/layout/LenisProvider";
-import { FloatingContact } from "@/components/layout/FloatingContact";
-import { ScrollProgress } from "@/components/motion/ScrollProgress";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationLd } from "@/lib/seo";
 
@@ -30,6 +26,9 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://itdos.ru"),
+  // NB: no `alternates.canonical` here on purpose — metadata is inherited
+  // field by field, so a root canonical would make every page declare "/"
+  // as its canonical URL. Each page sets its own.
   title: {
     default: "ITDOS — Разработка сайтов, AI-интеграции и автоматизация бизнеса",
     template: "%s | ITDOS",
@@ -73,7 +72,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#08080a",
-  colorScheme: "dark",
+  // The site alternates dark and light chapters, and the hero is white.
+  // Declaring only "dark" made the browser render native controls and
+  // scrollbars for a dark page on top of light sections.
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({
@@ -87,13 +89,7 @@ export default function RootLayout({
       <body className="antialiased">
         <JsonLd data={organizationLd} />
         <LenisProvider>
-          <CustomCursor />
-          <div className="grain-overlay" aria-hidden="true" />
-          <ScrollProgress />
-          <Header />
-          <main>{children}</main>
-          <Footer />
-          <FloatingContact />
+          <SiteChrome>{children}</SiteChrome>
         </LenisProvider>
       </body>
     </html>

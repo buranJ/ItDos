@@ -81,7 +81,7 @@ export function Hero() {
               </span>
               <span className="block overflow-hidden">
                 <span className="hero-line block">
-                  <span className="text-accent">продукты</span> мирового
+                  <span className="text-accent-text">продукты</span> мирового
                 </span>
               </span>
               <span className="block overflow-hidden">

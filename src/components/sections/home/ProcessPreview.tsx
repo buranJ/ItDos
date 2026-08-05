@@ -4,16 +4,17 @@ import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { StaggerGroup } from "@/components/motion/StaggerGroup";
-import { processPhases } from "@/data/process";
+import { getProcessPhases } from "@/server/content";
 
-export function ProcessPreview() {
+export async function ProcessPreview() {
+  const processPhases = await getProcessPhases();
   return (
     <Section className="theme-light border-t border-line">
       <Container>
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-              {"// процесс"}
+              Процесс
             </p> */}
             <TextReveal
               as="h2"
@@ -29,7 +30,7 @@ export function ProcessPreview() {
             Подробнее
             <ArrowUpRight
               size={16}
-              className="text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              className="text-accent-text transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             />
           </Link>
         </div>
@@ -51,11 +52,14 @@ export function ProcessPreview() {
 
               <div>
                 <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                  <span className="font-mono text-xs text-accent">{phase.number}</span>
+                  <span className="font-mono text-xs text-accent-text">{phase.number}</span>
                   <h3 className="font-display text-xl font-semibold tracking-tight text-fg sm:text-2xl">
                     {phase.title}
                   </h3>
-                  <span className="ml-auto hidden rounded-full border border-line px-3 py-1 font-mono text-xs text-fg-muted sm:block">
+                  {/* Was sm:block-only, so the one thing every prospect wants
+                      to know — how long each stage takes — was invisible on
+                      phones, where most of the traffic is. */}
+                  <span className="rounded-full border border-line px-3 py-1 font-mono text-xs text-fg-muted sm:ml-auto">
                     {phase.duration}
                   </span>
                 </div>

@@ -4,17 +4,21 @@ import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { ContactForm } from "@/components/sections/shared/ContactForm";
+import { site, emailLink, phoneLink, telegramLink } from "@/lib/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Контакт",
   description:
     "Свяжитесь с ITDOS. Обсудим ваш проект и предложим оптимальное решение в течение часа.",
 };
 
+// Every contact detail comes from lib/site.ts so the label and the link can
+// never drift apart again (the address on screen used to point elsewhere).
 const contacts = [
-  { label: "Email", value: "itdos@gmail.com", href: "mailto:zunusburan@gmail.com" },
-  { label: "Телефон", value: "+996 999 953 838", href: "tel:+996999953838" },
-  { label: "Telegram", value: "@itdos", href: "https://t.me/itdos" },
+  { label: "Email", value: site.email, href: emailLink },
+  { label: "Телефон", value: site.phoneDisplay, href: phoneLink },
+  { label: "Telegram", value: `@${site.telegram}`, href: telegramLink },
   // { label: "Адрес", value: "Бишкек, Кыргызстан", href: undefined },
 ];
 

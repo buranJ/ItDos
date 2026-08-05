@@ -51,7 +51,7 @@ export function ServicesGrid() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-              {"// услуги"}
+              Услуги
             </p>
             <TextReveal
               as="h2"
@@ -67,7 +67,7 @@ export function ServicesGrid() {
             Все услуги
             <ArrowUpRight
               size={16}
-              className="text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              className="text-accent-text transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             />
           </Link>
         </div>
@@ -82,7 +82,7 @@ export function ServicesGrid() {
                 data-cursor="link"
                 className="group relative -mx-4 grid grid-cols-[2rem_1fr_auto] items-center gap-5 rounded-xl border-b border-line px-4 py-6 transition-colors duration-300 hover:bg-surface/40 sm:gap-8 sm:py-7"
               >
-                <span className="font-mono text-sm text-fg-faint transition-colors duration-300 group-hover:text-accent">
+                <span className="font-mono text-sm text-fg-faint transition-colors duration-300 group-hover:text-accent-text">
                   {String(i + 1).padStart(2, "0")}
                 </span>
 
@@ -90,9 +90,9 @@ export function ServicesGrid() {
                   <div className="flex items-center gap-3">
                     <Icon
                       size={18}
-                      className="shrink-0 text-fg-muted transition-colors duration-300 group-hover:text-accent"
+                      className="shrink-0 text-fg-muted transition-colors duration-300 group-hover:text-accent-text"
                     />
-                    <h3 className="font-display text-xl font-semibold tracking-tight text-fg transition-colors duration-300 group-hover:text-accent sm:text-2xl">
+                    <h3 className="font-display text-xl font-semibold tracking-tight text-fg transition-colors duration-300 group-hover:text-accent-text sm:text-2xl">
                       {service.title}
                     </h3>
                   </div>
@@ -107,7 +107,7 @@ export function ServicesGrid() {
                   </span>
                   <ArrowUpRight
                     size={20}
-                    className="shrink-0 text-fg-faint transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent"
+                    className="shrink-0 text-fg-faint transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent-text"
                   />
                 </div>
               </Link>

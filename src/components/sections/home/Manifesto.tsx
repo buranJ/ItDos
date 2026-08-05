@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/motion";
 import { Container } from "@/components/layout/Container";
+import { Section } from "@/components/layout/Section";
 
 // const LEAD = "Мы не просто пишем код.";
 const LEAD = 'Из идеи -'
@@ -42,10 +43,10 @@ export function Manifesto() {
   }, [reduced]);
 
   return (
-    <section className="theme-light border-t border-line py-28 md:py-40">
+    <Section spacing="lg" className="theme-light border-t border-line">
       <Container size="lg">
         {/* <p className="mb-10 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-          {"// манифест"}
+          Манифест
         </p> */}
         <div
           ref={ref}
@@ -57,7 +58,7 @@ export function Manifesto() {
                 <span
                   key={`${si}-${i}`}
                   className={`mf-word inline-block ${
-                    ACCENT_WORDS.has(word) ? "text-accent" : "text-fg"
+                    ACCENT_WORDS.has(word) ? "text-accent-text" : "text-fg"
                   }`}
                 >
                   {word}
@@ -68,6 +69,6 @@ export function Manifesto() {
           ))}
         </div>
       </Container>
-    </section>
+    </Section>
   );
 }

@@ -1,5 +1,5 @@
 import { site } from "./site";
-import { faq } from "@/data/faq";
+import { getFaq } from "@/server/content";
 
 const base = "https://itdos.ru";
 
@@ -43,13 +43,18 @@ export const organizationLd = {
   ],
 };
 
-/** FAQPage structured data (rich results in search). */
-export const faqLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faq.map((f) => ({
-    "@type": "Question",
-    name: f.q,
-    acceptedAnswer: { "@type": "Answer", text: f.a },
-  })),
-};
+/** FAQPage structured data (rich results in search).
+ *  Only emit this on a page that actually renders the FAQ — Google treats
+ *  structured data describing absent content as a violation. */
+export async function getFaqLd() {
+  const faq = await getFaq();
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+}

@@ -8,19 +8,20 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { StaggerGroup } from "@/components/motion/StaggerGroup";
 import { CtaBanner } from "@/components/sections/shared/CtaBanner";
-import { services, getServiceBySlug } from "@/data/services";
+import { getServices, getServiceBySlug } from "@/server/content";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return services.map((s) => ({ slug: s.slug }));
+  return (await getServices()).map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const service = await getServiceBySlug(slug);
   if (!service) return {};
   return {
+    alternates: { canonical: `/services/${slug}` },
     title: service.title,
     description: service.longDescription,
   };
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ServicePage({ params }: Props) {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const service = await getServiceBySlug(slug);
   if (!service) notFound();
 
   return (

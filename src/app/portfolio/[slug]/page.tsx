@@ -11,28 +11,32 @@ import { ClipReveal } from "@/components/motion/ClipReveal";
 import { Parallax } from "@/components/motion/Parallax";
 import { ProjectMedia } from "@/components/portfolio/ProjectMedia";
 import { ProjectGallery } from "@/components/portfolio/ProjectGallery";
-import { portfolioProjects, getProjectBySlug } from "@/data/portfolio";
+import { getProjects, getProjectBySlug } from "@/server/content";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return portfolioProjects.map((p) => ({ slug: p.slug }));
+  return (await getProjects()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return {};
-  return { title: project.title, description: project.tagline };
+  return {
+    alternates: { canonical: `/portfolio/${slug}` },
+    title: project.title,
+    description: project.tagline,
+  };
 }
 
 export default async function CasePage({ params }: Props) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
   const nextProject = project.nextProject
-    ? getProjectBySlug(project.nextProject)
+    ? await getProjectBySlug(project.nextProject)
     : undefined;
 
   const metaItems = [
@@ -130,7 +134,7 @@ export default async function CasePage({ params }: Props) {
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.6fr_1fr] lg:gap-20">
             <div>
               <p className="mb-5 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-                {"// о проекте"}
+                О проекте
               </p>
               <p className="text-xl leading-relaxed text-fg sm:text-2xl">
                 {project.overview}
@@ -189,7 +193,7 @@ export default async function CasePage({ params }: Props) {
         />
         <Container className="relative">
           <p className="mb-12 font-mono text-xs uppercase tracking-[0.3em] text-m">
-            {"// результаты"}
+            Результаты
           </p>
           <StaggerGroup className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3">
             {project.results.map((result) => (
@@ -220,7 +224,7 @@ export default async function CasePage({ params }: Props) {
       <Section className="theme-light">
         <Container>
           <p className="mb-12 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-            {"// процесс"}
+            Процесс
           </p>
           <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {project.process.map((step) => (
@@ -252,7 +256,7 @@ export default async function CasePage({ params }: Props) {
         >
           <Container>
             <p className="mb-8 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-              {"// следующий проект"}
+              Следующий проект
             </p>
             <Link
               href={`/portfolio/${nextProject.slug}`}

@@ -4,6 +4,7 @@ import { Section } from "@/components/layout/Section";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/privacy" },
   title: "Политика конфиденциальности",
   description: "Как ITDOS обрабатывает и защищает персональные данные.",
   robots: { index: true, follow: true },
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 const sections = [
   {
     h: "1. Какие данные мы собираем",
-    p: "Через формы на сайте мы собираем данные, которые вы предоставляете добровольно: имя, номер телефона, адрес электронной почты, выбранную услугу и текст обращения. Дополнительно автоматически могут собираться обезличенные данные о посещении (тип устройства, источник перехода) через сервисы аналитики.",
+    p: "Через формы на сайте мы собираем данные, которые вы предоставляете добровольно: имя и номер телефона или адрес электронной почты. Дополнительно автоматически могут собираться обезличенные данные о посещении (тип устройства, источник перехода) через сервисы аналитики.",
   },
   {
     h: "2. Цели обработки",
@@ -41,13 +42,13 @@ export default function PrivacyPage() {
     <Section spacing="lg" className="theme-light pt-32!">
       <Container size="md">
         <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-          {"// документ"}
+          Документ
         </p>
         <h1 className="font-display text-[clamp(2.2rem,5vw,3.6rem)] font-semibold leading-tight tracking-tight text-fg">
           Политика конфиденциальности
         </h1>
         <p className="mt-4 text-fg-muted">
-          Последнее обновление: 02.06.2026
+          Последнее обновление: 30.07.2026
         </p>
 
         <div className="mt-12 flex flex-col gap-10">
@@ -66,17 +67,12 @@ export default function PrivacyPage() {
             </h2>
             <p className="mt-3 leading-relaxed text-fg-secondary">
               По вопросам обработки персональных данных:{" "}
-              <a href={`mailto:${site.email}`} className="text-accent hover:underline">
+              <a href={`mailto:${site.email}`} className="text-accent-text hover:underline">
                 {site.email}
               </a>
               , {site.phoneDisplay}.
             </p>
           </div>
-
-          <p className="text-sm text-fg-muted">
-            Это базовый шаблон — перед публичным запуском рекомендуем согласовать
-            текст с юристом под ваше законодательство.
-          </p>
         </div>
       </Container>
     </Section>

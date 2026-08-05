@@ -31,10 +31,7 @@ export function AgentMock({ accent, className }: MockupProps & { className?: str
   const [count, setCount] = useState(142);
 
   useEffect(() => {
-    if (reduced) {
-      setStep(STEPS.length);
-      return;
-    }
+    if (reduced) return;
     let phase = 0;
     let t: ReturnType<typeof setTimeout>;
     const run = () => {
@@ -47,6 +44,8 @@ export function AgentMock({ accent, className }: MockupProps & { className?: str
     t = setTimeout(run, 350);
     return () => clearTimeout(t);
   }, [reduced]);
+
+  const activeStep = reduced ? STEPS.length : step;
 
   return (
     <Frame accent={accent} variant="app" label="AI-агент · ITDOS" className={className}>
@@ -62,7 +61,7 @@ export function AgentMock({ accent, className }: MockupProps & { className?: str
         {/* steps */}
         <div className="flex flex-1 flex-col">
           {STEPS.map((s, i) => {
-            const state = step > i ? "done" : step === i ? "work" : "pending";
+            const state = activeStep > i ? "done" : activeStep === i ? "work" : "pending";
             const last = i === STEPS.length - 1;
             return (
               <div key={s.label} className="flex gap-3">
@@ -72,7 +71,7 @@ export function AgentMock({ accent, className }: MockupProps & { className?: str
                   {!last && (
                     <div
                       className={`my-1 w-px flex-1 transition-colors duration-500 ${
-                        step > i ? "bg-m" : "bg-line"
+                        activeStep > i ? "bg-m" : "bg-line"
                       }`}
                     />
                   )}
@@ -98,7 +97,7 @@ export function AgentMock({ accent, className }: MockupProps & { className?: str
                   {/* progress bar fills while the step is active */}
                   {state === "work" && (
                     <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-fg/10">
-                      <div key={step} className="m-fill h-full rounded-full bg-m" />
+                      <div key={activeStep} className="m-fill h-full rounded-full bg-m" />
                     </div>
                   )}
                 </div>

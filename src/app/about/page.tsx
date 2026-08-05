@@ -8,6 +8,7 @@ import { CtaBanner } from "@/components/sections/shared/CtaBanner";
 import { Team } from "@/components/sections/about/Team";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "О нас",
   description:
     "ITDOS — технологическая компания из Бишкека. Разрабатываем сайты, приложения, CRM и AI-решения с 2019 года.",

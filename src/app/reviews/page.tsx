@@ -5,14 +5,16 @@ import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { StaggerGroup } from "@/components/motion/StaggerGroup";
 import { CtaBanner } from "@/components/sections/shared/CtaBanner";
-import { reviews } from "@/data/reviews";
+import { getReviews } from "@/server/content";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/reviews" },
   title: "Отзывы",
   description: "Что клиенты говорят о работе с ITDOS. Реальные отзывы реальных компаний.",
 };
 
-export default function ReviewsPage() {
+export default async function ReviewsPage() {
+  const reviews = await getReviews();
   return (
     <>
       <Section spacing="lg" className="bg-bg pt-32!">

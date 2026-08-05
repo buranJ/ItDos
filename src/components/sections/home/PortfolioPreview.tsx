@@ -15,7 +15,7 @@ export function PortfolioPreview() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-              {"// избранные работы"}
+              Избранные работы
             </p>
             <TextReveal
               as="h2"
@@ -31,7 +31,7 @@ export function PortfolioPreview() {
             Все проекты
             <ArrowUpRight
               size={16}
-              className="text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              className="text-accent-text transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
             />
           </Link>
         </div>

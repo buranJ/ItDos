@@ -4,15 +4,17 @@ import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { CtaBanner } from "@/components/sections/shared/CtaBanner";
-import { processPhases } from "@/data/process";
+import { getProcessPhases } from "@/server/content";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/process" },
   title: "Процесс",
   description:
     "Как ITDOS ведёт проекты: от брифинга до запуска. Прозрачный процесс разработки за 6 этапов.",
 };
 
-export default function ProcessPage() {
+export default async function ProcessPage() {
+  const processPhases = await getProcessPhases();
   return (
     <>
       <Section spacing="lg" className="bg-bg pt-32!">

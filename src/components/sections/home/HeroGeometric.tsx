@@ -2,1130 +2,26 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import {
-  Globe,
-  Layout,
-  TrendingUp,
-  Database,
-  Sparkles,
-  MessageSquare,
-  Settings2,
-  ShoppingBag,
-  Bot,
-  Zap,
-  Code2,
-  BarChart3,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { gsap } from "@/lib/gsap";
 import { MagneticButton } from "@/components/motion/MagneticButton";
 import { Container } from "@/components/layout/Container";
+import { buttonClass } from "@/components/ui/Button";
 import { lerp } from "@/lib/utils";
+import { useReducedMotion } from "@/lib/motion";
 import { ChatMock } from "@/components/portfolio/mockups/ChatMock";
-
-/* ─── Chaotic small squares (snow effect) ───────────────────────────────── */
-type Square = {
-  id: number;
-  size: number;
-  x: string;
-  y: string;
-  rotate: number;
-  opacity: number;
-  filled: boolean;
-  duration: number;
-  delay: number;
-  w1x: number;
-  w1y: number;
-  w2x: number;
-  w2y: number;
-  w3x: number;
-  w3y: number;
-  w4x: number;
-  w4y: number;
-  r1: number;
-  r2: number;
-  r3: number;
-  r4: number;
-};
-
-const squares: Square[] = [
-  // ── основные ──────────────────────────────────────────────────────────────
-  {
-    id: 1,
-    size: 8,
-    x: "7%",
-    y: "14%",
-    rotate: 0,
-    opacity: 0.1,
-    filled: false,
-    duration: 14,
-    delay: 0,
-    w1x: 16,
-    w1y: -20,
-    w2x: -10,
-    w2y: -38,
-    w3x: 22,
-    w3y: -18,
-    w4x: 6,
-    w4y: -30,
-    r1: 22,
-    r2: -14,
-    r3: 30,
-    r4: 8,
-  },
-  {
-    id: 2,
-    size: 5,
-    x: "11%",
-    y: "31%",
-    rotate: 15,
-    opacity: 0.14,
-    filled: true,
-    duration: 10,
-    delay: 1.5,
-    w1x: -14,
-    w1y: -10,
-    w2x: 8,
-    w2y: -24,
-    w3x: -20,
-    w3y: -8,
-    w4x: 4,
-    w4y: -18,
-    r1: -20,
-    r2: 12,
-    r3: -30,
-    r4: 5,
-  },
-  {
-    id: 3,
-    size: 12,
-    x: "4%",
-    y: "55%",
-    rotate: 30,
-    opacity: 0.07,
-    filled: false,
-    duration: 18,
-    delay: 0.7,
-    w1x: 20,
-    w1y: -14,
-    w2x: -6,
-    w2y: -28,
-    w3x: 18,
-    w3y: -6,
-    w4x: -8,
-    w4y: -20,
-    r1: 18,
-    r2: -24,
-    r3: 10,
-    r4: -16,
-  },
-  {
-    id: 4,
-    size: 6,
-    x: "16%",
-    y: "70%",
-    rotate: 0,
-    opacity: 0.11,
-    filled: true,
-    duration: 12,
-    delay: 2.3,
-    w1x: -18,
-    w1y: -22,
-    w2x: 12,
-    w2y: -12,
-    w3x: -24,
-    w3y: -30,
-    w4x: 8,
-    w4y: -16,
-    r1: -28,
-    r2: 16,
-    r3: -40,
-    r4: 0,
-  },
-  {
-    id: 5,
-    size: 9,
-    x: "23%",
-    y: "88%",
-    rotate: 45,
-    opacity: 0.09,
-    filled: false,
-    duration: 16,
-    delay: 1,
-    w1x: 14,
-    w1y: -18,
-    w2x: -22,
-    w2y: -8,
-    w3x: 10,
-    w3y: -28,
-    w4x: -16,
-    w4y: -14,
-    r1: 14,
-    r2: -18,
-    r3: 20,
-    r4: -8,
-  },
-  {
-    id: 6,
-    size: 7,
-    x: "28%",
-    y: "18%",
-    rotate: 20,
-    opacity: 0.1,
-    filled: false,
-    duration: 11,
-    delay: 3,
-    w1x: -10,
-    w1y: -24,
-    w2x: 18,
-    w2y: -14,
-    w3x: -6,
-    w3y: -32,
-    w4x: 20,
-    w4y: -10,
-    r1: -16,
-    r2: 22,
-    r3: -10,
-    r4: 18,
-  },
-  {
-    id: 7,
-    size: 5,
-    x: "36%",
-    y: "7%",
-    rotate: 0,
-    opacity: 0.15,
-    filled: true,
-    duration: 9,
-    delay: 0.3,
-    w1x: 22,
-    w1y: -12,
-    w2x: -8,
-    w2y: -26,
-    w3x: 16,
-    w3y: -8,
-    w4x: -12,
-    w4y: -20,
-    r1: 26,
-    r2: -12,
-    r3: 34,
-    r4: -6,
-  },
-  {
-    id: 8,
-    size: 10,
-    x: "55%",
-    y: "5%",
-    rotate: 10,
-    opacity: 0.07,
-    filled: false,
-    duration: 20,
-    delay: 1.8,
-    w1x: -16,
-    w1y: -18,
-    w2x: 10,
-    w2y: -30,
-    w3x: -20,
-    w3y: -10,
-    w4x: 14,
-    w4y: -24,
-    r1: -22,
-    r2: 14,
-    r3: -30,
-    r4: 8,
-  },
-  {
-    id: 9,
-    size: 6,
-    x: "63%",
-    y: "74%",
-    rotate: 35,
-    opacity: 0.12,
-    filled: true,
-    duration: 13,
-    delay: 2,
-    w1x: 18,
-    w1y: -20,
-    w2x: -12,
-    w2y: -10,
-    w3x: 24,
-    w3y: -28,
-    w4x: -8,
-    w4y: -16,
-    r1: 20,
-    r2: -24,
-    r3: 12,
-    r4: -20,
-  },
-  {
-    id: 10,
-    size: 8,
-    x: "70%",
-    y: "91%",
-    rotate: 0,
-    opacity: 0.1,
-    filled: false,
-    duration: 15,
-    delay: 0.5,
-    w1x: -20,
-    w1y: -14,
-    w2x: 16,
-    w2y: -22,
-    w3x: -10,
-    w3y: -32,
-    w4x: 20,
-    w4y: -12,
-    r1: -18,
-    r2: 20,
-    r3: -26,
-    r4: 14,
-  },
-  {
-    id: 11,
-    size: 5,
-    x: "76%",
-    y: "47%",
-    rotate: 50,
-    opacity: 0.13,
-    filled: true,
-    duration: 10,
-    delay: 3.5,
-    w1x: 12,
-    w1y: -26,
-    w2x: -18,
-    w2y: -8,
-    w3x: 20,
-    w3y: -18,
-    w4x: -10,
-    w4y: -28,
-    r1: 16,
-    r2: -20,
-    r3: 24,
-    r4: -10,
-  },
-  {
-    id: 12,
-    size: 11,
-    x: "84%",
-    y: "22%",
-    rotate: 20,
-    opacity: 0.07,
-    filled: false,
-    duration: 17,
-    delay: 1.2,
-    w1x: -14,
-    w1y: -20,
-    w2x: 22,
-    w2y: -10,
-    w3x: -18,
-    w3y: -28,
-    w4x: 10,
-    w4y: -18,
-    r1: -24,
-    r2: 18,
-    r3: -32,
-    r4: 12,
-  },
-  {
-    id: 13,
-    size: 6,
-    x: "89%",
-    y: "68%",
-    rotate: 0,
-    opacity: 0.11,
-    filled: false,
-    duration: 12,
-    delay: 2.8,
-    w1x: 20,
-    w1y: -16,
-    w2x: -10,
-    w2y: -28,
-    w3x: 16,
-    w3y: -12,
-    w4x: -20,
-    w4y: -22,
-    r1: 18,
-    r2: -22,
-    r3: 26,
-    r4: -14,
-  },
-  {
-    id: 14,
-    size: 4,
-    x: "93%",
-    y: "40%",
-    rotate: 30,
-    opacity: 0.17,
-    filled: true,
-    duration: 8,
-    delay: 0.8,
-    w1x: -12,
-    w1y: -22,
-    w2x: 18,
-    w2y: -12,
-    w3x: -22,
-    w3y: -30,
-    w4x: 8,
-    w4y: -16,
-    r1: -20,
-    r2: 24,
-    r3: -28,
-    r4: 10,
-  },
-  {
-    id: 15,
-    size: 7,
-    x: "50%",
-    y: "95%",
-    rotate: 15,
-    opacity: 0.1,
-    filled: false,
-    duration: 14,
-    delay: 1.5,
-    w1x: 16,
-    w1y: -18,
-    w2x: -20,
-    w2y: -8,
-    w3x: 12,
-    w3y: -26,
-    w4x: -16,
-    w4y: -14,
-    r1: 22,
-    r2: -16,
-    r3: 30,
-    r4: -8,
-  },
-  {
-    id: 16,
-    size: 9,
-    x: "44%",
-    y: "4%",
-    rotate: 0,
-    opacity: 0.08,
-    filled: false,
-    duration: 19,
-    delay: 4,
-    w1x: -18,
-    w1y: -16,
-    w2x: 14,
-    w2y: -26,
-    w3x: -22,
-    w3y: -10,
-    w4x: 18,
-    w4y: -20,
-    r1: -26,
-    r2: 20,
-    r3: -18,
-    r4: 16,
-  },
-  {
-    id: 17,
-    size: 5,
-    x: "2%",
-    y: "80%",
-    rotate: 45,
-    opacity: 0.13,
-    filled: true,
-    duration: 11,
-    delay: 2.5,
-    w1x: 22,
-    w1y: -12,
-    w2x: -14,
-    w2y: -24,
-    w3x: 18,
-    w3y: -8,
-    w4x: -10,
-    w4y: -28,
-    r1: 14,
-    r2: -18,
-    r3: 20,
-    r4: -12,
-  },
-  {
-    id: 18,
-    size: 8,
-    x: "97%",
-    y: "15%",
-    rotate: 10,
-    opacity: 0.09,
-    filled: false,
-    duration: 16,
-    delay: 0.2,
-    w1x: -16,
-    w1y: -22,
-    w2x: 20,
-    w2y: -10,
-    w3x: -12,
-    w3y: -30,
-    w4x: 16,
-    w4y: -18,
-    r1: -20,
-    r2: 14,
-    r3: -28,
-    r4: 8,
-  },
-  // ── снежинки — мелкие и хаотичные ────────────────────────────────────────
-  {
-    id: 19,
-    size: 3,
-    x: "9%",
-    y: "42%",
-    rotate: 0,
-    opacity: 0.2,
-    filled: true,
-    duration: 7,
-    delay: 0.4,
-    w1x: 10,
-    w1y: -14,
-    w2x: -8,
-    w2y: -20,
-    w3x: 14,
-    w3y: -10,
-    w4x: -6,
-    w4y: -18,
-    r1: 45,
-    r2: -30,
-    r3: 60,
-    r4: 15,
-  },
-  {
-    id: 20,
-    size: 4,
-    x: "18%",
-    y: "22%",
-    rotate: 20,
-    opacity: 0.18,
-    filled: false,
-    duration: 9,
-    delay: 1.1,
-    w1x: -8,
-    w1y: -16,
-    w2x: 12,
-    w2y: -8,
-    w3x: -14,
-    w3y: -22,
-    w4x: 6,
-    w4y: -12,
-    r1: -45,
-    r2: 30,
-    r3: -60,
-    r4: -15,
-  },
-  {
-    id: 21,
-    size: 3,
-    x: "31%",
-    y: "60%",
-    rotate: 45,
-    opacity: 0.22,
-    filled: true,
-    duration: 6,
-    delay: 2.7,
-    w1x: 14,
-    w1y: -10,
-    w2x: -10,
-    w2y: -18,
-    w3x: 8,
-    w3y: -6,
-    w4x: -12,
-    w4y: -14,
-    r1: 90,
-    r2: 45,
-    r3: 135,
-    r4: 0,
-  },
-  {
-    id: 22,
-    size: 5,
-    x: "40%",
-    y: "44%",
-    rotate: 0,
-    opacity: 0.12,
-    filled: false,
-    duration: 11,
-    delay: 0.9,
-    w1x: -12,
-    w1y: -20,
-    w2x: 8,
-    w2y: -12,
-    w3x: -18,
-    w3y: -8,
-    w4x: 10,
-    w4y: -16,
-    r1: 25,
-    r2: -20,
-    r3: 35,
-    r4: -10,
-  },
-  {
-    id: 23,
-    size: 3,
-    x: "48%",
-    y: "78%",
-    rotate: 30,
-    opacity: 0.19,
-    filled: true,
-    duration: 8,
-    delay: 3.6,
-    w1x: 8,
-    w1y: -12,
-    w2x: -14,
-    w2y: -6,
-    w3x: 10,
-    w3y: -18,
-    w4x: -8,
-    w4y: -10,
-    r1: -60,
-    r2: 45,
-    r3: -90,
-    r4: 30,
-  },
-  {
-    id: 24,
-    size: 4,
-    x: "53%",
-    y: "35%",
-    rotate: 10,
-    opacity: 0.14,
-    filled: false,
-    duration: 10,
-    delay: 1.3,
-    w1x: -10,
-    w1y: -18,
-    w2x: 16,
-    w2y: -8,
-    w3x: -12,
-    w3y: -24,
-    w4x: 8,
-    w4y: -14,
-    r1: 30,
-    r2: -45,
-    r3: 20,
-    r4: -30,
-  },
-  {
-    id: 25,
-    size: 3,
-    x: "61%",
-    y: "56%",
-    rotate: 0,
-    opacity: 0.2,
-    filled: true,
-    duration: 7,
-    delay: 0.6,
-    w1x: 12,
-    w1y: -16,
-    w2x: -8,
-    w2y: -10,
-    w3x: 16,
-    w3y: -20,
-    w4x: -10,
-    w4y: -8,
-    r1: 45,
-    r2: -60,
-    r3: 30,
-    r4: -45,
-  },
-  {
-    id: 26,
-    size: 5,
-    x: "73%",
-    y: "28%",
-    rotate: 25,
-    opacity: 0.12,
-    filled: false,
-    duration: 12,
-    delay: 4.2,
-    w1x: -14,
-    w1y: -12,
-    w2x: 10,
-    w2y: -20,
-    w3x: -8,
-    w3y: -6,
-    w4x: 14,
-    w4y: -16,
-    r1: -30,
-    r2: 45,
-    r3: -20,
-    r4: 30,
-  },
-  {
-    id: 27,
-    size: 3,
-    x: "80%",
-    y: "85%",
-    rotate: 45,
-    opacity: 0.18,
-    filled: true,
-    duration: 9,
-    delay: 1.9,
-    w1x: 8,
-    w1y: -18,
-    w2x: -12,
-    w2y: -8,
-    w3x: 14,
-    w3y: -14,
-    w4x: -8,
-    w4y: -20,
-    r1: 90,
-    r2: -45,
-    r3: 60,
-    r4: -90,
-  },
-  {
-    id: 28,
-    size: 4,
-    x: "87%",
-    y: "54%",
-    rotate: 0,
-    opacity: 0.16,
-    filled: false,
-    duration: 8,
-    delay: 0.5,
-    w1x: -10,
-    w1y: -14,
-    w2x: 14,
-    w2y: -6,
-    w3x: -16,
-    w3y: -18,
-    w4x: 6,
-    w4y: -10,
-    r1: -45,
-    r2: 60,
-    r3: -30,
-    r4: 45,
-  },
-  {
-    id: 29,
-    size: 3,
-    x: "95%",
-    y: "72%",
-    rotate: 15,
-    opacity: 0.21,
-    filled: true,
-    duration: 6,
-    delay: 2.1,
-    w1x: 10,
-    w1y: -10,
-    w2x: -8,
-    w2y: -16,
-    w3x: 12,
-    w3y: -8,
-    w4x: -10,
-    w4y: -12,
-    r1: 60,
-    r2: -30,
-    r3: 90,
-    r4: -60,
-  },
-  {
-    id: 30,
-    size: 4,
-    x: "33%",
-    y: "33%",
-    rotate: 35,
-    opacity: 0.13,
-    filled: false,
-    duration: 10,
-    delay: 3.3,
-    w1x: -8,
-    w1y: -20,
-    w2x: 12,
-    w2y: -10,
-    w3x: -14,
-    w3y: -16,
-    w4x: 8,
-    w4y: -8,
-    r1: -20,
-    r2: 35,
-    r3: -15,
-    r4: 25,
-  },
-  {
-    id: 31,
-    size: 3,
-    x: "20%",
-    y: "52%",
-    rotate: 0,
-    opacity: 0.17,
-    filled: true,
-    duration: 7,
-    delay: 1.7,
-    w1x: 14,
-    w1y: -8,
-    w2x: -10,
-    w2y: -14,
-    w3x: 8,
-    w3y: -18,
-    w4x: -12,
-    w4y: -6,
-    r1: 45,
-    r2: -90,
-    r3: 30,
-    r4: -45,
-  },
-  {
-    id: 32,
-    size: 5,
-    x: "47%",
-    y: "20%",
-    rotate: 20,
-    opacity: 0.11,
-    filled: false,
-    duration: 13,
-    delay: 0.1,
-    w1x: -12,
-    w1y: -16,
-    w2x: 8,
-    w2y: -8,
-    w3x: -16,
-    w3y: -20,
-    w4x: 10,
-    w4y: -12,
-    r1: -25,
-    r2: 40,
-    r3: -35,
-    r4: 20,
-  },
-  {
-    id: 33,
-    size: 3,
-    x: "64%",
-    y: "38%",
-    rotate: 0,
-    opacity: 0.19,
-    filled: true,
-    duration: 8,
-    delay: 4.8,
-    w1x: 10,
-    w1y: -12,
-    w2x: -14,
-    w2y: -6,
-    w3x: 8,
-    w3y: -16,
-    w4x: -6,
-    w4y: -10,
-    r1: 60,
-    r2: -45,
-    r3: 75,
-    r4: -30,
-  },
-  {
-    id: 34,
-    size: 4,
-    x: "78%",
-    y: "62%",
-    rotate: 30,
-    opacity: 0.14,
-    filled: false,
-    duration: 11,
-    delay: 2.4,
-    w1x: -8,
-    w1y: -18,
-    w2x: 12,
-    w2y: -10,
-    w3x: -10,
-    w3y: -22,
-    w4x: 6,
-    w4y: -14,
-    r1: -40,
-    r2: 55,
-    r3: -25,
-    r4: 40,
-  },
-  {
-    id: 35,
-    size: 3,
-    x: "14%",
-    y: "6%",
-    rotate: 45,
-    opacity: 0.2,
-    filled: true,
-    duration: 6,
-    delay: 1.6,
-    w1x: 12,
-    w1y: -14,
-    w2x: -8,
-    w2y: -20,
-    w3x: 10,
-    w3y: -8,
-    w4x: -14,
-    w4y: -16,
-    r1: 90,
-    r2: -60,
-    r3: 45,
-    r4: -90,
-  },
-  {
-    id: 36,
-    size: 5,
-    x: "58%",
-    y: "48%",
-    rotate: 0,
-    opacity: 0.1,
-    filled: false,
-    duration: 15,
-    delay: 3.8,
-    w1x: -14,
-    w1y: -10,
-    w2x: 10,
-    w2y: -18,
-    w3x: -8,
-    w3y: -6,
-    w4x: 12,
-    w4y: -14,
-    r1: -30,
-    r2: 20,
-    r3: -45,
-    r4: 15,
-  },
-  {
-    id: 37,
-    size: 3,
-    x: "3%",
-    y: "27%",
-    rotate: 20,
-    opacity: 0.18,
-    filled: true,
-    duration: 9,
-    delay: 5.2,
-    w1x: 8,
-    w1y: -16,
-    w2x: -12,
-    w2y: -8,
-    w3x: 14,
-    w3y: -12,
-    w4x: -8,
-    w4y: -18,
-    r1: 45,
-    r2: -30,
-    r3: 60,
-    r4: -45,
-  },
-  {
-    id: 38,
-    size: 4,
-    x: "96%",
-    y: "56%",
-    rotate: 0,
-    opacity: 0.15,
-    filled: false,
-    duration: 10,
-    delay: 0.9,
-    w1x: -10,
-    w1y: -20,
-    w2x: 16,
-    w2y: -8,
-    w3x: -12,
-    w3y: -14,
-    w4x: 8,
-    w4y: -18,
-    r1: -60,
-    r2: 45,
-    r3: -30,
-    r4: 60,
-  },
-];
-
-/* ─── Service chips ──────────────────────────────────────────────────────── */
-type Chip = {
-  id: number;
-  label: string;
-  Icon: React.ElementType;
-  x: string;
-  y: string;
-  depth: number;
-  floatDelay: string;
-  floatDur: string;
-  variant: "light" | "dark" | "outline";
-};
-
-const chips: Chip[] = [
-  // ── правая колонка ──────────────────────────────────────────
-  {
-    id: 1,
-    label: "AI-агенты",
-    Icon: Bot,
-    x: "62%",
-    y: "10%",
-    depth: 0.055,
-    floatDelay: "0s",
-    floatDur: "8s",
-    variant: "dark",
-  },
-  {
-    id: 2,
-    label: "Разработка",
-    Icon: Code2,
-    x: "82%",
-    y: "18%",
-    depth: 0.03,
-    floatDelay: "1.2s",
-    floatDur: "10s",
-    variant: "light",
-  },
-  {
-    id: 3,
-    label: "Telegram",
-    Icon: MessageSquare,
-    x: "60%",
-    y: "24%",
-    depth: 0.04,
-    floatDelay: "0.6s",
-    floatDur: "9s",
-    variant: "outline",
-  },
-  {
-    id: 4,
-    label: "Автоматизация",
-    Icon: Settings2,
-    x: "88%",
-    y: "40%",
-    depth: 0.025,
-    floatDelay: "2s",
-    floatDur: "11s",
-    variant: "light",
-  },
-  {
-    id: 5,
-    label: "AI-интеграции",
-    Icon: Sparkles,
-    x: "89%",
-    y: "56%",
-    depth: 0.05,
-    floatDelay: "0.9s",
-    floatDur: "9s",
-    variant: "dark",
-  },
-  {
-    id: 6,
-    label: "CRM / ERP",
-    Icon: Database,
-    x: "57%",
-    y: "73%",
-    depth: 0.035,
-    floatDelay: "1.7s",
-    floatDur: "12s",
-    variant: "outline",
-  },
-  {
-    id: 7,
-    label: "Маркетплейс",
-    Icon: ShoppingBag,
-    x: "85%",
-    y: "66%",
-    depth: 0.04,
-    floatDelay: "0.3s",
-    floatDur: "10s",
-    variant: "light",
-  },
-  {
-    id: 8,
-    label: "Аналитика",
-    Icon: BarChart3,
-    x: "69%",
-    y: "80%",
-    depth: 0.02,
-    floatDelay: "2.6s",
-    floatDur: "13s",
-    variant: "outline",
-  },
-  {
-    id: 9,
-    label: "SEO",
-    Icon: TrendingUp,
-    x: "91%",
-    y: "82%",
-    depth: 0.03,
-    floatDelay: "1.5s",
-    floatDur: "11s",
-    variant: "light",
-  },
-  // ── верхний центр (над текстом) ─────────────────────────────
-  {
-    id: 10,
-    label: "Сайты",
-    Icon: Globe,
-    x: "54%",
-    y: "6%",
-    depth: 0.04,
-    floatDelay: "0.7s",
-    floatDur: "8s",
-    variant: "light",
-  },
-  {
-    id: 11,
-    label: "Приложения",
-    Icon: Layout,
-    x: "93%",
-    y: "12%",
-    depth: 0.05,
-    floatDelay: "1.8s",
-    floatDur: "9s",
-    variant: "outline",
-  },
-  // ── нижний центр ─────────────────────────────────────────────
-];
-
-const variantStyles = {
-  light:
-    "border border-[#e5e5e5] bg-white text-[#0a0a0a] shadow-[0_2px_12px_rgba(0,0,0,0.06)]",
-  dark: "border border-[#0a0a0a] bg-[#0a0a0a] text-white shadow-[0_4px_20px_rgba(0,0,0,0.18)]",
-  outline:
-    "border border-[#d4d4d4] bg-white/60 text-[#525252] shadow-[0_1px_6px_rgba(0,0,0,0.04)] backdrop-blur-sm",
-};
-
-const iconColor = {
-  light: "text-[#525252]",
-  dark: "text-white/60",
-  outline: "text-[#a3a3a3]",
-};
-
-/* ─── Keyframes string ───────────────────────────────────────────────────── */
-const squareKeyframes = squares
-  .map(
-    (s) => `
-  @keyframes sq-${s.id} {
-    0%   { transform: translate(0px, 0px)           rotate(${s.rotate}deg); }
-    20%  { transform: translate(${s.w1x}px,${s.w1y}px) rotate(${s.r1}deg); }
-    45%  { transform: translate(${s.w2x}px,${s.w2y}px) rotate(${s.r2}deg); }
-    70%  { transform: translate(${s.w3x}px,${s.w3y}px) rotate(${s.r3}deg); }
-    85%  { transform: translate(${s.w4x}px,${s.w4y}px) rotate(${s.r4}deg); }
-    100% { transform: translate(0px, 0px)           rotate(${s.rotate}deg); }
-  }
-`,
-  )
-  .join("\n");
-
-const chatFloatKf = `
-  @keyframes chat-float {
-    0%   { translate: 0px 0px; }
-    30%  { translate: 5px -14px; }
-    65%  { translate: -4px -20px; }
-    100% { translate: 0px 0px; }
-  }
-`;
-
-/* Per-chip float so each moves differently (x + y drift, not just vertical) */
-const chipFloatKf = chips
-  .map((c, i) => {
-    const xA = [-6, 8, -10, 5, -7, 9, -4, 7, -8, 6, -5, 10][i % 12];
-    const yA = [-18, -22, -16, -24, -20, -14, -26, -18, -22, -16, -20, -24][
-      i % 12
-    ];
-    return `
-    @keyframes chip-float-${c.id} {
-      0%   { translate: 0px 0px;              }
-      30%  { translate: ${xA * 0.6}px ${yA * 0.5}px; }
-      60%  { translate: ${-xA * 0.4}px ${yA * 0.9}px; }
-      100% { translate: 0px 0px;              }
-    }
-  `;
-  })
-  .join("\n");
-
-/* ─── Component ─────────────────────────────────────────────────────────── */
-const CHAT_DEPTH = 0.08;
+import {
+  squares,
+  mobileSquares,
+  chips,
+  mobileChips,
+  variantStyles,
+  iconColor,
+  squareKeyframes,
+  chatFloatKf,
+  chipFloatKf,
+  CHAT_DEPTH,
+} from "./heroGeometric.data";
 
 export function HeroGeometric() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -1135,19 +31,22 @@ export function HeroGeometric() {
   const chatWrapRef = useRef<HTMLDivElement>(null);
   const chatTiltRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
+  const mobileStageRef = useRef<HTMLDivElement>(null);
+  const mobileChatRef = useRef<HTMLDivElement>(null);
+  const mobileChipRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const mobileRafRef = useRef<number>(0);
+  const reduced = useReducedMotion();
 
   /* ── Entrance animations ── */
   useEffect(() => {
     const root = sectionRef.current;
-    if (!root) return;
+    // Everything below is decorative motion. Under reduced-motion the hero
+    // renders in its final state instead — the CSS safety net alone left the
+    // GSAP timelines running.
+    if (!root || reduced) return;
     const ctx = gsap.context(() => {
       gsap
         .timeline({ delay: 0.1 })
-        .fromTo(
-          ".hg-badge",
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-        )
         .fromTo(
           ".hg-line",
           { yPercent: 115, skewY: 3 },
@@ -1160,12 +59,9 @@ export function HeroGeometric() {
           },
           "-=0.3",
         )
-        .fromTo(
-          ".hg-sub",
-          { opacity: 0, y: 18 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.55",
-        )
+        // NB: `.hg-badge` and `.hg-sub` are commented out in the markup; the
+        // timeline steps that animated them were logging "GSAP target not
+        // found" on every load. Re-add them together with the elements.
         .fromTo(
           ".hg-cta",
           { opacity: 0, y: 14 },
@@ -1179,7 +75,7 @@ export function HeroGeometric() {
           "-=0.4",
         )
         .fromTo(
-          ".hg-chip",
+          ".hg-chip, .hg-chip-m",
           { opacity: 0, scale: 0.75, y: 10 },
           {
             opacity: 1,
@@ -1205,12 +101,16 @@ export function HeroGeometric() {
         );
     }, root);
     return () => ctx.revert();
-  }, []);
+  }, [reduced]);
 
   /* ── Mouse parallax ── */
   useEffect(() => {
     const root = sectionRef.current;
-    if (!root) return;
+    if (!root || reduced) return;
+    // Pointer parallax is meaningless without a fine pointer, and the loop
+    // used to run forever — burning a frame's worth of work per tick long
+    // after the hero had scrolled away.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
     const onMove = (e: MouseEvent) => {
       const r = root.getBoundingClientRect();
@@ -1247,13 +147,145 @@ export function HeroGeometric() {
 
       rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
+
+    // Only spin the loop while the hero is actually on screen.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!rafRef.current) rafRef.current = requestAnimationFrame(tick);
+        } else if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = 0;
+        }
+      },
+      { threshold: 0 },
+    );
+    io.observe(root);
 
     return () => {
+      io.disconnect();
       root.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(rafRef.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = 0;
     };
-  }, []);
+  }, [reduced]);
+
+  /* ── Scatter for the < lg composition ──
+     Two inputs, summed: how far the hero has scrolled (the only "pointer" a
+     phone has) and, where a pointer exists, repulsion away from it. Each chip
+     carries its own depth and a deterministic jitter angle derived from its
+     id, so the group breaks apart unevenly instead of sliding as one block.
+     Offsets are lerped towards their target and rounded to whole pixels —
+     fractional translations blur the pill's text. */
+  useEffect(() => {
+    const stage = mobileStageRef.current;
+    if (!stage || reduced) return;
+    if (window.matchMedia("(min-width: 1024px)").matches) return;
+
+    const MAX_SCATTER = 18;
+    const current = mobileChips.map(() => ({ x: 0, y: 0 }));
+    const pointer = { x: 0, y: 0, active: false };
+    let running = false;
+
+    // Deterministic per-chip angle — random enough to read as chaos, stable
+    // between renders so nothing jumps on a re-render.
+    const jitter = mobileChips.map((c, i) => {
+      const a = ((c.id * 97 + i * 53) % 360) * (Math.PI / 180);
+      return { cos: Math.cos(a), sin: Math.sin(a) };
+    });
+
+    const frame = () => {
+      const rect = stage.getBoundingClientRect();
+      // -1 → below the fold, 0 → centred, 1 → scrolled past.
+      const p = Math.max(
+        -1,
+        Math.min(
+          1,
+          (window.innerHeight / 2 - (rect.top + rect.height / 2)) /
+            (window.innerHeight / 2 + rect.height / 2),
+        ),
+      );
+
+      let moving = false;
+
+      mobileChipRefs.current.forEach((el, i) => {
+        const chip = mobileChips[i];
+        const j = jitter[i];
+        if (!el || !chip || !j) return;
+
+        // scroll component — each chip drifts along its own angle
+        let tx = p * MAX_SCATTER * chip.depth * j.cos;
+        let ty = p * -MAX_SCATTER * 1.6 * chip.depth + p * 6 * j.sin;
+
+        // pointer component — push away, falling off with distance
+        if (pointer.active) {
+          const b = el.getBoundingClientRect();
+          const cx = b.left + b.width / 2 - rect.left;
+          const cy = b.top + b.height / 2 - rect.top;
+          const dx = cx - pointer.x;
+          const dy = cy - pointer.y;
+          const dist = Math.hypot(dx, dy) || 1;
+          const falloff = Math.max(0, 1 - dist / 220);
+          const push = falloff * 16 * (0.6 + chip.depth * 0.6);
+          tx += (dx / dist) * push;
+          ty += (dy / dist) * push;
+        }
+
+        const c = current[i];
+        c.x = lerp(c.x, tx, 0.12);
+        c.y = lerp(c.y, ty, 0.12);
+        if (Math.abs(c.x - tx) > 0.2 || Math.abs(c.y - ty) > 0.2) moving = true;
+
+        el.style.setProperty("--px", `${Math.round(c.x)}px`);
+        el.style.setProperty("--py", `${Math.round(c.y)}px`);
+      });
+
+      if (mobileChatRef.current) {
+        mobileChatRef.current.style.setProperty("--py", `${Math.round(p * -12)}px`);
+      }
+
+      // Keep ticking while anything is still settling or the pointer is down.
+      if (moving || pointer.active) {
+        mobileRafRef.current = requestAnimationFrame(frame);
+      } else {
+        mobileRafRef.current = 0;
+        running = false;
+      }
+    };
+
+    const kick = () => {
+      if (running) return;
+      running = true;
+      mobileRafRef.current = requestAnimationFrame(frame);
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      const rect = stage.getBoundingClientRect();
+      pointer.x = e.clientX - rect.left;
+      pointer.y = e.clientY - rect.top;
+      pointer.active = true;
+      kick();
+    };
+    const onPointerLeave = () => {
+      pointer.active = false;
+      kick();
+    };
+
+    stage.addEventListener("pointermove", onPointerMove, { passive: true });
+    stage.addEventListener("pointerleave", onPointerLeave, { passive: true });
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick, { passive: true });
+    kick();
+
+    return () => {
+      if (mobileRafRef.current) cancelAnimationFrame(mobileRafRef.current);
+      mobileRafRef.current = 0;
+      stage.removeEventListener("pointermove", onPointerMove);
+      stage.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("scroll", kick);
+      window.removeEventListener("resize", kick);
+    };
+  }, [reduced]);
 
   return (
     <>
@@ -1277,10 +309,12 @@ export function HeroGeometric() {
           }}
         />
 
-        {/* ── Chaotic small squares ── */}
+        {/* ── Chaotic small squares ──
+            Two passes: the full field on desktop, a thinned one below `lg`
+            that keeps clear of the headline. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 overflow-hidden"
+          className="pointer-events-none absolute inset-0 hidden overflow-hidden lg:block"
         >
           {squares.map((sq) => (
             <div
@@ -1295,6 +329,34 @@ export function HeroGeometric() {
                 background: sq.filled ? "#0a0a0a" : "transparent",
                 opacity: sq.opacity,
                 animationName: `sq-${sq.id}`,
+                animationDuration: `${sq.duration}s`,
+                animationDelay: `${sq.delay}s`,
+                animationTimingFunction: "ease-in-out",
+                animationIterationCount: "infinite",
+                animationDirection: "alternate",
+                willChange: "transform",
+              }}
+            />
+          ))}
+        </div>
+
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 overflow-hidden lg:hidden"
+        >
+          {mobileSquares.map((sq) => (
+            <div
+              key={sq.id}
+              className="hg-sq absolute"
+              style={{
+                left: sq.x,
+                top: sq.y,
+                width: sq.size,
+                height: sq.size,
+                border: sq.filled ? "none" : "1.5px solid #0a0a0a",
+                background: sq.filled ? "#0a0a0a" : "transparent",
+                opacity: sq.opacity,
+                animationName: `sq-${sq.animId ?? sq.id}`,
                 animationDuration: `${sq.duration}s`,
                 animationDelay: `${sq.delay}s`,
                 animationTimingFunction: "ease-in-out",
@@ -1380,7 +442,9 @@ export function HeroGeometric() {
         </div>
 
         {/* ── Content layout: stacked on mobile, centered on desktop ── */}
-        <div className="relative z-10 flex min-h-screen flex-col pt-20 pb-8 lg:justify-center lg:pt-36 lg:pb-24">
+        {/* `pb-16` on small screens: the buttons and the scroll hint used to
+            end flush against the next section's dark edge. */}
+        <div className="relative z-10 flex min-h-screen flex-col pb-16 pt-28 sm:pb-20 sm:pt-32 lg:justify-center lg:pb-24 lg:pt-36">
           <Container>
             <div className="max-w-208">
               {/* Badge */}
@@ -1395,7 +459,13 @@ export function HeroGeometric() {
               </div> */}
 
               {/* Heading */}
-              <h2 className="mt-8 font-semibold leading-[1.02] tracking-tight text-[#0a0a0a] text-[clamp(2.4rem,7.5vw,6.8rem)]">
+              {/* The home page's only <h1>. It used to be an <h2>, which left
+                  the most important page on the site without one. */}
+              {/* Two clamps rather than one: a single 7.5vw curve was still
+                  growing past 76px at 1023px while the layout was the stacked
+                  mobile one. The small/tablet band gets its own curve with a
+                  4.5rem ceiling; desktop keeps its original scale. */}
+              <h1 className="mt-6 font-semibold leading-[1.05] tracking-tight text-[#0a0a0a] text-[clamp(2.6rem,9.5vw,4.5rem)] lg:mt-8 lg:text-[clamp(3.5rem,7.5vw,6.8rem)] lg:leading-[1.02]">
                 <span className="block overflow-hidden">
                   <span className="hg-line block">Создаем</span>
                 </span>
@@ -1403,9 +473,9 @@ export function HeroGeometric() {
                   <span className="hg-line block">сайты</span>
                 </span>
                 <span className="block overflow-hidden">
-                  <span className="hg-line block text-[#a3a3a3]">и приложения</span>
+                  <span className="hg-line block text-[#8f8f8f]">и приложения</span>
                 </span>
-              </h2>
+              </h1>
 
               {/* Subtitle */}
               {/* <p className="hg-sub mt-6 max-w-md text-base sm:text-lg leading-relaxed text-[#525252]">
@@ -1413,13 +483,14 @@ export function HeroGeometric() {
                 делают бизнес быстрее и прибыльнее.
               </p> */}
 
-              {/* CTAs */}
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              {/* CTAs — desktop only; below `lg` they render after the
+                  visual block so the eye reaches the AI card first. */}
+              <div className="mt-10 hidden gap-3 lg:flex">
                 <MagneticButton>
                   <Link
                     href="/contact"
                     data-cursor="button"
-                    className="hg-cta inline-flex items-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-3.5 text-sm font-medium text-white shadow-[0_4px_20px_rgba(0,0,0,0.16)] transition-all duration-200 hover:bg-[#1a1a1a] hover:shadow-[0_6px_28px_rgba(0,0,0,0.22)]"
+                    className={buttonClass("dark", "md", "hg-cta")}
                   >
                     Обсудить проект <ArrowRight size={15} />
                   </Link>
@@ -1428,7 +499,7 @@ export function HeroGeometric() {
                   <Link
                     href="/portfolio"
                     data-cursor="link"
-                    className="hg-cta inline-flex items-center gap-2 rounded-full border border-[#e5e5e5] bg-white px-7 py-3.5 text-sm font-medium text-[#0a0a0a] shadow-sm transition-all duration-200 hover:border-[#0a0a0a]"
+                    className={buttonClass("outlineLight", "md", "hg-cta")}
                   >
                     Смотреть работы
                   </Link>
@@ -1437,83 +508,144 @@ export function HeroGeometric() {
             </div>
           </Container>
 
-          {/* ── Mobile card + chips (< lg) ── */}
-          <div className="mt-auto lg:hidden px-5 sm:px-8 pt-8 pb-2">
+          {/* ── Card + chips (< lg) ── */}
+          <div className="mt-auto px-5 pb-2 pt-10 sm:px-8 lg:hidden">
             <div
-              className="relative mx-auto"
-              style={{ maxWidth: 320, height: 356 }}
+              ref={mobileStageRef}
+              className="relative mx-auto h-[380px] w-full max-w-[360px] sm:h-[440px] sm:max-w-[520px]"
             >
               {/* ambient glow */}
               <div
-                className="pointer-events-none absolute inset-0 rounded-3xl opacity-[0.14] blur-3xl"
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-6 rounded-[40px] opacity-15 blur-3xl"
                 style={{ background: "#6e56ff" }}
               />
 
-              {/* ChatMock */}
+              {/* ChatMock with the 3D tilt restored.
+                  A rotated element is rasterised once and then resampled, which
+                  is what smeared the 11px text. Three things keep it legible:
+                    · the shadow lives on this outer, untransformed node, so the
+                      rotated layer carries no filter (a filter forces a second,
+                      lower-quality raster pass);
+                    · `transform-style: flat` — no preserve-3d chain, so there
+                      is exactly one composite step;
+                    · modest angles, and the type inside ChatMock went up from
+                      11px to 12px so the same resampling costs less.
+                  `--px/--py` are rounded to whole pixels for the same reason. */}
               <div
-                className="hg-chat-m absolute"
+                ref={mobileChatRef}
+                className="hg-chat-m absolute left-1/2 top-1/2 shadow-[0_22px_50px_-14px_rgba(10,10,10,0.24),0_4px_12px_-4px_rgba(10,10,10,0.1)]"
                 style={{
-                  top: 28,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: 224,
-                  height: 186,
+                  width: "min(82%, 310px)",
+                  height: "min(74%, 310px)",
+                  borderRadius: 16,
+                  perspective: "1200px",
+                  transform:
+                    "translate(calc(-50% + var(--px, 0px)), calc(-50% + var(--py, 0px)))",
                 }}
               >
-                <ChatMock accent="#6e56ff" typing className="h-full rounded-xl" />
-              </div>
-
-              {/* Chip: AI-агенты — top-left */}
-              <div
-                className="absolute"
-                style={{ top: 6, left: 2, animation: "chip-float-1 8s ease-in-out infinite" }}
-              >
-                <div className="flex items-center gap-1.5 rounded-full border border-[#0a0a0a] bg-[#0a0a0a] px-3 py-1.5 text-xs font-medium text-white shadow-lg">
-                  <Bot size={11} className="text-white/60" strokeWidth={1.75} />
-                  <span>AI-агенты</span>
+                <div
+                  className="h-full w-full"
+                  style={{
+                    transform: "rotateY(-6deg) rotateX(1.5deg)",
+                    transformStyle: "flat",
+                    backfaceVisibility: "hidden",
+                  }}
+                >
+                  <ChatMock accent="#6e56ff" typing className="h-full rounded-2xl" />
                 </div>
               </div>
 
-              {/* Chip: Сайты — top-right */}
-              <div
-                className="absolute"
-                style={{ top: 6, right: 2, animation: "chip-float-2 10s 0.5s ease-in-out infinite" }}
-              >
-                <div className="flex items-center gap-1.5 rounded-full border border-[#e5e5e5] bg-white px-3 py-1.5 text-xs font-medium text-[#0a0a0a] shadow-md">
-                  <Globe size={11} className="text-[#525252]" strokeWidth={1.75} />
-                  <span>Сайты</span>
+              {/* Chips — positioned by percentage so the arrangement survives
+                  every width from 320px to the lg breakpoint. */}
+              {/* Three nested layers, each owning one transform, because they
+                  would otherwise overwrite each other:
+                    outer — scatter offset driven by JS (scroll + pointer)
+                    middle — GSAP entrance tween (this is why the scatter
+                             stopped working when both lived on one element)
+                    inner  — idle CSS float
+              */}
+              {mobileChips.map((chip, i) => (
+                <div
+                  key={chip.id}
+                  ref={(el) => {
+                    mobileChipRefs.current[i] = el;
+                  }}
+                  className="absolute"
+                  style={{
+                    left: chip.x,
+                    top: chip.y,
+                    transform: "translate(var(--px, 0px), var(--py, 0px))",
+                    willChange: "transform",
+                  }}
+                >
+                  <div className="hg-chip-m">
+                    <div
+                      style={{
+                        animation: `chip-float-${chip.floatId} ${9 + i * 1.3}s ${i * 0.45}s ease-in-out infinite`,
+                      }}
+                    >
+                      <div
+                        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium sm:px-3.5 sm:py-2 sm:text-sm ${variantStyles[chip.variant]}`}
+                      >
+                        <chip.Icon
+                          size={12}
+                          className={iconColor[chip.variant]}
+                          strokeWidth={1.75}
+                        />
+                        <span>{chip.label}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              {/* Chip: Telegram — bottom-left */}
-              <div
-                className="absolute"
-                style={{ bottom: 8, left: 2, animation: "chip-float-3 9s 1s ease-in-out infinite" }}
-              >
-                <div className="flex items-center gap-1.5 rounded-full border border-[#d4d4d4] bg-white/70 px-3 py-1.5 text-xs font-medium text-[#525252] shadow-sm backdrop-blur-sm">
-                  <MessageSquare size={11} className="text-[#a3a3a3]" strokeWidth={1.75} />
-                  <span>Telegram</span>
-                </div>
-              </div>
-
-              {/* Chip: Разработка — bottom-right */}
-              <div
-                className="absolute"
-                style={{ bottom: 8, right: 2, animation: "chip-float-4 11s 1.5s ease-in-out infinite" }}
-              >
-                <div className="flex items-center gap-1.5 rounded-full border border-[#e5e5e5] bg-white px-3 py-1.5 text-xs font-medium text-[#0a0a0a] shadow-md">
-                  <Code2 size={11} className="text-[#525252]" strokeWidth={1.75} />
-                  <span>Разработка</span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
+
+          {/* CTAs on small screens — after the visual, side by side */}
+          <Container className="pt-8 lg:hidden">
+            <div className="flex flex-row gap-2.5">
+              <Link
+                href="/contact"
+                data-cursor="button"
+                className={buttonClass(
+                  "dark",
+                  "md",
+                  "hg-cta flex-1 px-4 text-[13px] sm:px-7 sm:text-sm",
+                )}
+              >
+                Обсудить проект <ArrowRight size={14} />
+              </Link>
+              <Link
+                href="/portfolio"
+                data-cursor="link"
+                className={buttonClass(
+                  "outlineLight",
+                  "md",
+                  "hg-cta flex-1 px-4 text-[13px] sm:px-7 sm:text-sm",
+                )}
+              >
+                Смотреть работы
+              </Link>
+            </div>
+
+            {/* Label for the client strip directly below, in the flow on small
+                screens — the absolutely-positioned version would collide with
+                the buttons, which sit at the bottom of the hero here. The rule
+                underneath points at the marquee. */}
+            <div className="mt-9 flex flex-col items-center gap-2 lg:hidden">
+              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#0a0a0a]/55">
+                Нам доверяют
+              </span>
+              <span className="h-8 w-px bg-linear-to-b from-[#0a0a0a]/45 to-transparent" />
+            </div>
+          </Container>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 opacity-60 sm:flex">
+        {/* Same label on desktop, where the buttons sit up top */}
+        <div className="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 opacity-60 lg:flex">
           <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-black">
-            Скролл
+            Нам доверяют
           </span>
           <span className="h-10 w-px bg-linear-to-b from-black to-transparent" />
         </div>

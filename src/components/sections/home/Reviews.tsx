@@ -23,7 +23,7 @@ export function Reviews() {
         <div className="mb-14 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-              {"// отзывы"}
+              Отзывы
             </p>
             <TextReveal
               as="h2"
@@ -53,7 +53,7 @@ export function Reviews() {
         <FadeIn key={current}>
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-16">
             <div>
-              <span className="font-display text-7xl leading-none text-accent">“</span>
+              <span className="font-display text-7xl leading-none text-accent-text">“</span>
               <blockquote className="-mt-6 font-display text-2xl font-medium leading-snug tracking-tight text-fg sm:text-3xl lg:text-4xl">
                 {review.text}
               </blockquote>

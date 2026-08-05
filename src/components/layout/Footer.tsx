@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "./Container";
+import { site, emailLink, phoneLink } from "@/lib/site";
 
 const footerLinks = {
   Услуги: [
@@ -51,11 +52,11 @@ export function Footer() {
               и автоматизируем бизнес с помощью AI.
             </p>
             <div className="mt-6 flex flex-col gap-1 text-sm text-fg-secondary">
-              <a href="mailto:zunusburan@gmail.com" className="hover:text-accent transition-colors">
-                itdos@gmail.com
+              <a href={emailLink} className="hover:text-accent-text transition-colors">
+                {site.email}
               </a>
-              <a href="tel:+996999953838" className="hover:text-accent transition-colors">
-                +996 999 953 838
+              <a href={phoneLink} className="hover:text-accent-text transition-colors">
+                {site.phoneDisplay}
               </a>
               {/* <span className="text-fg-muted">Бишкек, Кыргызстан</span> */}
             </div>
@@ -77,7 +78,7 @@ export function Footer() {
                       {link.label}
                       <ArrowUpRight
                         size={13}
-                        className="text-accent opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+                        className="text-accent-text opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0"
                       />
                     </Link>
                   </li>

@@ -28,11 +28,7 @@ export function CommandCenterMock({ accent, className }: MockupProps & { classNa
 
   // streaming agent log (typewriter)
   useEffect(() => {
-    if (reduced) {
-      setLineIdx(LOG.length);
-      setTyped("");
-      return;
-    }
+    if (reduced) return;
     let li = 0;
     let ci = 0;
     let t: ReturnType<typeof setTimeout>;
@@ -73,13 +69,14 @@ export function CommandCenterMock({ accent, className }: MockupProps & { classNa
 
   // task queue resolving
   useEffect(() => {
-    if (reduced) {
-      setResolved(QUEUE.length);
-      return;
-    }
+    if (reduced) return;
     const id = setInterval(() => setResolved((r) => (r + 1) % (QUEUE.length + 1)), 950);
     return () => clearInterval(id);
   }, [reduced]);
+
+  const visibleLineIdx = reduced ? LOG.length : lineIdx;
+  const visibleTyped = reduced ? "" : typed;
+  const visibleResolved = reduced ? QUEUE.length : resolved;
 
   return (
     <Frame accent={accent} variant="app" label="AI Command Center · ITDOS" className={className}>
@@ -100,14 +97,14 @@ export function CommandCenterMock({ accent, className }: MockupProps & { classNa
               лог агента
             </span>
             <div className="flex flex-col gap-1 font-mono text-[9.5px] leading-relaxed">
-              {LOG.slice(0, lineIdx).map((l, i) => (
+              {LOG.slice(0, visibleLineIdx).map((l, i) => (
                 <p key={i} className={l.startsWith("✓") ? "text-m" : "text-fg-secondary"}>
                   {l}
                 </p>
               ))}
-              {lineIdx < LOG.length && (
+              {visibleLineIdx < LOG.length && (
                 <p className="text-fg-secondary">
-                  {typed}
+                  {visibleTyped}
                   <span className="ml-0.5 inline-block w-1 animate-pulse text-m">▍</span>
                 </p>
               )}
@@ -133,8 +130,8 @@ export function CommandCenterMock({ accent, className }: MockupProps & { classNa
                 очередь
               </span>
               {QUEUE.map((q, i) => {
-                const done = reduced || i < resolved;
-                const work = !reduced && i === resolved;
+                const done = i < visibleResolved;
+                const work = !reduced && i === visibleResolved;
                 return (
                   <div key={q} className="flex items-center gap-1.5">
                     {done ? (

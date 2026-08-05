@@ -1,7 +1,6 @@
-import { marqueeItems, techStack } from "@/data/tech";
+import { techStack } from "@/data/tech";
 
 export function TechMarquee() {
-  const row1 = [...marqueeItems, ...marqueeItems];
   const row2 = [
     ...techStack.map((t) => t.name),
     ...techStack.map((t) => t.name),

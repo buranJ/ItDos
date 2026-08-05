@@ -3,20 +3,31 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, RotateCw, X } from "lucide-react";
-import { team } from "@/data/team";
 import { cn } from "@/lib/utils";
 
+/**
+ * Pick the tag's text colour by actual WCAG contrast rather than a perceived
+ * brightness threshold. The old 0.6 cutoff put white on the #ff6a3d tag at
+ * 2.85:1 — below the 4.5:1 floor — because orange reads "dark" to the
+ * luma formula while being far too light to carry white text.
+ */
 function ink(hex: string): string {
   const c = hex.replace("#", "");
-  const r = parseInt(c.slice(0, 2), 16);
-  const g = parseInt(c.slice(2, 4), 16);
-  const b = parseInt(c.slice(4, 6), 16);
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6 ? "#0a0a0a" : "#fff";
+  const channels = [0, 2, 4].map((i) => {
+    const v = parseInt(c.slice(i, i + 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  const L = 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  const onWhite = 1.05 / (L + 0.05); // white text over the tag
+  const onBlack = (L + 0.05) / 0.05714; // #0a0a0a text over the tag
+  return onBlack >= onWhite ? "#0a0a0a" : "#fff";
 }
 
 const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 
-export function TeamSlider() {
+import type { TeamMember } from "@/server/content";
+
+export function TeamSlider({ team }: { team: TeamMember[] }) {
   const [active, setActive] = useState(Math.floor(team.length / 2));
   const [flipped, setFlipped] = useState(false);
   const startX = useRef<number | null>(null);
@@ -147,7 +158,7 @@ export function TeamSlider() {
                     {/* flip hint (active only) */}
                     {isActive && (
                       <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
-                        <RotateCw size={12} className="text-accent" />
+                        <RotateCw size={12} className="text-accent-text" />
                         Подробнее
                       </span>
                     )}
@@ -180,7 +191,7 @@ export function TeamSlider() {
                     </h3>
                     <p className="text-sm text-fg-secondary">{m.role}</p>
                     {m.experience && (
-                      <p className="mt-1 font-mono text-xs text-accent">{m.experience}</p>
+                      <p className="mt-1 font-mono text-xs text-accent-text">{m.experience}</p>
                     )}
                   </div>
 

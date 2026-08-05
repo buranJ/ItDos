@@ -1,22 +1,24 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/Container";
+import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { plans } from "@/data/pricing";
+import { buttonClass } from "@/components/ui/Button";
+import { getPlans } from "@/server/content";
 import { cn } from "@/lib/utils";
 
-export function Pricing() {
+export async function Pricing() {
+  const plans = await getPlans();
+
   return (
-    <section className="theme-light border-t border-line py-24 lg:py-32">
+    <Section className="theme-light border-t border-line">
       <Container>
         {/* ── Header ── */}
         <div className="mb-20 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-              {"// цены"}
+              Цены
             </p> */}
             <TextReveal
               as="h2"
@@ -42,13 +44,13 @@ export function Pricing() {
                 <div
                   className={cn(
                     "ml-5 inline-flex items-center gap-2.5 rounded-t-xl px-5 py-2.5",
-                    plan.popular ? "bg-[#ede9ff]" : "bg-[#e8e8e8]",
+                    plan.popular ? "bg-accent/12" : "bg-panel-2",
                   )}
                 >
                   <span
                     className={cn(
                       "font-mono text-[10px] font-bold uppercase tracking-[0.2em]",
-                      plan.popular ? "text-accent" : "text-[#a1a1aa]",
+                      plan.popular ? "text-accent-text" : "text-fg-muted",
                     )}
                   >
                     0{i + 1}
@@ -56,13 +58,13 @@ export function Pricing() {
                   <span
                     className={cn(
                       "text-xs font-semibold",
-                      plan.popular ? "text-accent" : "text-[#3f3f46]",
+                      plan.popular ? "text-accent-text" : "text-fg-secondary",
                     )}
                   >
                     {plan.name.split(" /")[0]}
                   </span>
                   {plan.popular && (
-                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">
+                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent-text">
                       ТОП
                     </span>
                   )}
@@ -73,25 +75,25 @@ export function Pricing() {
                   className={cn(
                     "overflow-hidden rounded-b-2xl rounded-tr-2xl transition-shadow duration-300",
                     plan.popular
-                      ? "border-2 border-accent/20 bg-white shadow-[0_8px_40px_rgba(110,86,255,0.09)] group-hover:shadow-[0_20px_60px_rgba(110,86,255,0.16)]"
-                      : "border border-[#e4e4e7] bg-white shadow-md group-hover:shadow-xl",
+                      ? "border-2 border-accent/20 bg-panel shadow-[0_8px_40px_rgba(110,86,255,0.09)] group-hover:shadow-[0_20px_60px_rgba(110,86,255,0.16)]"
+                      : "border border-line bg-panel shadow-md group-hover:shadow-xl",
                   )}
                 >
                   <div className="flex flex-col items-center p-7 text-center lg:p-8">
                     {/* Name & tagline */}
-                    <h3 className="font-display text-xl font-semibold leading-tight tracking-tight text-[#0a0a0a]">
+                    <h3 className="font-display text-xl font-semibold leading-tight tracking-tight text-fg">
                       {plan.name}
                     </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-[#71717a]">
+                    <p className="mt-2 text-sm leading-relaxed text-fg-secondary">
                       {plan.tagline}
                     </p>
 
                     {/* Price */}
-                    <div className="mt-7 w-full border-t border-[#e8e8e8] pt-7">
-                      <p className="font-display font-semibold leading-none tracking-tight text-[#0a0a0a] text-[clamp(1.9rem,3.5vw,2.5rem)]">
+                    <div className="mt-7 w-full border-t border-line pt-7">
+                      <p className="font-display font-semibold leading-none tracking-tight text-fg text-[clamp(1.9rem,3.5vw,2.5rem)]">
                         {plan.price}
                       </p>
-                      <p className="mt-2 text-xs text-[#a1a1aa]">
+                      <p className="mt-2 text-xs text-fg-muted">
                         {plan.period}
                       </p>
                     </div>
@@ -101,12 +103,12 @@ export function Pricing() {
                       {plan.features.map((f) => (
                         <li
                           key={f}
-                          className="flex items-center justify-center gap-2.5 text-sm text-[#52525b]"
+                          className="flex items-center justify-center gap-2.5 text-sm text-fg-secondary"
                         >
                           <span
                             className={cn(
                               "h-1 w-1 shrink-0 rounded-full",
-                              plan.popular ? "bg-accent" : "bg-[#a1a1aa]",
+                              plan.popular ? "bg-accent" : "bg-fg-muted",
                             )}
                           />
                           {f}
@@ -118,11 +120,10 @@ export function Pricing() {
                     <Link
                       href="/contact"
                       data-cursor="button"
-                      className={cn(
-                        "group/btn mt-9 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium transition-all duration-300",
-                        plan.popular
-                          ? "bg-accent text-white shadow-[0_4px_20px_rgba(110,86,255,0.28)] hover:bg-accent-bright hover:shadow-[0_6px_32px_rgba(110,86,255,0.48)]"
-                          : "border border-[#e2e2e6] text-[#0a0a0a] hover:border-[#0a0a0a]/30 hover:bg-[#0a0a0a]/3",
+                      className={buttonClass(
+                        plan.popular ? "accent" : "outline",
+                        "md",
+                        "group/btn mt-9 w-full",
                       )}
                     >
                       Обсудить проект
@@ -143,13 +144,13 @@ export function Pricing() {
             Не уверены, что нужно?{" "}
             <Link
               href="/contact"
-              className="text-accent transition-colors hover:text-accent-bright"
+              className="text-accent-text transition-colors hover:text-accent-bright"
             >
               Бесплатная консультация →
             </Link>
           </p>
         </FadeIn>
       </Container>
-    </section>
+    </Section>
   );
 }

@@ -5,16 +5,18 @@ import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { StaggerGroup } from "@/components/motion/StaggerGroup";
-import { blogPosts } from "@/data/blog";
+import { getPosts } from "@/server/content";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/blog" },
   title: "Блог",
   description:
     "Статьи ITDOS о разработке, AI-автоматизации, CRM-системах и цифровизации бизнеса.",
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const blogPosts = await getPosts();
   return (
     <>
       <Section spacing="lg" className="bg-bg pt-32!">

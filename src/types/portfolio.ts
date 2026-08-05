@@ -57,13 +57,18 @@ export type MockupKind =
   | "iframe"
   | "phone"
   | "laptop"
+  | "laptop-video"
   | "showcase"
   | "flow"
   | "agent"
   | "neural"
   | "command"
   | "unified"
-  | "assistant";
+  | "assistant"
+  | "assistant-enhanced"
+  | "assistant-editorial"
+  | "automation"
+  | "journey";
 
 export type ProjectResult = {
   label: string;

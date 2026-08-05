@@ -3,14 +3,14 @@ import { Plus } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
-import { faq } from "@/data/faq";
+import { getFaq } from "@/server/content";
 
-export function Faq() {
+export async function Faq() {
   return (
     <Section className="border-t border-line">
       <Container size="lg">
         <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-          {"// вопросы"}
+          Вопросы
         </p>
         <TextReveal
           as="h2"
@@ -20,7 +20,7 @@ export function Faq() {
         </TextReveal>
 
         <div className="mt-12 border-t border-line">
-          {faq.map((item) => (
+          {(await getFaq()).map((item) => (
             <details key={item.q} className="group border-b border-line">
               <summary
                 data-cursor="link"
@@ -31,7 +31,7 @@ export function Faq() {
                 </span>
                 <Plus
                   size={20}
-                  className="shrink-0 text-accent transition-transform duration-300 group-open:rotate-45"
+                  className="shrink-0 text-accent-text transition-transform duration-300 group-open:rotate-45"
                 />
               </summary>
               <p className="max-w-2xl pb-6 leading-relaxed text-fg-secondary">
@@ -43,7 +43,7 @@ export function Faq() {
 
         <p className="mt-10 text-sm text-fg-muted">
           Не нашли ответ?{" "}
-          <Link href="/contact" className="text-accent hover:underline">
+          <Link href="/contact" className="text-accent-text hover:underline">
             Напишите — ответим в течение часа →
           </Link>
         </p>

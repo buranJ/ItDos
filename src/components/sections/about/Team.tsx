@@ -4,6 +4,7 @@ import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 // import { founderNote } from "@/data/team";
 import { TeamSlider } from "./TeamSlider";
+import { getTeam } from "@/server/content";
 
 // function FounderAvatar() {
 //   return (
@@ -25,13 +26,14 @@ import { TeamSlider } from "./TeamSlider";
 //   );
 // }
 
-export function Team() {
+export async function Team() {
+  const team = await getTeam();
   return (
     <Section className="overflow-hidden border-t border-line">
       <Container>
         <div className="max-w-3xl">
           {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-            {"// команда"}
+            Команда
           </p> */}
           <TextReveal
             as="h2"
@@ -59,7 +61,7 @@ export function Team() {
 
       {/* Coverflow team slider (full-bleed for the side-card spill) */}
       <div className="mt-16">
-        <TeamSlider />
+        <TeamSlider team={team} />
       </div>
     </Section>
   );

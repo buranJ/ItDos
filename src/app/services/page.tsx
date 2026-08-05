@@ -6,10 +6,11 @@ import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { StaggerGroup } from "@/components/motion/StaggerGroup";
 import { CtaBanner } from "@/components/sections/shared/CtaBanner";
-import { services } from "@/data/services";
+import { getServices } from "@/server/content";
 import type { LucideIcon } from "lucide-react";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/services" },
   title: "Услуги",
   description:
     "Полный спектр услуг: разработка сайтов, веб-приложений, CRM/ERP, AI-интеграции, Telegram-боты, автоматизация бизнеса.",
@@ -29,7 +30,8 @@ const categoryLabels = {
   support: "Поддержка",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getServices();
   const grouped = services.reduce<Record<string, typeof services>>(
     (acc, s) => {
       (acc[s.category] ??= []).push(s);
@@ -62,9 +64,11 @@ export default function ServicesPage() {
       {Object.entries(grouped).map(([category, items]) => (
         <Section key={category} className="theme-light border-t border-line">
           <Container>
-            <p className="text-xs font-semibold text-fg-muted uppercase tracking-widest mb-10">
+            {/* Real heading, not a styled <p> — otherwise the page is a flat
+                run of H2 service names with nothing grouping them. */}
+            <h2 className="text-xs font-semibold text-fg-muted uppercase tracking-widest mb-10">
               {categoryLabels[category as keyof typeof categoryLabels] ?? category}
-            </p>
+            </h2>
             <StaggerGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {items.map((service) => {
                 const Icon = iconMap[service.icon] ?? Monitor;
@@ -86,7 +90,7 @@ export default function ServicesPage() {
                       />
                     </div>
                     <div>
-                      <h2 className="font-semibold text-fg mb-2">{service.title}</h2>
+                      <h3 className="font-semibold text-fg mb-2">{service.title}</h3>
                       <p className="text-sm text-fg-secondary leading-relaxed">{service.description}</p>
                     </div>
                     <div className="mt-auto flex items-center justify-between">

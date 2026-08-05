@@ -1,0 +1,746 @@
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: size;
+  overflow: hidden;
+  color: #f4f2ed;
+  border: 1px solid rgba(244, 242, 237, 0.09);
+  border-radius: 1rem;
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      color-mix(in srgb, var(--flow-accent) 11%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(145deg, #0d0d12, #070709 72%);
+  box-shadow:
+    0 32px 90px rgba(0, 0, 0, 0.34),
+    inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.42;
+  background-image:
+    linear-gradient(rgba(244, 242, 237, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 242, 237, 0.025) 1px, transparent 1px);
+  background-size: 2.8rem 2.8rem;
+  -webkit-mask-image: radial-gradient(circle at 50% 48%, #000, transparent 83%);
+  mask-image: radial-gradient(circle at 50% 48%, #000, transparent 83%);
+}
+
+.ambient {
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  width: 38%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--flow-accent);
+  opacity: 0.07;
+  filter: blur(3.5rem);
+  animation: ambientPulse 4.8s ease-in-out infinite;
+}
+
+.topbar {
+  position: absolute;
+  z-index: 8;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: grid;
+  height: 12%;
+  min-height: 2.65rem;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0 4%;
+  border-bottom: 1px solid rgba(244, 242, 237, 0.07);
+  background: rgba(10, 10, 13, 0.66);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.live {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(244, 242, 237, 0.56);
+  font-family: var(--font-geist-mono);
+  font-size: clamp(0.43rem, 1.15cqh, 0.64rem);
+  letter-spacing: 0.13em;
+}
+
+.live > span {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: #65e6a7;
+  box-shadow: 0 0 0.7rem rgba(101, 230, 167, 0.72);
+  animation: livePulse 1.7s ease-in-out infinite;
+}
+
+.topMetric {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: var(--font-geist-mono);
+}
+
+.topMetric strong {
+  color: var(--flow-accent);
+  font-size: clamp(0.66rem, 1.8cqh, 0.95rem);
+  font-weight: 500;
+}
+
+.topMetric span,
+.success {
+  color: rgba(244, 242, 237, 0.43);
+  font-size: clamp(0.4rem, 1.05cqh, 0.59rem);
+}
+
+.success {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 0.35rem;
+  color: rgba(101, 230, 167, 0.7);
+  font-family: var(--font-geist-mono);
+}
+
+.workflow {
+  position: absolute;
+  z-index: 3;
+  top: 14.5%;
+  right: 3%;
+  bottom: 22%;
+  left: 3%;
+}
+
+.sourceColumn,
+.actionColumn {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  display: grid;
+  width: 29%;
+  grid-template-rows: 0.42fr repeat(3, 1fr);
+  gap: clamp(0.25rem, 1.3cqh, 0.65rem);
+}
+
+.sourceColumn {
+  left: 0;
+}
+
+.actionColumn {
+  right: 0;
+}
+
+.columnLabel {
+  align-self: end;
+  padding-bottom: 0.12rem;
+  color: rgba(244, 242, 237, 0.32);
+  font-family: var(--font-geist-mono);
+  font-size: clamp(0.36rem, 0.95cqh, 0.54rem);
+  letter-spacing: 0.13em;
+}
+
+.actionColumn .columnLabel {
+  text-align: right;
+}
+
+.node {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(0.32rem, 1.2cqw, 0.65rem);
+  padding: 7% 7.5%;
+  overflow: hidden;
+  border: 1px solid rgba(244, 242, 237, 0.08);
+  border-radius: clamp(0.55rem, 2.1cqw, 0.9rem);
+  background: rgba(18, 18, 24, 0.78);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
+  animation: nodeCycle 7.4s ease-in-out var(--delay) infinite;
+}
+
+.node::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 24%,
+    color-mix(in srgb, var(--flow-accent) 12%, transparent),
+    transparent 72%
+  );
+  transform: translateX(-120%);
+  animation: nodeSweep 7.4s ease-in-out var(--delay) infinite;
+}
+
+.nodeIcon {
+  display: grid;
+  width: clamp(1.35rem, 4.4cqw, 2rem);
+  aspect-ratio: 1;
+  place-items: center;
+  color: var(--flow-accent);
+  border: 1px solid color-mix(in srgb, var(--flow-accent) 23%, transparent);
+  border-radius: 0.58rem;
+  background: color-mix(in srgb, var(--flow-accent) 8%, transparent);
+}
+
+.nodeCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.nodeCopy strong {
+  overflow: hidden;
+  font-size: clamp(0.48rem, 1.45cqh, 0.76rem);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nodeCopy small {
+  overflow: hidden;
+  color: rgba(244, 242, 237, 0.38);
+  font-size: clamp(0.37rem, 1.05cqh, 0.58rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nodeStatus {
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: rgba(244, 242, 237, 0.15);
+  animation: statusCycle 7.4s ease-in-out var(--delay) infinite;
+}
+
+.core {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: clamp(5rem, 21%, 8.4rem);
+  aspect-ratio: 1;
+  place-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.coreOrbit,
+.coreOrbitInner {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.coreOrbit {
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--flow-accent) 35%, transparent);
+  background: conic-gradient(
+    from 90deg,
+    transparent 0 18%,
+    color-mix(in srgb, var(--flow-accent) 70%, transparent) 22%,
+    transparent 26% 62%,
+    color-mix(in srgb, var(--flow-accent) 42%, transparent) 66%,
+    transparent 70%
+  );
+  -webkit-mask: radial-gradient(transparent 64%, #000 65%);
+  mask: radial-gradient(transparent 64%, #000 65%);
+  animation: coreSpin 8s linear infinite;
+}
+
+.coreOrbitInner {
+  inset: 10%;
+  border: 1px solid rgba(244, 242, 237, 0.08);
+  box-shadow:
+    0 0 2rem color-mix(in srgb, var(--flow-accent) 14%, transparent),
+    inset 0 0 1.4rem color-mix(in srgb, var(--flow-accent) 8%, transparent);
+  animation: coreBreathe 2.8s ease-in-out infinite;
+}
+
+.coreBody {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 70%;
+  aspect-ratio: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.08rem;
+  color: #f4f2ed;
+  border: 1px solid color-mix(in srgb, var(--flow-accent) 32%, transparent);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 40% 28%,
+      color-mix(in srgb, var(--flow-accent) 35%, transparent),
+      transparent 48%
+    ),
+    #121219;
+  box-shadow:
+    0 0 2.4rem color-mix(in srgb, var(--flow-accent) 18%, transparent),
+    inset 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.coreBody svg {
+  color: var(--flow-accent);
+  filter: drop-shadow(
+    0 0 0.45rem color-mix(in srgb, var(--flow-accent) 65%, transparent)
+  );
+}
+
+.coreBody strong {
+  font-family: var(--font-geist-mono);
+  font-size: clamp(0.42rem, 1.15cqh, 0.63rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.coreBody small {
+  color: rgba(244, 242, 237, 0.38);
+  font-family: var(--font-geist-mono);
+  font-size: clamp(0.3rem, 0.78cqh, 0.46rem);
+}
+
+.reasoning {
+  position: absolute;
+  top: 88%;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.3rem 0.48rem;
+  color: color-mix(in srgb, var(--flow-accent) 82%, white);
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in srgb, var(--flow-accent) 22%, transparent);
+  border-radius: 999px;
+  background: rgba(9, 9, 12, 0.88);
+  font-family: var(--font-geist-mono);
+  font-size: clamp(0.34rem, 0.88cqh, 0.51rem);
+  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.38);
+  animation: reasoningPulse 2.2s ease-in-out infinite;
+}
+
+.routes {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.route,
+.bridge,
+.spine {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  background: rgba(244, 242, 237, 0.08);
+}
+
+.route,
+.bridge {
+  height: 1px;
+}
+
+.route {
+  width: 7%;
+}
+
+.routeInOne,
+.routeInTwo,
+.routeInThree {
+  left: 29%;
+}
+
+.routeOutOne,
+.routeOutTwo,
+.routeOutThree {
+  right: 29%;
+}
+
+.routeInOne,
+.routeOutOne {
+  top: 31%;
+}
+
+.routeInTwo,
+.routeOutTwo {
+  top: 57%;
+}
+
+.routeInThree,
+.routeOutThree {
+  top: 83%;
+}
+
+.route span,
+.bridge span {
+  position: absolute;
+  top: -2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--flow-accent);
+  box-shadow:
+    0 0 0.45rem var(--flow-accent),
+    0 0 1rem color-mix(in srgb, var(--flow-accent) 60%, transparent);
+  animation: signalRight 1.45s linear infinite;
+}
+
+.routeOutOne span,
+.routeOutTwo span,
+.routeOutThree span {
+  animation-delay: 0.72s;
+}
+
+.routeInTwo span,
+.routeOutTwo span {
+  animation-delay: 0.34s;
+}
+
+.routeInThree span,
+.routeOutThree span {
+  animation-delay: 0.68s;
+}
+
+.spine {
+  top: 31%;
+  width: 1px;
+  height: 52%;
+  background: linear-gradient(
+    to bottom,
+    rgba(244, 242, 237, 0.06),
+    color-mix(in srgb, var(--flow-accent) 28%, transparent),
+    rgba(244, 242, 237, 0.06)
+  );
+}
+
+.spineLeft {
+  left: 36%;
+}
+
+.spineRight {
+  right: 36%;
+}
+
+.bridge {
+  top: 57%;
+  width: 7%;
+}
+
+.bridgeLeft {
+  left: 36%;
+}
+
+.bridgeRight {
+  right: 36%;
+}
+
+.pipeline {
+  position: absolute;
+  z-index: 7;
+  right: 3.5%;
+  bottom: 3%;
+  left: 3.5%;
+  height: 15.5%;
+  min-height: 3.25rem;
+  padding: 1.8% 2%;
+  border: 1px solid rgba(244, 242, 237, 0.08);
+  border-radius: 0.8rem;
+  background: rgba(13, 13, 17, 0.76);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.pipelineTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: clamp(0.25rem, 0.85cqh, 0.45rem);
+}
+
+.pipelineTitle > span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--flow-accent);
+  font-family: var(--font-geist-mono);
+  font-size: clamp(0.4rem, 1.05cqh, 0.58rem);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.pipelineTitle small {
+  color: rgba(244, 242, 237, 0.3);
+  font-family: var(--font-geist-mono);
+  font-size: clamp(0.34rem, 0.85cqh, 0.49rem);
+}
+
+.pipelineSteps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.35rem;
+}
+
+.pipelineSteps::before {
+  position: absolute;
+  top: 50%;
+  right: 7%;
+  left: 7%;
+  z-index: 0;
+  height: 1px;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--flow-accent) 42%, transparent),
+    transparent
+  );
+}
+
+.pipelineStep {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.32rem;
+  color: rgba(244, 242, 237, 0.36);
+  border: 1px solid rgba(244, 242, 237, 0.07);
+  border-radius: 0.45rem;
+  background: #101015;
+  font-family: var(--font-geist-mono);
+  animation: stepCycle 4.8s ease-in-out var(--step-delay) infinite;
+}
+
+.pipelineStep span {
+  color: var(--flow-accent);
+  font-size: clamp(0.32rem, 0.78cqh, 0.45rem);
+}
+
+.pipelineStep strong {
+  overflow: hidden;
+  font-size: clamp(0.37rem, 0.92cqh, 0.53rem);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes signalRight {
+  from {
+    left: -8%;
+    opacity: 0;
+  }
+  16%,
+  82% {
+    opacity: 1;
+  }
+  to {
+    left: 103%;
+    opacity: 0;
+  }
+}
+
+@keyframes coreSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes coreBreathe {
+  0%,
+  100% {
+    opacity: 0.48;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes ambientPulse {
+  0%,
+  100% {
+    opacity: 0.045;
+    transform: translate(-50%, -50%) scale(0.82);
+  }
+  50% {
+    opacity: 0.1;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+
+@keyframes livePulse {
+  0%,
+  100% {
+    opacity: 0.52;
+    transform: scale(0.82);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes nodeCycle {
+  0%,
+  13% {
+    border-color: color-mix(in srgb, var(--flow-accent) 38%, transparent);
+    box-shadow:
+      0 0 1.4rem color-mix(in srgb, var(--flow-accent) 9%, transparent),
+      inset 0 1px rgba(255, 255, 255, 0.04);
+    transform: translateY(-1px);
+  }
+  26%,
+  100% {
+    border-color: rgba(244, 242, 237, 0.08);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
+    transform: translateY(0);
+  }
+}
+
+@keyframes nodeSweep {
+  0%,
+  5% {
+    transform: translateX(-120%);
+  }
+  20% {
+    transform: translateX(120%);
+  }
+  21%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes statusCycle {
+  0%,
+  13% {
+    background: #65e6a7;
+    box-shadow: 0 0 0.65rem rgba(101, 230, 167, 0.7);
+    transform: scale(1.15);
+  }
+  26%,
+  100% {
+    background: rgba(244, 242, 237, 0.15);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes reasoningPulse {
+  0%,
+  100% {
+    opacity: 0.64;
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-2px);
+  }
+}
+
+@keyframes stepCycle {
+  0%,
+  20% {
+    color: #f4f2ed;
+    border-color: color-mix(in srgb, var(--flow-accent) 42%, transparent);
+    background: color-mix(in srgb, var(--flow-accent) 12%, #101015);
+    box-shadow: 0 0 1rem color-mix(in srgb, var(--flow-accent) 12%, transparent);
+    transform: translateY(-1px);
+  }
+  32%,
+  100% {
+    color: rgba(244, 242, 237, 0.36);
+    border-color: rgba(244, 242, 237, 0.07);
+    background: #101015;
+    box-shadow: none;
+    transform: translateY(0);
+  }
+}
+
+@container (max-height: 25rem) {
+  .topbar {
+    min-height: 2.2rem;
+  }
+
+  .workflow {
+    top: 15%;
+    bottom: 21%;
+  }
+
+  .pipeline {
+    min-height: 2.8rem;
+  }
+
+  .reasoning {
+    display: none;
+  }
+}
+
+@container (max-width: 26rem) {
+  .success {
+    display: none;
+  }
+
+  .topbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .sourceColumn,
+  .actionColumn {
+    width: 31%;
+  }
+
+  .routeInOne,
+  .routeInTwo,
+  .routeInThree {
+    left: 31%;
+  }
+
+  .routeOutOne,
+  .routeOutTwo,
+  .routeOutThree {
+    right: 31%;
+  }
+
+  .route {
+    width: 5%;
+  }
+
+  .node {
+    padding: 6%;
+  }
+
+  .nodeStatus,
+  .nodeCopy small {
+    display: none;
+  }
+
+  .core {
+    width: 22%;
+  }
+
+  .pipelineStep {
+    gap: 0.16rem;
+  }
+}

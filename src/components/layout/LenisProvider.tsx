@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -14,10 +15,23 @@ export function useLenis(): Lenis | null {
 
 export function LenisProvider({ children }: { children: React.ReactNode }) {
   const [lenis, setLenis] = useState<Lenis | null>(null);
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
+    // Momentum scrolling belongs on the marketing site, not over an admin
+    // table where people expect the scrollbar to behave like a scrollbar.
+    if (isAdmin) return;
     // Respect reduced motion — fall back to native scroll, ScrollTrigger still works.
     if (prefersReducedMotion()) {
+      ScrollTrigger.refresh();
+      return;
+    }
+
+    // Touch devices keep native scrolling. Hijacked momentum on a phone reads
+    // as lag or as the page "not following the finger", and iOS Safari loses
+    // its scroll-to-top-on-status-bar-tap and address-bar collapse.
+    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) {
       ScrollTrigger.refresh();
       return;
     }
@@ -47,7 +61,7 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       instance.destroy();
       setLenis(null);
     };
-  }, []);
+  }, [isAdmin]);
 
   return <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>;
 }

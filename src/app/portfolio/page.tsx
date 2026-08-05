@@ -5,21 +5,23 @@ import { TextReveal } from "@/components/motion/TextReveal";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { ProjectFeatureRow } from "@/components/portfolio/ProjectFeatureRow";
 import { CtaBanner } from "@/components/sections/shared/CtaBanner";
-import { portfolioProjects } from "@/data/portfolio";
+import { getProjects } from "@/server/content";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/portfolio" },
   title: "Портфолио",
   description:
     "Кейсы ITDOS: сайты, веб-приложения, CRM, маркетплейсы, AI-интеграции — с реальными результатами.",
 };
 
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  const portfolioProjects = await getProjects();
   return (
     <>
       <Section spacing="lg" className="pt-36!">
         <Container>
           <p className="mb-6 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-            {"// портфолио · "}
+            {"Портфолио · "}
             {String(portfolioProjects.length).padStart(2, "0")}
             {" кейса"}
           </p>
@@ -38,7 +40,7 @@ export default function PortfolioPage() {
         </Container>
       </Section>
 
-      <Section spacing="none" className="border-t border-line py-20 md:py-28">
+      <Section className="border-t border-line">
         <Container>
           <div className="flex flex-col gap-24 lg:gap-36">
             {portfolioProjects.map((project, i) => (

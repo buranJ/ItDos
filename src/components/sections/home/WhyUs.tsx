@@ -50,7 +50,7 @@ export function WhyUs() {
       <Container>
         <div className="max-w-2xl">
           {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-            {"// почему ITDOS"}
+            Почему ITDOS
           </p> */}
           <TextReveal
             as="h2"
@@ -68,7 +68,7 @@ export function WhyUs() {
         <StaggerGroup className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
           {reasons.map((r) => (
             <div key={r.title} className="bg-bg p-7">
-              <r.icon size={22} className="text-accent" />
+              <r.icon size={22} className="text-accent-text" />
               <h3 className="mt-5 font-semibold text-fg">{r.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-fg-muted">
                 {r.desc}

@@ -36,10 +36,7 @@ async function request<T>(
 
 export type ContactPayload = {
   name: string;
-  phone: string;
-  email?: string;
-  service?: string;
-  message?: string;
+  contact: string;
   /** Honeypot — must stay empty. Filled = bot. */
   company?: string;
 };

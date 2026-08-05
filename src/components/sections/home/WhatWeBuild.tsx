@@ -5,6 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { ClipReveal } from "@/components/motion/ClipReveal";
 import { Mockup } from "@/components/portfolio/mockups";
 import type { MockupKind } from "@/types/portfolio";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 
 type Step = {
@@ -16,6 +17,8 @@ type Step = {
   kind: MockupKind;
   accent: string;
   url?: string;
+  /** Domain shown in the mock browser bar (kind="laptop-video"). */
+  address?: string;
 };
 
 const steps: Step[] = [
@@ -25,19 +28,12 @@ const steps: Step[] = [
     title: "Лендинги и корпоративные сайты",
     desc: "Быстрые, отзывчивые и SEO-оптимизированные сайты, которые выглядят дорого и превращают посетителей в клиентов.",
     tags: ["Корпоративные сайты", "Лендинги", "Интернет-магазины"],
-    kind: "iframe",
-    url: "https://avangardstyle.kg/",
-    accent: "#6e56ff",
-  },
-  {
-    n: "01",
-    label: "Сайты · Видео",
-    title: "Лендинги и корпоративные сайты",
-    desc: "Быстрые, отзывчивые и SEO-оптимизированные сайты, которые выглядят дорого и превращают посетителей в клиентов.",
-    tags: ["Корпоративные сайты", "Лендинги", "Интернет-магазины"],
-    kind: "showcase",
-    url: "Bz8LB_lNQJA",
-    accent: "#6e56ff",
+    // Video in a laptop instead of a live <iframe> of the client's site: the
+    // embed pulled the whole site (plus its analytics) into this page.
+    kind: "laptop-video",
+    url: "o1USBxQkmvU",
+    address: "avangardstyle.kg",
+    accent: "#004281",
   },
   {
     n: "02",
@@ -58,8 +54,9 @@ const steps: Step[] = [
     kind: "portal",
     accent: "#2bd4c4",
   },
-  // ── Шаг 04 (AI). Активен вариант «Помощник». Остальные мокапы сохранены
-  //    в резерве ниже (виды и компоненты на месте — можем вернуть в будущем). ──
+  // ── Шаг 04 (AI). Активен светлый редакционный вариант.
+  //    Остальные варианты сохранены в комментариях для быстрого возврата. ──
+  /* ── Варианты 04 и 04A (в резерве) ──
   {
     n: "04",
     label: "AI",
@@ -69,6 +66,45 @@ const steps: Step[] = [
     kind: "assistant",
     accent: "#8b78ff",
   },
+  {
+    n: "04A",
+    label: "AI · Помощник 2.0",
+    title: "AI-агенты и автоматизация",
+    desc: "AI-агенты, чат-боты и умная автоматизация, которые работают за вас 24/7 и экономят часы рутины.",
+    tags: ["AI-агенты", "Чат-боты", "RAG-системы"],
+    kind: "assistant-enhanced",
+    accent: "#8b78ff",
+  },
+  */
+  {
+    n: "04",
+    label: "AI-автоматизация",
+    title: "AI-агенты и автоматизация",
+    desc: "AI-помощник отвечает клиентам, назначает встречи, отправляет счета и обновляет CRM — 24/7, без ручной рутины.",
+    tags: ["Ответы клиентам", "Встречи и счета", "CRM-интеграция"],
+    kind: "assistant-editorial",
+    accent: "#f0eee9",
+  },
+  /* ── Варианты 04B и 04C (в резерве) ──
+  {
+    n: "04B",
+    label: "AI · Новый концепт",
+    title: "AI-агенты и автоматизация",
+    desc: "AI-агенты, чат-боты и умная автоматизация, которые работают за вас 24/7 и экономят часы рутины.",
+    tags: ["AI-агенты", "Интеграции", "Автоматизация"],
+    kind: "automation",
+    accent: "#8b78ff",
+  },
+  {
+    n: "04C",
+    label: "AI · Сценарий",
+    title: "AI-агенты и автоматизация",
+    desc: "AI-агенты, чат-боты и умная автоматизация, которые работают за вас 24/7 и экономят часы рутины.",
+    tags: ["AI-агенты", "Продажи", "Автоматизация"],
+    kind: "journey",
+    accent: "#8b78ff",
+  },
+  */
   /* ── Альтернативные AI-мокапы (в резерве, kind'ы определены в types/portfolio.ts) ──
   {
     n: "04",
@@ -121,6 +157,10 @@ const steps: Step[] = [
 export function WhatWeBuild() {
   const [active, setActive] = useState(0);
   const blockRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // The mobile and the sticky desktop column used to BOTH sit in the DOM,
+  // hidden from each other only by CSS — so every live-site iframe and the
+  // video player were fetched twice on every visit. Mount one or the other.
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   // Drive the active step from which block is centered in the viewport.
   // CSS sticky handles the visual — no fragile ScrollTrigger pin.
@@ -151,8 +191,12 @@ export function WhatWeBuild() {
         </div>
 
         <div className="grid lg:grid-cols-2 lg:gap-16">
-          {/* Left: scrolling steps */}
-          <div>
+          {/* Left: scrolling steps.
+              `min-w-0`: a grid item defaults to min-width:auto, so it refuses
+              to shrink below its content's intrinsic width. The device mockups
+              are intrinsically ~375px wide, which pushed this column past the
+              container on 320px phones. */}
+          <div className="min-w-0">
             {steps.map((step, i) => (
               <div
                 key={step.n}
@@ -166,48 +210,52 @@ export function WhatWeBuild() {
                 <StepCopy step={step} active={i === active} />
 
                 {/* Mobile inline mockup (reveals on scroll) */}
+                {!isDesktop && (
                 <ClipReveal
                   className={cn(
                     "rounded-xl lg:hidden",
-                    step.kind !== "phone" && "border border-line",
+                    step.kind === "phone" &&
+                      "-mr-5 rounded-r-none sm:-mr-8",
+                    step.kind === "laptop-video" &&
+                      "-mx-5 rounded-none sm:-mx-8",
+                    step.kind !== "phone" &&
+                      step.kind !== "laptop-video" &&
+                      step.kind !== "assistant-enhanced" &&
+                      step.kind !== "assistant-editorial" &&
+                      step.kind !== "automation" &&
+                      step.kind !== "journey" &&
+                      "border border-line",
                   )}
                 >
-                  {step.kind === "phone" ? (
-                    // Fixed-size phone centered in the step.
-                    // w-[72vw] max-w-[260px] caps phone width on any screen.
-                    // paddingBottom 216.8% of that width = correct portrait height.
-                    <div className="flex w-full justify-center py-4">
-                      <div
-                        className="relative w-[72vw] max-w-65"
-                        style={{
-                          paddingBottom: "min(calc(72vw * 2.168), 563px)",
-                        }}
-                      >
-                        <div className="absolute inset-0 pointer-events-none">
-                          <Mockup
-                            kind={step.kind}
-                            accent={step.accent}
-                            url={step.url}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="relative w-full aspect-16/10">
+                  <div
+                    className={cn(
+                      "relative w-full",
+                      step.kind === "phone" ||
+                        step.kind === "laptop-video" ||
+                        step.kind === "assistant-enhanced" ||
+                        step.kind === "assistant-editorial" ||
+                        step.kind === "automation" ||
+                        step.kind === "journey"
+                        ? "aspect-square"
+                        : "aspect-16/10",
+                    )}
+                  >
                       <Mockup
                         kind={step.kind}
                         accent={step.accent}
                         live={step.kind === "chat"}
                         url={step.url}
+                        address={step.address}
                       />
-                    </div>
-                  )}
+                  </div>
                 </ClipReveal>
+                )}
               </div>
             ))}
           </div>
 
           {/* Right: sticky media (desktop) */}
+          {isDesktop && (
           <div className="hidden lg:block">
             <div className="sticky top-0 flex h-screen items-center justify-center">
               <div className="relative h-[65vh] w-full">
@@ -227,12 +275,14 @@ export function WhatWeBuild() {
                       accent={step.accent}
                       live={i === active && step.kind === "chat"}
                       url={step.url}
+                      address={step.address}
                     />
                   </div>
                 ))}
               </div>
             </div>
           </div>
+          )}
         </div>
       </Container>
     </section>
@@ -244,7 +294,7 @@ function Header() {
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-          {"// что мы создаем"}
+          Что мы создаём
         </p> */}
         <h2 className="font-display text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-tight tracking-tight text-fg">
           {/* Один партнёр — от сайта до
@@ -271,7 +321,6 @@ function StepCopy({ step, active }: { step: Step; active: boolean }) {
       )}
     >
       <div className="mb-5 flex items-center gap-4">
-        <span className="font-mono text-sm text-m">{step.n}</span>
         <span className="h-px w-10 bg-m" />
         <span className="font-mono text-xs uppercase tracking-widest text-fg-muted">
           {step.label}

@@ -48,10 +48,17 @@ export function ChatMock({ accent, className, typing = false }: ChatMockProps) {
   return (
     <Frame accent={accent} variant="app" label="AI-агент · ITDOS" className={className}>
       <div className="flex h-full flex-col gap-3 p-4">
+        {/* Messages get their own flex track with `min-h-0`: the assistant's
+            reply is long and typed out character by character, and without
+            this it grew until it pushed the input field out of the frame. */}
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
         {/* user message */}
         <div className="flex justify-end">
           <div className="max-w-[78%] rounded-2xl rounded-tr-sm border border-m bg-m-soft px-3 py-2">
-            <p className="text-[11px] leading-snug text-fg-secondary">
+            {/* 12px rather than 11px: the card is tilted in 3D on small
+                screens, and resampling costs a fraction of a pixel of stroke
+                weight — the smaller the type, the more of it is lost. */}
+            <p className="text-xs leading-snug text-fg-secondary">
               Сколько стоит разработка сайта?
             </p>
           </div>
@@ -60,7 +67,7 @@ export function ChatMock({ accent, className, typing = false }: ChatMockProps) {
         {/* AI message */}
         <div className="flex items-start gap-2">
           <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-m">
-            <span className="text-[9px] font-bold text-accent-ink">AI</span>
+            <span className="text-[10px] font-bold text-accent-ink">AI</span>
           </div>
           <div className="max-w-[78%] rounded-2xl rounded-tl-sm border border-line bg-surface px-3 py-2 min-h-9">
             {display === "" ? (
@@ -74,7 +81,7 @@ export function ChatMock({ accent, className, typing = false }: ChatMockProps) {
                 ))}
               </span>
             ) : (
-              <p className="text-[11px] leading-snug text-fg">
+              <p className="text-xs leading-snug text-fg">
                 {display}
                 {live && <span className="ml-0.5 inline-block w-1.5 animate-pulse text-m">▍</span>}
               </p>
@@ -82,8 +89,10 @@ export function ChatMock({ accent, className, typing = false }: ChatMockProps) {
           </div>
         </div>
 
+        </div>
+
         {/* input */}
-        <div className="mt-auto flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5">
+        <div className="flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5">
           <div className="h-2 w-1/3 rounded bg-fg/12" />
           <div className="ml-auto flex h-6 w-6 items-center justify-center rounded-full bg-m">
             <svg width="11" height="11" viewBox="0 0 24 24" className="fill-accent-ink">

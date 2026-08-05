@@ -20,10 +20,7 @@ export function UnifiedMock({ accent, className }: MockupProps & { className?: s
   const [count, setCount] = useState(142);
 
   useEffect(() => {
-    if (reduced) {
-      setStep(STEPS.length - 1);
-      return;
-    }
+    if (reduced) return;
     const id = setInterval(() => {
       setStep((s) => (s + 1) % STEPS.length);
       setCount((c) => c + 1);
@@ -31,7 +28,8 @@ export function UnifiedMock({ accent, className }: MockupProps & { className?: s
     return () => clearInterval(id);
   }, [reduced]);
 
-  const activeAction = step % ACTIONS.length;
+  const activeStep = reduced ? STEPS.length - 1 : step;
+  const activeAction = activeStep % ACTIONS.length;
 
   return (
     <Frame accent={accent} variant="app" label="AI-агент · ITDOS" className={className}>
@@ -118,7 +116,7 @@ export function UnifiedMock({ accent, className }: MockupProps & { className?: s
 
           <div className="flex flex-1 flex-col justify-center gap-2">
             {STEPS.map((label, i) => {
-              const state = step > i ? "done" : step === i ? "work" : "pending";
+              const state = activeStep > i ? "done" : activeStep === i ? "work" : "pending";
               return (
                 <div key={label} className="flex items-center gap-2">
                   {state === "done" ? (

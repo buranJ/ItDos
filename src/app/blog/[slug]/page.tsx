@@ -7,20 +7,21 @@ import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { CtaBanner } from "@/components/sections/shared/CtaBanner";
-import { blogPosts, getBlogPostBySlug } from "@/data/blog";
+import { getPosts, getPostBySlug } from "@/server/content";
 import { formatDate } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return blogPosts.map((p) => ({ slug: p.slug }));
+  return (await getPosts()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) return {};
   return {
+    alternates: { canonical: `/blog/${slug}` },
     title: post.title,
     description: post.excerpt,
   };
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await getPostBySlug(slug);
   if (!post) notFound();
 
   return (
@@ -80,13 +81,7 @@ export default async function BlogPostPage({ params }: Props) {
           <FadeIn>
             <div className="prose prose-gray max-w-none">
               <p className="text-lg text-fg-secondary leading-relaxed">{post.excerpt}</p>
-              {post.content ? (
-                <div className="mt-8">{post.content}</div>
-              ) : (
-                <p className="mt-8 text-fg-muted italic">
-                  Статья в процессе подготовки. Следите за обновлениями.
-                </p>
-              )}
+              {post.content && <div className="mt-8">{post.content}</div>}
             </div>
           </FadeIn>
         </Container>

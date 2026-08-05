@@ -5,6 +5,7 @@ import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { MagneticButton } from "@/components/motion/MagneticButton";
+import { buttonClass } from "@/components/ui/Button";
 
 type CtaBannerProps = {
   title?: string;
@@ -48,7 +49,7 @@ export function CtaBanner({
               <Link
                 href={primaryCta.href}
                 data-cursor="button"
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-medium text-accent-ink transition-transform duration-200"
+                className={buttonClass("accent", "lg")}
               >
                 {primaryCta.label}
                 <ArrowRight size={16} />
@@ -60,7 +61,7 @@ export function CtaBanner({
                 <Link
                   href={secondaryCta.href}
                   data-cursor="link"
-                  className="inline-flex items-center gap-2 rounded-full border border-line px-8 py-4 text-sm font-medium text-fg transition-colors duration-200 hover:border-fg/50"
+                  className={buttonClass("outline", "lg")}
                 >
                   {secondaryCta.label}
                 </Link>

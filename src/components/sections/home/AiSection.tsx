@@ -30,8 +30,8 @@ export function AiSection() {
         <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-24">
           {/* Left */}
           <div>
-            <p className="mb-6 font-mono text-xs uppercase tracking-[0.3em] text-accent">
-              {"// AI и автоматизация"}
+            <p className="mb-6 font-mono text-xs uppercase tracking-[0.3em] text-accent-text">
+              AI и автоматизация
             </p>
 
             <TextReveal
@@ -63,7 +63,7 @@ export function AiSection() {
               <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-3">
                 {capabilities.map((c) => (
                   <div key={c.label} className="flex items-center gap-2.5">
-                    <c.icon size={15} className="shrink-0 text-accent" />
+                    <c.icon size={15} className="shrink-0 text-accent-text" />
                     <span className="text-sm text-fg-secondary">{c.label}</span>
                   </div>
                 ))}

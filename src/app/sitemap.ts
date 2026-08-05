@@ -1,11 +1,9 @@
 import type { MetadataRoute } from "next";
-import { portfolioProjects } from "@/data/portfolio";
-import { services } from "@/data/services";
-import { blogPosts } from "@/data/blog";
+import { getProjects, getServices, getPosts } from "@/server/content";
 
 const base = "https://itdos.ru";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticPaths = [
@@ -25,10 +23,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path === "" ? 1 : 0.7,
   }));
 
+  const [services, projects, posts] = await Promise.all([
+    getServices(),
+    getProjects(),
+    getPosts(),
+  ]);
+
   const dynamic = [
     ...services.map((s) => `/services/${s.slug}`),
-    ...portfolioProjects.map((p) => `/portfolio/${p.slug}`),
-    ...blogPosts.map((b) => `/blog/${b.slug}`),
+    ...projects.map((p) => `/portfolio/${p.slug}`),
+    ...posts.map((b) => `/blog/${b.slug}`),
   ].map((path) => ({
     url: `${base}${path}`,
     lastModified: now,

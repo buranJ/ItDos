@@ -184,10 +184,7 @@ export function AssistantMock({ accent, className }: MockupProps & { className?:
   const [phase, setPhase] = useState(0); // 0–2 actions, 3 summary
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(3);
-      return;
-    }
+    if (reduced) return;
     let p = 0;
     let t: ReturnType<typeof setTimeout>;
     const run = () => {
@@ -200,6 +197,8 @@ export function AssistantMock({ accent, className }: MockupProps & { className?:
     return () => clearTimeout(t);
   }, [reduced]);
 
+  const activePhase = reduced ? 3 : phase;
+
   return (
     <Frame accent={accent} variant="app" label="Ваш AI-помощник" className={className}>
       <div className="relative h-full overflow-hidden p-3">
@@ -210,21 +209,21 @@ export function AssistantMock({ accent, className }: MockupProps & { className?:
         <div className="relative flex h-full flex-col gap-2.5">
           {/* live status + progress dots */}
           <div className="flex items-center gap-2">
-            {phase === 3 ? (
+            {activePhase === 3 ? (
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-m text-accent-ink">
                 <Sparkles size={13} />
               </span>
             ) : (
               <span className="m-spin h-5 w-5 shrink-0 rounded-full border-2 border-m/25 border-t-m" />
             )}
-            <p className="text-[12px] font-medium text-fg">{STATUS[phase]}</p>
+            <p className="text-[12px] font-medium text-fg">{STATUS[activePhase]}</p>
             <div className="ml-auto flex items-center gap-1">
               {[0, 1, 2, 3].map((i) => (
                 <span
                   key={i}
                   className={cn(
                     "h-1 rounded-full transition-all duration-300",
-                    i === phase ? "w-3 bg-m" : "w-1 bg-fg-faint"
+                    i === activePhase ? "w-3 bg-m" : "w-1 bg-fg-faint"
                   )}
                 />
               ))}
@@ -233,8 +232,8 @@ export function AssistantMock({ accent, className }: MockupProps & { className?:
 
           {/* stage — the live demonstration */}
           <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl border border-line bg-surface/40 p-3 backdrop-blur-sm">
-            <div key={phase} className="h-full">
-              <Scene phase={phase} />
+            <div key={activePhase} className="h-full">
+              <Scene phase={activePhase} />
             </div>
           </div>
 
@@ -243,8 +242,8 @@ export function AssistantMock({ accent, className }: MockupProps & { className?:
             {TILES.map((tile, i) => {
               const Icon = tile.icon;
               const isTime = i === 3;
-              const active = isTime ? phase === 3 : phase === i;
-              const done = isTime ? phase === 3 : phase > i || phase === 3;
+              const active = isTime ? activePhase === 3 : activePhase === i;
+              const done = isTime ? activePhase === 3 : activePhase > i || activePhase === 3;
               return (
                 <div
                   key={tile.label}
