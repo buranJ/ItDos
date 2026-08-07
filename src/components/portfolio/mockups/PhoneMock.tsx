@@ -65,16 +65,20 @@ export function PhoneMock({ url, className }: Props) {
           className={styles.mockup}
         />
 
-        <div className={styles.hint}>
-          <span aria-hidden="true" className={styles.hintIcon}>
-            <ChevronsUpDown size={16} strokeWidth={1.8} />
-            <span className={styles.hintDot} />
-          </span>
-          <span className={styles.hintCopy}>
-            <strong>Живое приложение</strong>
-            <span>Листайте экран прямо сейчас</span>
-          </span>
-        </div>
+      </div>
+
+      {/* Sibling of the stage, not a child: the stage is ~2.6x wider than the
+          visible scene, so a percentage offset inside it put the badge off
+          screen on phones. */}
+      <div className={styles.hint}>
+        <span aria-hidden="true" className={styles.hintIcon}>
+          <ChevronsUpDown size={16} strokeWidth={1.8} />
+          <span className={styles.hintDot} />
+        </span>
+        <span className={styles.hintCopy}>
+          <strong>Живое приложение</strong>
+          <span>Листайте экран прямо сейчас</span>
+        </span>
       </div>
     </div>
   );

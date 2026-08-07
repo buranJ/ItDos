@@ -183,8 +183,14 @@ export function WhatWeBuild() {
     return () => io.disconnect();
   }, []);
 
+  // `overflow-x-clip` contains the laptop mock: its stage is deliberately
+  // 175% of the column so the device reads larger than its slot, and that
+  // overhang made the whole page scroll 58px sideways on desktop.
+  // `clip` rather than `hidden` on purpose — paired with `overflow-y: visible`
+  // it does not become a scroll container, so the sticky media column below
+  // keeps working.
   return (
-    <section className="relative border-t border-line">
+    <section className="relative overflow-x-clip border-t border-line">
       <Container>
         <div className="pt-24 md:pt-28">
           <Header />
@@ -230,14 +236,18 @@ export function WhatWeBuild() {
                   <div
                     className={cn(
                       "relative w-full",
-                      step.kind === "phone" ||
-                        step.kind === "laptop-video" ||
+                      // The phone is portrait, so it gets a portrait box —
+                      // in a square one it ran out of height at ~37% of the
+                      // available width.
+                      step.kind === "phone" && "aspect-[4/7]",
+                      step.kind !== "phone" &&
+                        (step.kind === "laptop-video" ||
                         step.kind === "assistant-enhanced" ||
                         step.kind === "assistant-editorial" ||
                         step.kind === "automation" ||
                         step.kind === "journey"
-                        ? "aspect-square"
-                        : "aspect-16/10",
+                          ? "aspect-square"
+                          : "aspect-16/10"),
                     )}
                   >
                       <Mockup

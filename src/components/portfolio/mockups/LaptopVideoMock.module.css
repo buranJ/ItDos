@@ -75,15 +75,8 @@
   aspect-ratio: 3 / 2;
   transform: translate(-50%, -50%);
   opacity: 1;
-  transition:
-    opacity 400ms ease,
-    transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.previewHidden {
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -46%) scale(0.92);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 .photo {
@@ -243,28 +236,25 @@
 .mobileStage {
   position: absolute;
   z-index: 2;
-  inset: 13% -5% 1%;
-  overflow: hidden;
+  inset: 13% 0 1%;
+  overflow: visible;
   pointer-events: none;
+  visibility: hidden;
   opacity: 0;
   transform: translateY(1.2rem) scale(0.94);
   perspective: 75rem;
-  transition:
-    opacity 400ms ease,
-    transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.mobileStageVisible {
-  pointer-events: auto;
-  opacity: 1;
-  transform: translateY(0) scale(1);
+  will-change: transform, opacity;
 }
 
 .mobilePhone {
   position: absolute;
   top: 50%;
   left: 50%;
-  height: min(98%, 38rem);
+  /* Sized against the container, not just its height. The fan is ~1.9 phone
+     widths across, so a height-only cap let the group grow wider than the
+     column on narrow screens and the left phone slid off the viewport.
+     `.scene` is a size container, so 96cqw keeps the whole fan inside it. */
+  height: min(88cqh, 84cqw, 30rem);
   aspect-ratio: var(--phone-aspect, 393 / 852);
   transform-origin: center;
   border: clamp(3px, 0.7cqh, 7px) solid #262629;
@@ -273,7 +263,8 @@
   box-shadow:
     0 28px 60px rgba(0, 0, 0, 0.58),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  transition: transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 .mobilePhone::after {
@@ -290,21 +281,26 @@
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.045);
 }
 
+/* No `transform` on these three on purpose — GSAP owns their placement.
+   When a percentage translate sits in a compound transform next to rotate()
+   and scale(), GSAP decomposes it to a pixel `x` and then adds its own
+   `xPercent` on top, so the offset was applied twice and the left phone ended
+   up ~194px further out than the right one. The centre phone escaped it only
+   because a bare translate(-50%,-50%) is parsed straight into xPercent.
+   The stage starts hidden, so there is no unpositioned frame before JS runs.
+   Offsets live in `mobilePhonePositions` in LaptopVideoMock.tsx. */
 .mobilePhoneLeft {
   z-index: 1;
   filter: brightness(0.7);
-  transform: translate(-112%, -48%) rotate(-8deg) scale(0.86);
 }
 
 .mobilePhoneCenter {
   z-index: 3;
-  transform: translate(-50%, -50%);
 }
 
 .mobilePhoneRight {
   z-index: 2;
   filter: brightness(0.78);
-  transform: translate(12%, -48%) rotate(8deg) scale(0.86);
 }
 
 .mobilePhoneScreen {
@@ -432,6 +428,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .photoStage,
+  .mobileStage,
+  .mobilePhone {
+    will-change: auto;
+  }
+
   .videoLoader,
   .loaderMark,
   .loaderPart,

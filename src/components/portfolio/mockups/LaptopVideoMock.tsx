@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import { Laptop, Smartphone } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
-import { useReducedMotion } from "@/lib/motion";
+import { DURATION, EASE, useReducedMotion } from "@/lib/motion";
 import styles from "./LaptopVideoMock.module.css";
 
 type Props = {
@@ -123,6 +124,10 @@ export function LaptopVideoMock({
   const [loaderHidden, setLoaderHidden] = useState(false);
   const reduced = useReducedMotion();
   const [viewRef, inView] = useInView<HTMLDivElement>("0px");
+  const photoStageRef = useRef<HTMLDivElement>(null);
+  const mobileStageRef = useRef<HTMLDivElement>(null);
+  const phoneRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const motionReadyRef = useRef(false);
   const loaderFading = introComplete && videoLoaded;
   const id = ytId(url);
   const src =
@@ -159,6 +164,207 @@ export function LaptopVideoMock({
 
     return () => window.clearTimeout(fadeTimer);
   }, [loaderFading, loaderHidden, reduced]);
+
+  useEffect(() => {
+    const photoStage = photoStageRef.current;
+    const mobileStage = mobileStageRef.current;
+    const [leftPhone, centerPhone, rightPhone] = phoneRefs.current;
+
+    if (
+      !photoStage ||
+      !mobileStage ||
+      !leftPhone ||
+      !centerPhone ||
+      !rightPhone
+    ) {
+      return;
+    }
+
+    const phones = [leftPhone, centerPhone, rightPhone];
+    const collapsedSidePhone = {
+      xPercent: -50,
+      yPercent: -50,
+      rotation: 0,
+      scale: 0.78,
+      autoAlpha: 0,
+    };
+    const collapsedCenterPhone = {
+      xPercent: -50,
+      yPercent: -50,
+      rotation: 0,
+      scaleX: 1.9,
+      scaleY: 0.72,
+      autoAlpha: 0,
+    };
+    // ±54% of a phone's own width from the centre one. Tighter than this and
+    // the side screenshots vanish behind the middle phone; wider and the fan
+    // stops reading as one group.
+    const mobilePhonePositions = [
+      { xPercent: -104, yPercent: -46, rotation: -7, scale: 0.84 },
+      { xPercent: -50, yPercent: -50, rotation: 0, scale: 1 },
+      { xPercent: 4, yPercent: -46, rotation: 7, scale: 0.84 },
+    ];
+
+    const setDesktopState = () => {
+      gsap.set(photoStage, {
+        xPercent: -50,
+        yPercent: -50,
+        x: 0,
+        y: 0,
+        scaleX: 1,
+        scaleY: 1,
+        autoAlpha: 1,
+      });
+      gsap.set(mobileStage, {
+        autoAlpha: 0,
+        y: 18,
+        scale: 0.94,
+        visibility: "hidden",
+        pointerEvents: "none",
+      });
+      gsap.set([leftPhone, rightPhone], collapsedSidePhone);
+      gsap.set(centerPhone, collapsedCenterPhone);
+    };
+
+    const setMobileState = () => {
+      gsap.set(photoStage, {
+        xPercent: -50,
+        yPercent: -50,
+        x: 0,
+        y: -10,
+        scaleX: 0.38,
+        scaleY: 0.86,
+        autoAlpha: 0,
+      });
+      gsap.set(mobileStage, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        visibility: "visible",
+        pointerEvents: "auto",
+      });
+      phones.forEach((phone, index) => {
+        gsap.set(phone, {
+          ...mobilePhonePositions[index],
+          autoAlpha: 1,
+        });
+      });
+    };
+
+    if (!motionReadyRef.current) {
+      motionReadyRef.current = true;
+      if (view === "desktop") setDesktopState();
+      else setMobileState();
+      return;
+    }
+
+    if (reduced) {
+      if (view === "desktop") setDesktopState();
+      else setMobileState();
+      return;
+    }
+
+    gsap.killTweensOf([photoStage, mobileStage, ...phones]);
+
+    const timeline = gsap.timeline({
+      defaults: {
+        duration: DURATION.base,
+        ease: EASE.inOut,
+        overwrite: "auto",
+      },
+    });
+
+    if (view === "mobile") {
+      timeline
+        .set(mobileStage, {
+          visibility: "visible",
+          pointerEvents: "auto",
+        })
+        .to(
+          photoStage,
+          {
+            y: -10,
+            scaleX: 0.38,
+            scaleY: 0.86,
+            autoAlpha: 0,
+            duration: DURATION.base,
+          },
+          0,
+        )
+        .to(
+          mobileStage,
+          { autoAlpha: 1, y: 0, scale: 1, duration: DURATION.fast },
+          0.18,
+        )
+        .to(
+          centerPhone,
+          {
+            ...mobilePhonePositions[1],
+            autoAlpha: 1,
+            duration: DURATION.base,
+          },
+          0.08,
+        )
+        .to(
+          leftPhone,
+          {
+            ...mobilePhonePositions[0],
+            autoAlpha: 1,
+            duration: DURATION.base,
+          },
+          0.26,
+        )
+        .to(
+          rightPhone,
+          {
+            ...mobilePhonePositions[2],
+            autoAlpha: 1,
+            duration: DURATION.base,
+          },
+          0.26,
+        );
+    } else {
+      timeline
+        .set(photoStage, { visibility: "visible", pointerEvents: "auto" })
+        .to(
+          [leftPhone, rightPhone],
+          { ...collapsedSidePhone, duration: DURATION.base },
+          0,
+        )
+        .to(
+          centerPhone,
+          { ...collapsedCenterPhone, duration: DURATION.base },
+          0.08,
+        )
+        .to(
+          mobileStage,
+          { autoAlpha: 0, y: 18, scale: 0.94, duration: DURATION.fast },
+          0.34,
+        )
+        .to(
+          photoStage,
+          {
+            xPercent: -50,
+            yPercent: -50,
+            x: 0,
+            y: 0,
+            scaleX: 1,
+            scaleY: 1,
+            autoAlpha: 1,
+            duration: DURATION.slow,
+          },
+          0.08,
+        )
+        .set(mobileStage, {
+          visibility: "hidden",
+          pointerEvents: "none",
+        });
+    }
+
+    return () => {
+      timeline.kill();
+    };
+  }, [reduced, view]);
 
   const showDesktopView = () => {
     if (view === "mobile") {
@@ -202,10 +408,8 @@ export function LaptopVideoMock({
       </div>
 
       <div
-        className={cn(
-          styles.photoStage,
-          view !== "desktop" && styles.previewHidden,
-        )}
+        ref={photoStageRef}
+        className={styles.photoStage}
         aria-hidden={view !== "desktop"}
       >
         <div ref={viewRef} className={styles.screen}>
@@ -241,15 +445,16 @@ export function LaptopVideoMock({
       </div>
 
       <div
-        className={cn(
-          styles.mobileStage,
-          view === "mobile" && styles.mobileStageVisible,
-        )}
+        ref={mobileStageRef}
+        className={styles.mobileStage}
         aria-hidden={view !== "mobile"}
       >
         {MOBILE_SCREENS.map(({ src, width, height }, index) => (
           <div
             key={src}
+            ref={(element) => {
+              phoneRefs.current[index] = element;
+            }}
             className={cn(
               styles.mobilePhone,
               index === 0 && styles.mobilePhoneLeft,

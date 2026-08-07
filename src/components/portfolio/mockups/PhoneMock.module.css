@@ -65,8 +65,8 @@
 .hint {
   position: absolute;
   z-index: 5;
-  top: 23%;
-  left: 54%;
+  top: 22.5%;
+  left: 50%;
   display: flex;
   width: max-content;
   align-items: center;
@@ -211,33 +211,48 @@
 }
 
 @media (max-width: 63.999rem) {
+  /* The box is portrait here (aspect-[4/7]), so the mock can finally use the
+     full width: the device roughly doubles and the hand stays in frame on
+     the right instead of being cropped away. */
   .stage {
-    right: -67%;
-    width: 160%;
+    /* -123% put the device hard against the left edge; -134% is the same
+       ~40px nudge to the right (the scene is 370px wide here). */
+    right: -134%;
+    width: 260%;
   }
 
+  /* Badge sits under the device, across the full width — as a narrow card
+     pinned beside the phone it ran past the right edge of the screen. */
   .hint {
-    top: 20%;
-    left: 48.5%;
-    width: 8.5rem;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 0.58rem 0.5rem;
-    text-align: center;
+    top: auto;
+    bottom: 2%;
+    left: 50%;
+    width: min(90%, 20rem);
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.9rem;
+    text-align: left;
+    transform: translateX(-50%);
     border-radius: 1rem;
   }
 
+  /* The connector line pointed at the phone from the side; pointless now
+     that the badge is below it. */
   .hint::before {
-    width: 1.5rem;
+    display: none;
   }
 
   .hintIcon {
-    width: 1.85rem;
-    height: 1.85rem;
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .hintCopy strong {
+    font-size: 0.78rem;
   }
 
   .hintCopy span {
-    font-size: 0.56rem;
+    font-size: 0.62rem;
   }
 }
 

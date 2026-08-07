@@ -44,14 +44,36 @@ export async function POST(request: NextRequest) {
     const id = randomUUID();
     const normalizedContact = contact.trim();
     const contactIsEmail = normalizedContact.includes("@");
-    await db.insert(leads).values({
-      id,
-      name: name.trim(),
-      phone: contactIsEmail ? "" : normalizedContact,
-      email: contactIsEmail ? normalizedContact : null,
-      service: null,
-      message: null,
-    });
+
+    // Storing the lead must never be able to lose it. On a host with an
+    // ephemeral filesystem the local database is simply not reachable from a
+    // serverless function, so a throw here would 500 the form and the enquiry
+    // would be gone. Persist if we can, and fall through to Telegram either
+    // way — see docs/BACKEND.md for the Turso setup that makes this durable.
+    let stored = false;
+    try {
+      await db.insert(leads).values({
+        id,
+        name: name.trim(),
+        phone: contactIsEmail ? "" : normalizedContact,
+        email: contactIsEmail ? normalizedContact : null,
+        service: null,
+        message: null,
+      });
+      stored = true;
+    } catch (err) {
+      console.error("[contact] could not persist lead:", err);
+    }
+
+    /** Bookkeeping updates are best-effort — never worth failing a lead over. */
+    const note = async (patch: Record<string, unknown>) => {
+      if (!stored) return;
+      try {
+        await db.update(leads).set(patch).where(eq(leads.id, id));
+      } catch (err) {
+        console.error("[contact] could not update lead:", err);
+      }
+    };
 
     const text = [
       "🟣 Новая заявка с сайта ITDOS",
@@ -73,26 +95,25 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
         });
         if (tg.ok) {
-          await db.update(leads).set({ notified: true }).where(eq(leads.id, id));
+          await note({ notified: true });
         } else {
           const detail = await tg.text();
           console.error("[contact] Telegram delivery failed:", detail);
-          await db.update(leads).set({ notifyError: detail.slice(0, 500) }).where(eq(leads.id, id));
+          await note({ notifyError: detail.slice(0, 500) });
         }
       } catch (err) {
         const detail = err instanceof Error ? err.message : String(err);
         console.error("[contact] Telegram error:", detail);
-        await db.update(leads).set({ notifyError: detail.slice(0, 500) }).where(eq(leads.id, id));
+        await note({ notifyError: detail.slice(0, 500) });
       }
     } else {
-      await db
-        .update(leads)
-        .set({ notifyError: "Telegram не настроен (TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID)" })
-        .where(eq(leads.id, id));
-      console.log("[contact] lead stored (Telegram not configured):\n" + text);
+      await note({
+        notifyError: "Telegram не настроен (TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID)",
+      });
+      console.log("[contact] lead received (Telegram not configured):\n" + text);
     }
 
-    // The lead is safely stored either way, so the visitor always sees success.
+    // Success as long as the enquiry reached us by at least one route.
     return Response.json({ success: true, message: "Заявка принята" });
   } catch (err) {
     console.error("[contact] error:", err);
