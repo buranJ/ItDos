@@ -7,7 +7,9 @@
   position: absolute;
   top: 50%;
   right: calc(min(0px, (80rem - 100vw) / 2) - 3rem);
-  width: min(62vw, 66.25rem);
+  /* Respect both axes. Width-only scaling made the composition taller than
+     the sticky viewport on short laptops and too small on tall displays. */
+  width: min(62vw, 147cqh, 66.25rem);
   aspect-ratio: 3 / 2;
   transform: translateY(-50%);
 }
@@ -66,7 +68,7 @@
   position: absolute;
   z-index: 5;
   top: 22.5%;
-  left: 50%;
+  left: 14.6%;
   display: flex;
   width: max-content;
   align-items: center;
@@ -75,7 +77,9 @@
   color: #fff;
   pointer-events: none;
   user-select: none;
-  transform: translate(-50%, -50%);
+  /* The phone begins at 15.3% of the artwork. Pinning the badge just before
+     that edge guarantees that it never covers the live application. */
+  transform: translate(calc(-100% - 0.75rem), -50%);
   border: 1px solid rgba(224, 179, 65, 0.62);
   border-radius: 999px;
   background:
@@ -95,11 +99,11 @@
 .hint::before {
   position: absolute;
   top: 50%;
-  right: 100%;
-  width: 2.6rem;
+  left: 100%;
+  width: 1.25rem;
   height: 1px;
   content: "";
-  background: linear-gradient(90deg, transparent, rgba(224, 179, 65, 0.9));
+  background: linear-gradient(90deg, rgba(224, 179, 65, 0.38), rgba(224, 179, 65, 0.95));
 }
 
 .hint::after {
@@ -210,6 +214,36 @@
   }
 }
 
+/* Compact laptops keep the hint beside the phone as well. Only its internal
+   spacing is reduced so it remains in the right visual column. */
+@media (min-width: 64rem) and (max-width: 79.999rem) {
+  .stage {
+    width: min(58vw, 147cqh);
+  }
+
+  .hint {
+    top: 22.5%;
+    bottom: auto;
+    left: 14.6%;
+    gap: 0.58rem;
+    padding: 0.58rem 0.78rem 0.58rem 0.58rem;
+    transform: translate(calc(-100% - 0.75rem), -50%);
+  }
+
+  .hintIcon {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+
+  .hintCopy strong {
+    font-size: 0.7rem;
+  }
+
+  .hintCopy span {
+    font-size: 0.56rem;
+  }
+}
+
 @media (max-width: 63.999rem) {
   /* The box is portrait here (aspect-[4/7]), so the mock can finally use the
      full width: the device roughly doubles and the hand stays in frame on
@@ -221,13 +255,13 @@
     width: 260%;
   }
 
-  /* Badge sits under the device, across the full width — as a narrow card
-     pinned beside the phone it ran past the right edge of the screen. */
+  /* The stage is 2.6x the visible scene on phones. These percentages convert
+     the scene's centre and 90% width into the stage coordinate system. */
   .hint {
     top: auto;
     bottom: 2%;
-    left: 50%;
-    width: min(90%, 20rem);
+    left: 29.23%;
+    width: min(34.6%, 20rem);
     justify-content: center;
     gap: 0.7rem;
     padding: 0.7rem 0.9rem;

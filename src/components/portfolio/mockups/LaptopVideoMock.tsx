@@ -9,6 +9,12 @@ import { useInView } from "@/hooks/useInView";
 import { DURATION, EASE, useReducedMotion } from "@/lib/motion";
 import styles from "./LaptopVideoMock.module.css";
 
+type MobileScreen = {
+  src?: string;
+  width: number;
+  height: number;
+};
+
 type Props = {
   /** YouTube id or any YouTube link. */
   url: string;
@@ -16,12 +22,14 @@ type Props = {
   address?: string;
   accent?: string;
   className?: string;
+  projectTitle?: string;
+  mobileScreens?: readonly MobileScreen[];
 };
 
-const MOBILE_SCREENS = [
-  { src: "/project/avangard-mob1.png", width: 430, height: 932 },
-  { src: "/project/avangard-mob2.png", width: 370, height: 772 },
-  { src: "/project/avangard-mob3.png", width: 370, height: 715 },
+const PLACEHOLDER_MOBILE_SCREENS: readonly MobileScreen[] = [
+  { width: 393, height: 852 },
+  { width: 393, height: 852 },
+  { width: 393, height: 852 },
 ] as const;
 
 const LOADER_DURATION_MS = 2200;
@@ -112,11 +120,87 @@ function AvangardLoader({ fading }: { fading: boolean }) {
   );
 }
 
+function ProjectVideoLoader({
+  fading,
+  title,
+}: {
+  fading: boolean;
+  title: string;
+}) {
+  return (
+    <div
+      className={cn(styles.videoLoader, fading && styles.videoLoaderFading)}
+      role="status"
+      aria-label={`Загружается видео проекта ${title}`}
+    >
+      <div className={styles.genericLoaderContent}>
+        <span aria-hidden="true" />
+        <strong>{title}</strong>
+        <small>Загружаем проект</small>
+      </div>
+    </div>
+  );
+}
+
+const TOOLOR_LETTERS = [
+  { left: 0, right: 83.5, y: "-0.7rem", rotation: "-4deg" },
+  { left: 16.5, right: 64.5, y: "0.65rem", rotation: "3deg" },
+  { left: 35.5, right: 45, y: "-0.65rem", rotation: "-2deg" },
+  { left: 55, right: 29.5, y: "0.65rem", rotation: "2deg" },
+  { left: 70.5, right: 11.5, y: "-0.65rem", rotation: "-3deg" },
+  { left: 88.5, right: 0, y: "0.65rem", rotation: "3deg" },
+] as const;
+
+function ToolorLoader({ fading }: { fading: boolean }) {
+  return (
+    <div
+      className={cn(
+        styles.videoLoader,
+        styles.toolorLoader,
+        fading && styles.videoLoaderFading,
+      )}
+      role="status"
+      aria-label="Загружается видео проекта Toolor"
+    >
+      <div className={styles.toolorLoaderStage} aria-hidden="true">
+        <div className={styles.toolorLetterWord}>
+          {TOOLOR_LETTERS.map((letter, index) => (
+            <span
+              key={`${letter.left}-${letter.right}`}
+              className={styles.toolorLetter}
+              style={
+                {
+                  "--letter-left": `${letter.left}%`,
+                  "--letter-right": `${letter.right}%`,
+                  "--letter-y": letter.y,
+                  "--letter-rotation": letter.rotation,
+                  "--letter-delay": `${140 + index * 105}ms`,
+                } as React.CSSProperties
+              }
+            >
+              <Image
+                src="/logos/toolor.svg"
+                alt=""
+                width={184}
+                height={48}
+                className={styles.toolorLetterImage}
+              />
+            </span>
+          ))}
+        </div>
+        <span className={styles.toolorLoaderTrack} />
+      </div>
+    </div>
+  );
+}
+
 export function LaptopVideoMock({
   url,
   address = "itdos.ru",
   accent = "#6e56ff",
   className,
+  projectTitle = "Проект ITDOS",
+  mobileScreens,
 }: Props) {
   const [view, setView] = useState<"desktop" | "mobile">("desktop");
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -130,6 +214,11 @@ export function LaptopVideoMock({
   const motionReadyRef = useRef(false);
   const loaderFading = introComplete && videoLoaded;
   const id = ytId(url);
+  const screens = mobileScreens?.length
+    ? mobileScreens
+    : PLACEHOLDER_MOBILE_SCREENS;
+  const usesAvangardLoader = address === "avangardstyle.kg";
+  const usesToolorLoader = projectTitle.toLowerCase() === "toolor";
   const src =
     `https://www.youtube-nocookie.com/embed/${id}` +
     `?autoplay=1&mute=1&loop=1&playlist=${id}` +
@@ -137,7 +226,7 @@ export function LaptopVideoMock({
     "&disablekb=1&fs=0&playsinline=1";
 
   useEffect(() => {
-    if (!inView || view !== "desktop" || loaderHidden) return;
+    if (!id || !inView || view !== "desktop" || loaderHidden) return;
 
     const introTimer = window.setTimeout(
       () => setIntroComplete(true),
@@ -152,7 +241,7 @@ export function LaptopVideoMock({
       window.clearTimeout(introTimer);
       window.clearTimeout(timeoutTimer);
     };
-  }, [inView, loaderHidden, reduced, view]);
+  }, [id, inView, loaderHidden, reduced, view]);
 
   useEffect(() => {
     if (!loaderFading || loaderHidden) return;
@@ -415,7 +504,7 @@ export function LaptopVideoMock({
         <div ref={viewRef} className={styles.screen}>
           <div aria-hidden="true" className={styles.fallback} />
 
-          {inView && view === "desktop" && (
+          {inView && view === "desktop" && id && (
             <iframe
               src={src}
               title={`Проект — ${address}`}
@@ -427,8 +516,25 @@ export function LaptopVideoMock({
             />
           )}
 
-          {inView && view === "desktop" && !loaderHidden && (
-            <AvangardLoader fading={loaderFading} />
+          {inView && view === "desktop" && id && !loaderHidden && (
+            usesAvangardLoader ? (
+              <AvangardLoader fading={loaderFading} />
+            ) : usesToolorLoader ? (
+              <ToolorLoader fading={loaderFading} />
+            ) : (
+              <ProjectVideoLoader
+                fading={loaderFading}
+                title={projectTitle}
+              />
+            )
+          )}
+
+          {!id && (
+            <div className={styles.desktopPlaceholder}>
+              <span>Лендинг</span>
+              <strong>{projectTitle}</strong>
+              <small>Видео проекта появится здесь</small>
+            </div>
           )}
 
           <div aria-hidden="true" className={styles.glass} />
@@ -449,9 +555,9 @@ export function LaptopVideoMock({
         className={styles.mobileStage}
         aria-hidden={view !== "mobile"}
       >
-        {MOBILE_SCREENS.map(({ src, width, height }, index) => (
+        {screens.map(({ src, width, height }, index) => (
           <div
-            key={src}
+            key={`${src ?? "placeholder"}-${index}`}
             ref={(element) => {
               phoneRefs.current[index] = element;
             }}
@@ -470,19 +576,21 @@ export function LaptopVideoMock({
             <div className={styles.mobilePhoneScreen}>
               <div className={styles.mobileFallback}>
                 <span>0{index + 1}</span>
-                <strong>Mobile screen</strong>
-                <small>project/avangard-mob{index + 1}.png</small>
+                <strong>{projectTitle}</strong>
+                <small>Мобильный экран — заглушка</small>
               </div>
-              <Image
-                src={src}
-                alt={`Мобильная версия сайта — экран ${index + 1}`}
-                fill
-                sizes="(min-width: 1024px) 14vw, 24vw"
-                className={styles.mobileScreenImage}
-                onError={(event) => {
-                  event.currentTarget.style.display = "none";
-                }}
-              />
+              {src && (
+                <Image
+                  src={src}
+                  alt={`${projectTitle} — мобильный экран ${index + 1}`}
+                  fill
+                  sizes="(min-width: 1024px) 14vw, 24vw"
+                  className={styles.mobileScreenImage}
+                  onError={(event) => {
+                    event.currentTarget.style.display = "none";
+                  }}
+                />
+              )}
               <div aria-hidden="true" className={styles.mobileGlass} />
             </div>
           </div>

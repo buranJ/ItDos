@@ -2,6 +2,7 @@
   --scene-accent: #6e56ff;
   container-type: size;
   background: transparent;
+  animation: projectSwapIn 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .deviceToggle {
@@ -126,13 +127,106 @@
   place-items: center;
   overflow: hidden;
   pointer-events: none;
-  background: #00417d;
+  background: color-mix(in srgb, var(--scene-accent) 68%, #070709);
   opacity: 1;
   transition: opacity 400ms ease-in-out;
 }
 
 .videoLoaderFading {
   opacity: 0;
+}
+
+.genericLoaderContent {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #f4f2ed;
+  text-align: center;
+}
+
+.genericLoaderContent > span {
+  width: 2.1rem;
+  height: 2.1rem;
+  margin-bottom: 0.35rem;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: genericLoaderSpin 900ms linear infinite;
+}
+
+.genericLoaderContent strong {
+  font-family: var(--font-space-grotesk);
+  font-size: clamp(0.8rem, 2.6cqh, 1.3rem);
+  font-weight: 600;
+}
+
+.genericLoaderContent small {
+  color: rgba(244, 242, 237, 0.68);
+  font-family: var(--font-geist-mono);
+  font-size: clamp(0.42rem, 1.4cqh, 0.68rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.toolorLoader {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(0, 51, 161, 0.09), transparent 48%),
+    #f7f9fe;
+}
+
+.toolorLoaderStage {
+  position: relative;
+  isolation: isolate;
+  width: min(62%, 24rem);
+  padding: 1.25rem 0 1.15rem;
+}
+
+.toolorLetterWord {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 184 / 48;
+}
+
+.toolorLetter {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(var(--letter-y)) rotate(var(--letter-rotation)) scale(0.94);
+  transform-origin: center;
+  -webkit-clip-path: inset(0 var(--letter-right) 0 var(--letter-left));
+  clip-path: inset(0 var(--letter-right) 0 var(--letter-left));
+  animation: toolorLetterIn 720ms cubic-bezier(0.16, 1, 0.3, 1) var(--letter-delay) forwards;
+  will-change: transform, opacity;
+}
+
+.toolorLetterImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.toolorLoaderTrack {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(0, 51, 161, 0.1);
+}
+
+.toolorLoaderTrack::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(0, 51, 161, 0.68), transparent);
+  opacity: 0;
+  transform: scaleX(0.08);
+  transform-origin: center;
+  animation: toolorTrack 1.35s ease-in-out 520ms forwards;
 }
 
 .loaderLogo {
@@ -219,7 +313,48 @@
 .fallback {
   position: absolute;
   inset: 0;
-  background: #00417d;
+  background: color-mix(in srgb, var(--scene-accent) 54%, #08090b);
+}
+
+.desktopPlaceholder {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #f4f2ed;
+  text-align: center;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    radial-gradient(circle at 68% 28%, color-mix(in srgb, var(--scene-accent) 42%, transparent), transparent 48%),
+    #09090b;
+  background-size: 100% 15%, 100% 100%, 100% 100%;
+}
+
+.desktopPlaceholder span,
+.desktopPlaceholder small {
+  font-family: var(--font-geist-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.desktopPlaceholder span {
+  color: var(--scene-accent);
+  font-size: clamp(0.42rem, 1.35cqh, 0.68rem);
+}
+
+.desktopPlaceholder strong {
+  font-family: var(--font-space-grotesk);
+  font-size: clamp(0.95rem, 3.3cqh, 1.65rem);
+  font-weight: 600;
+}
+
+.desktopPlaceholder small {
+  color: rgba(244, 242, 237, 0.52);
+  font-size: clamp(0.36rem, 1.1cqh, 0.58rem);
 }
 
 .glass {
@@ -411,6 +546,52 @@
   }
 }
 
+@keyframes projectSwapIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes genericLoaderSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes toolorLetterIn {
+  68% {
+    opacity: 1;
+    transform: translateY(0) rotate(0) scale(1.045);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes toolorTrack {
+  34% {
+    opacity: 0.48;
+  }
+
+  78% {
+    opacity: 0.48;
+    transform: scaleX(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
 @media (max-width: 63.999rem) {
   .deviceToggle {
     top: 5%;
@@ -428,6 +609,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .scene,
   .photoStage,
   .mobileStage,
   .mobilePhone {
@@ -440,6 +622,20 @@
   .loaderLetter {
     animation: none;
     transition: none;
+  }
+
+  .genericLoaderContent > span {
+    animation: none;
+  }
+
+  .toolorLetter,
+  .toolorLoaderTrack::after {
+    animation: none;
+  }
+
+  .toolorLetter {
+    opacity: 1;
+    transform: none;
   }
 
   .loaderMark,

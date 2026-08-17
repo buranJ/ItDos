@@ -33,10 +33,27 @@ type MockupDispatchProps = {
   url?: string;
   /** Domain shown in the mock browser bar (kind="laptop-video"). */
   address?: string;
+  /** Project name shown while media is loading or still a placeholder. */
+  projectTitle?: string;
+  /** Optional project-specific mobile screens for the laptop showcase. */
+  mobileScreens?: readonly {
+    src?: string;
+    width: number;
+    height: number;
+  }[];
 };
 
 /** Renders the generative placeholder UI for a given kind. */
-export function Mockup({ kind, accent, className, live, url, address }: MockupDispatchProps) {
+export function Mockup({
+  kind,
+  accent,
+  className,
+  live,
+  url,
+  address,
+  projectTitle,
+  mobileScreens,
+}: MockupDispatchProps) {
   const base = cn("h-full w-full", className);
   switch (kind) {
     case "browser":
@@ -81,6 +98,8 @@ export function Mockup({ kind, accent, className, live, url, address }: MockupDi
           accent={accent}
           url={url ?? ""}
           address={address}
+          projectTitle={projectTitle}
+          mobileScreens={mobileScreens}
           className={base}
         />
       );

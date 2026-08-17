@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { ClipReveal } from "@/components/motion/ClipReveal";
 import { Mockup } from "@/components/portfolio/mockups";
@@ -21,13 +22,59 @@ type Step = {
   address?: string;
 };
 
+type WebsiteProject = {
+  id: string;
+  label: string;
+  title: string;
+  video: string;
+  address: string;
+  accent: string;
+  mobileScreens?: readonly {
+    src?: string;
+    width: number;
+    height: number;
+  }[];
+};
+
+const websiteProjects: WebsiteProject[] = [
+  {
+    id: "corporate",
+    label: "Корпоративные сайты",
+    title: "Avangard Style",
+    video: "o1USBxQkmvU",
+    address: "avangardstyle.kg",
+    accent: "#004281",
+    mobileScreens: [
+      { src: "/project/avangard-mob1.png", width: 430, height: 932 },
+      { src: "/project/avangard-mob2.png", width: 370, height: 772 },
+      { src: "/project/avangard-mob3.png", width: 370, height: 715 },
+    ],
+  },
+  {
+    id: "store",
+    label: "Интернет-магазины",
+    title: "Toolor",
+    video: "nNYSL7SbYsM",
+    address: "toolor",
+    accent: "#0033a1",
+  },
+  {
+    id: "landing",
+    label: "Лендинги",
+    title: "Новый лендинг",
+    video: "",
+    address: "landing.itdos",
+    accent: "#5c7cfa",
+  },
+];
+
 const steps: Step[] = [
   {
     n: "01",
     label: "Сайты",
-    title: "Лендинги и корпоративные сайты",
+    title: "Лендинги, интернет-магазины и корпоративные сайты",
     desc: "Быстрые, отзывчивые и SEO-оптимизированные сайты, которые выглядят дорого и превращают посетителей в клиентов.",
-    tags: ["Корпоративные сайты", "Лендинги", "Интернет-магазины"],
+    tags: ["Корпоративные сайты", "Интернет-магазины", "Лендинги"],
     // Video in a laptop instead of a live <iframe> of the client's site: the
     // embed pulled the whole site (plus its analytics) into this page.
     kind: "laptop-video",
@@ -156,11 +203,25 @@ const steps: Step[] = [
 
 export function WhatWeBuild() {
   const [active, setActive] = useState(0);
+  const [websiteProjectIndex, setWebsiteProjectIndex] = useState(0);
   const blockRefs = useRef<(HTMLDivElement | null)[]>([]);
   // The mobile and the sticky desktop column used to BOTH sit in the DOM,
   // hidden from each other only by CSS — so every live-site iframe and the
   // video player were fetched twice on every visit. Mount one or the other.
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const websiteProject = websiteProjects[websiteProjectIndex];
+
+  const showPreviousWebsite = () => {
+    setWebsiteProjectIndex((current) =>
+      (current - 1 + websiteProjects.length) % websiteProjects.length,
+    );
+  };
+
+  const showNextWebsite = () => {
+    setWebsiteProjectIndex((current) =>
+      (current + 1) % websiteProjects.length,
+    );
+  };
 
   // Drive the active step from which block is centered in the viewport.
   // CSS sticky handles the visual — no fragile ScrollTrigger pin.
@@ -203,65 +264,102 @@ export function WhatWeBuild() {
               are intrinsically ~375px wide, which pushed this column past the
               container on 320px phones. */}
           <div className="min-w-0">
-            {steps.map((step, i) => (
-              <div
-                key={step.n}
-                data-index={i}
-                ref={(el) => {
-                  blockRefs.current[i] = el;
-                }}
-                className="flex min-h-[68vh] flex-col justify-center gap-7 py-10 lg:min-h-screen lg:py-0"
-                style={{ "--m-accent": step.accent } as React.CSSProperties}
-              >
-                <StepCopy step={step} active={i === active} />
+            {steps.map((step, i) => {
+              const isWebsiteStep = i === 0;
+              const visualAccent = isWebsiteStep
+                ? websiteProject.accent
+                : step.accent;
+              const visualKey = isWebsiteStep
+                ? websiteProject.id
+                : step.kind;
 
-                {/* Mobile inline mockup (reveals on scroll) */}
-                {!isDesktop && (
-                <ClipReveal
-                  className={cn(
-                    "rounded-xl lg:hidden",
-                    step.kind === "phone" &&
-                      "-mr-5 rounded-r-none sm:-mr-8",
-                    step.kind === "laptop-video" &&
-                      "-mx-5 rounded-none sm:-mx-8",
-                    step.kind !== "phone" &&
-                      step.kind !== "laptop-video" &&
-                      step.kind !== "assistant-enhanced" &&
-                      step.kind !== "assistant-editorial" &&
-                      step.kind !== "automation" &&
-                      step.kind !== "journey" &&
-                      "border border-line",
-                  )}
+              return (
+                <div
+                  key={step.n}
+                  data-index={i}
+                  ref={(el) => {
+                    blockRefs.current[i] = el;
+                  }}
+                  className="flex min-h-[68vh] flex-col justify-center gap-7 py-10 lg:min-h-screen lg:py-0"
+                  style={{ "--m-accent": visualAccent } as React.CSSProperties}
                 >
-                  <div
-                    className={cn(
-                      "relative w-full",
-                      // The phone is portrait, so it gets a portrait box —
-                      // in a square one it ran out of height at ~37% of the
-                      // available width.
-                      step.kind === "phone" && "aspect-[4/7]",
-                      step.kind !== "phone" &&
-                        (step.kind === "laptop-video" ||
-                        step.kind === "assistant-enhanced" ||
-                        step.kind === "assistant-editorial" ||
-                        step.kind === "automation" ||
-                        step.kind === "journey"
-                          ? "aspect-square"
-                          : "aspect-16/10"),
-                    )}
-                  >
-                      <Mockup
-                        kind={step.kind}
-                        accent={step.accent}
-                        live={step.kind === "chat"}
-                        url={step.url}
-                        address={step.address}
-                      />
-                  </div>
-                </ClipReveal>
-                )}
-              </div>
-            ))}
+                  <StepCopy
+                    step={step}
+                    active={i === active}
+                    websiteSlider={
+                      isWebsiteStep
+                        ? {
+                            activeIndex: websiteProjectIndex,
+                            onSelect: setWebsiteProjectIndex,
+                            onPrevious: showPreviousWebsite,
+                            onNext: showNextWebsite,
+                          }
+                        : undefined
+                    }
+                  />
+
+                  {/* Mobile inline mockup (reveals on scroll) */}
+                  {!isDesktop && (
+                    <ClipReveal
+                      className={cn(
+                        "rounded-xl lg:hidden",
+                        step.kind === "phone" &&
+                          "-mr-5 rounded-r-none sm:-mr-8",
+                        step.kind === "laptop-video" &&
+                          "-mx-5 rounded-none sm:-mx-8",
+                        step.kind !== "phone" &&
+                          step.kind !== "laptop-video" &&
+                          step.kind !== "assistant-enhanced" &&
+                          step.kind !== "assistant-editorial" &&
+                          step.kind !== "automation" &&
+                          step.kind !== "journey" &&
+                          "border border-line",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "relative w-full",
+                          step.kind === "phone" && "aspect-[4/7]",
+                          step.kind !== "phone" &&
+                            (step.kind === "laptop-video" ||
+                            step.kind === "assistant-enhanced" ||
+                            step.kind === "assistant-editorial" ||
+                            step.kind === "automation" ||
+                            step.kind === "journey"
+                              ? "aspect-square"
+                              : "aspect-16/10"),
+                        )}
+                      >
+                        <Mockup
+                          key={visualKey}
+                          kind={step.kind}
+                          accent={visualAccent}
+                          live={step.kind === "chat"}
+                          url={
+                            isWebsiteStep
+                              ? websiteProject.video
+                              : step.url
+                          }
+                          address={
+                            isWebsiteStep
+                              ? websiteProject.address
+                              : step.address
+                          }
+                          projectTitle={
+                            isWebsiteStep ? websiteProject.title : undefined
+                          }
+                          mobileScreens={
+                            isWebsiteStep
+                              ? websiteProject.mobileScreens
+                              : undefined
+                          }
+                        />
+                      </div>
+                    </ClipReveal>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* Right: sticky media (desktop) */}
@@ -269,8 +367,14 @@ export function WhatWeBuild() {
           <div className="hidden lg:block">
             <div className="sticky top-0 flex h-screen items-center justify-center">
               <div className="relative h-[65vh] w-full">
-                {steps.map((step, i) => (
-                  <div
+                {steps.map((step, i) => {
+                  const isWebsiteStep = i === 0;
+                  const visualAccent = isWebsiteStep
+                    ? websiteProject.accent
+                    : step.accent;
+
+                  return (
+                    <div
                     key={step.n}
                     className={cn(
                       "absolute inset-0 transition-all duration-700 ease-out",
@@ -278,17 +382,29 @@ export function WhatWeBuild() {
                         ? "scale-100 opacity-100 blur-0"
                         : "pointer-events-none scale-95 opacity-0 blur-sm",
                     )}
-                    style={{ "--m-accent": step.accent } as React.CSSProperties}
+                    style={{ "--m-accent": visualAccent } as React.CSSProperties}
                   >
                     <Mockup
+                      key={isWebsiteStep ? websiteProject.id : step.kind}
                       kind={step.kind}
-                      accent={step.accent}
+                      accent={visualAccent}
                       live={i === active && step.kind === "chat"}
-                      url={step.url}
-                      address={step.address}
+                      url={isWebsiteStep ? websiteProject.video : step.url}
+                      address={
+                        isWebsiteStep ? websiteProject.address : step.address
+                      }
+                      projectTitle={
+                        isWebsiteStep ? websiteProject.title : undefined
+                      }
+                      mobileScreens={
+                        isWebsiteStep
+                          ? websiteProject.mobileScreens
+                          : undefined
+                      }
                     />
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -322,7 +438,22 @@ function Header() {
   );
 }
 
-function StepCopy({ step, active }: { step: Step; active: boolean }) {
+type WebsiteSliderControls = {
+  activeIndex: number;
+  onSelect: (index: number) => void;
+  onPrevious: () => void;
+  onNext: () => void;
+};
+
+function StepCopy({
+  step,
+  active,
+  websiteSlider,
+}: {
+  step: Step;
+  active: boolean;
+  websiteSlider?: WebsiteSliderControls;
+}) {
   return (
     <div
       className={cn(
@@ -343,15 +474,56 @@ function StepCopy({ step, active }: { step: Step; active: boolean }) {
         {step.desc}
       </p>
       <div className="mt-6 flex flex-wrap gap-2">
-        {step.tags.map((t) => (
-          <span
-            key={t}
-            className="rounded-full border border-m bg-m-softer px-3 py-1 text-xs text-m"
-          >
-            {t}
-          </span>
-        ))}
+        {step.tags.map((t, index) =>
+          websiteSlider ? (
+            <button
+              key={t}
+              type="button"
+              onClick={() => websiteSlider.onSelect(index)}
+              aria-pressed={websiteSlider.activeIndex === index}
+              className={cn(
+                "rounded-full border px-3 py-1 text-xs transition-all duration-300",
+                websiteSlider.activeIndex === index
+                  ? "border-m bg-m-soft text-m shadow-[0_0_18px_color-mix(in_srgb,var(--m-accent)_20%,transparent)]"
+                  : "border-m/50 bg-m-softer text-m hover:border-m hover:bg-m-soft",
+              )}
+            >
+              {t}
+            </button>
+          ) : (
+            <span
+              key={t}
+              className="rounded-full border border-m bg-m-softer px-3 py-1 text-xs text-m"
+            >
+              {t}
+            </span>
+          ),
+        )}
       </div>
+
+      {websiteSlider && (
+        <div className="mt-4 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={websiteSlider.onPrevious}
+            aria-label="Предыдущий проект"
+            className="grid h-9 w-9 place-items-center rounded-full border border-m/50 text-m transition-all duration-300 hover:border-m hover:bg-m-soft hover:-translate-x-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m"
+          >
+            <ArrowLeft size={15} />
+          </button>
+          <span className="min-w-12 text-center font-mono text-[10px] tracking-widest text-fg-muted">
+            0{websiteSlider.activeIndex + 1} / 0{websiteProjects.length}
+          </span>
+          <button
+            type="button"
+            onClick={websiteSlider.onNext}
+            aria-label="Следующий проект"
+            className="grid h-9 w-9 place-items-center rounded-full border border-m/50 text-m transition-all duration-300 hover:border-m hover:bg-m-soft hover:translate-x-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m"
+          >
+            <ArrowRight size={15} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
