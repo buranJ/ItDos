@@ -1,17 +1,25 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/motion";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 
-// const LEAD = "Мы не просто пишем код.";
-const LEAD = 'Из идеи -'
-const BODY =
-  "в работающий продукт. Сайты, приложения, CRM и AI, которые делают бизнес быстрее и прибыльнее.";
-  // const BODY2 = "Мы создаем продукты, которые удовлетворяют потребности людей, которые нуждаются в продуктах.";
-const ACCENT_WORDS = new Set(["идеи", "продукт."]);
+// Прошлые варианты:
+//   "Мы не просто пишем код."
+//   "Из идеи - в работающий продукт. Сайты, приложения, CRM и AI, которые
+//    делают бизнес быстрее и прибыльнее."
+/** Lines of phrases. The accent is per phrase, not per word — «бизнес» and
+ *  «продукт» appear in both sentences, and only the second pair is the
+ *  point. */
+const LINES: { text: string; accent?: boolean }[][] = [
+  [
+    { text: "Не подгоняем бизнес под готовый продукт." },
+    { text: "Делаем продукт под бизнес.", accent: true },
+  ],
+  [{ text: "Сайты, CRM, приложения, внутренние системы и автоматизация." }],
+];
 
 export function Manifesto() {
   const ref = useRef<HTMLDivElement>(null);
@@ -55,19 +63,24 @@ export function Manifesto() {
           ref={ref}
           className="max-w-264 font-display text-[clamp(1.9rem,4.4vw,3.6rem)] font-medium leading-[1.18] tracking-tight"
         >
-          {[LEAD, BODY].map((sentence, si) => (
-            <span key={si}>
-              {sentence.split(" ").map((word, i) => (
-                <span
-                  key={`${si}-${i}`}
-                  className={`mf-word inline-block ${
-                    ACCENT_WORDS.has(word) ? "text-accent-text" : "text-fg"
-                  }`}
-                >
-                  {word}
-                  {" "}
-                </span>
-              ))}{" "}
+          {/* The space goes BETWEEN the word boxes, not inside them: a
+              trailing space inside an inline-block is dropped once the line
+              is a block box, and every word ran into the next. */}
+          {LINES.map((line, li) => (
+            <span key={li} className="block">
+              {line.map((phrase, pi) =>
+                phrase.text.split(" ").map((word, wi) => (
+                  <Fragment key={`${li}-${pi}-${wi}`}>
+                    <span
+                      className={`mf-word inline-block ${
+                        phrase.accent ? "text-accent-text" : "text-fg"
+                      }`}
+                    >
+                      {word}
+                    </span>{" "}
+                  </Fragment>
+                )),
+              )}
             </span>
           ))}
         </div>

@@ -242,6 +242,60 @@ function ToolorLoader({ fading }: { fading: boolean }) {
   );
 }
 
+const BILMONT_WORD = "Bilmont";
+
+/** The two bowls of the Bilmont «B» slide in from opposite sides and lock
+ *  together, then the wordmark rises letter by letter — the brand's cream
+ *  and olive, from public/logos/bilmont.svg. */
+function BilmontLoader({ fading }: { fading: boolean }) {
+  return (
+    <div
+      className={cn(
+        styles.videoLoader,
+        styles.bilmontLoader,
+        fading && styles.videoLoaderFading,
+      )}
+      role="status"
+      aria-label="Загружается видео проекта Bilmont"
+    >
+      <div className={styles.bilmontStage} aria-hidden="true">
+        <svg
+          viewBox="0 0 160 220"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={styles.bilmontMark}
+        >
+          <path
+            className={styles.bilmontBowlTop}
+            d="M0 12C0 5.373 5.373 0 12 0H92C126 0 160 27 160 55C160 83 126 110 92 110H12C5.373 110 0 104.627 0 98V12Z"
+            fill="#7D9955"
+          />
+          <path
+            className={styles.bilmontBowlBottom}
+            d="M0 122C0 115.373 5.373 110 12 110H92C126 110 160 137 160 165C160 193 126 220 92 220H12C5.373 220 0 214.627 0 208V122Z"
+            fill="#7D9955"
+          />
+        </svg>
+
+        <span className={styles.bilmontWord}>
+          {BILMONT_WORD.split("").map((letter, index) => (
+            <span
+              key={`${letter}-${index}`}
+              className={styles.bilmontLetter}
+              style={
+                { "--letter-delay": `${620 + index * 70}ms` } as React.CSSProperties
+              }
+            >
+              {letter}
+            </span>
+          ))}
+          <span className={styles.bilmontTrack} />
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function LaptopVideoMock({
   url,
   address = "itdos.ru",
@@ -272,6 +326,7 @@ export function LaptopVideoMock({
   );
   const usesAvangardLoader = address === "avangardstyle.kg";
   const usesToolorLoader = projectTitle.toLowerCase() === "toolor";
+  const usesBilmontLoader = projectTitle.toLowerCase() === "bilmont";
   const src =
     `https://www.youtube-nocookie.com/embed/${id}` +
     `?autoplay=1&mute=1&loop=1&playlist=${id}` +
@@ -576,6 +631,8 @@ export function LaptopVideoMock({
               <AvangardLoader fading={loaderFading} />
             ) : usesToolorLoader ? (
               <ToolorLoader fading={loaderFading} />
+            ) : usesBilmontLoader ? (
+              <BilmontLoader fading={loaderFading} />
             ) : (
               <ProjectVideoLoader
                 fading={loaderFading}
