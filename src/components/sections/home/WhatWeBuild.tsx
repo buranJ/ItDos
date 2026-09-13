@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { ClipReveal } from "@/components/motion/ClipReveal";
 import { Mockup } from "@/components/portfolio/mockups";
@@ -27,8 +27,11 @@ type WebsiteProject = {
   label: string;
   title: string;
   video: string;
+  /** The live site's domain — shown as the "visit" link, and the video title. */
   address: string;
   accent: string;
+  /** Text colour on a fill of `accent` (the active tag), picked for contrast. */
+  ink: string;
   mobileScreens?: readonly {
     src?: string;
     width: number;
@@ -43,11 +46,12 @@ const websiteProjects: WebsiteProject[] = [
     title: "Avangard Style",
     video: "o1USBxQkmvU",
     address: "avangardstyle.kg",
-    // Accents are the tint of the copy, tags and arrows on the dark canvas,
-    // so they have to read on #08080a AND differ from each other. The brand
-    // blues (#004281, #0033a1) failed both: near-invisible, near-identical.
-    // Gold matches Avangard's own case-study page.
-    accent: "#c8a97e",
+    // Accents tint the tags, arrows and link on the dark canvas, so each is
+    // its brand colour lifted until it reads on #08080a. Both brands are
+    // blue, so they are kept apart by hue and weight: Avangard's bright
+    // azure (its logo's #0090FC) against Toolor's deeper royal blue.
+    accent: "#0090fc",
+    ink: "#0a0a0a",
     mobileScreens: [
       { src: "/project/avangard-mob1.png", width: 430, height: 932 },
       { src: "/project/avangard-mob2.png", width: 370, height: 772 },
@@ -59,8 +63,10 @@ const websiteProjects: WebsiteProject[] = [
     label: "Интернет-магазины",
     title: "Toolor",
     video: "nNYSL7SbYsM",
-    address: "toolor",
-    accent: "#5b8cff",
+    address: "toolor.store",
+    // Toolor's logo #0033a1, lifted — and dark enough to want white text.
+    accent: "#3d63f5",
+    ink: "#ffffff",
     // Hero in the middle of the fan, the purchase path fanning out around it.
     mobileScreens: [
       { src: "/pr/3.jpg", width: 1319, height: 2371 },
@@ -75,8 +81,9 @@ const websiteProjects: WebsiteProject[] = [
     label: "Лендинги",
     title: "Bilmont",
     video: "SO5efpX3Xw0",
-    address: "bilmont",
+    address: "bilmont.school",
     accent: "#9cba6e",
+    ink: "#0a0a0a",
     mobileScreens: [
       { src: "/pr/8.jpg", width: 1305, height: 2560 },
       { src: "/pr/6.jpg", width: 1316, height: 2553 },
@@ -99,7 +106,7 @@ const steps: Step[] = [
     kind: "laptop-video",
     url: "o1USBxQkmvU",
     address: "avangardstyle.kg",
-    accent: "#c8a97e",
+    accent: "#0090fc",
   },
   {
     n: "02",
@@ -511,9 +518,14 @@ function StepCopy({
               className={cn(
                 "rounded-full border px-3 py-1 text-xs transition-all duration-300",
                 websiteSlider.activeIndex === index
-                  ? "border-transparent bg-m font-medium text-[#0b0b0d] shadow-[0_0_22px_color-mix(in_srgb,var(--m-accent)_35%,transparent)]"
+                  ? "border-transparent bg-m font-medium shadow-[0_0_22px_color-mix(in_srgb,var(--m-accent)_35%,transparent)]"
                   : "border-line text-fg-secondary hover:border-m hover:text-m",
               )}
+              style={
+                websiteSlider.activeIndex === index
+                  ? { color: websiteProjects[index].ink }
+                  : undefined
+              }
             >
               {t}
             </button>
@@ -538,9 +550,27 @@ function StepCopy({
           >
             <ArrowLeft size={15} />
           </button>
-          <span className="min-w-12 text-center font-mono text-[10px] tracking-widest text-fg-muted">
-            0{websiteSlider.activeIndex + 1} / 0{websiteProjects.length}
-          </span>
+          {/* The project on screen, between the arrows, as a way to go and
+              see it — the tags name the category, this names (and opens) the
+              real site. Fixed width (the longest domain) so the «next» arrow
+              doesn't jump under the pointer when the name changes. */}
+          <a
+            key={websiteSlider.activeIndex}
+            href={`https://${websiteProjects[websiteSlider.activeIndex].address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Открыть сайт ${websiteProjects[websiteSlider.activeIndex].address} в новой вкладке`}
+            data-cursor="link"
+            className="group/site inline-flex min-w-38 animate-[m-rise-in_400ms_ease-out] items-center justify-center gap-1.5 px-2 text-sm font-medium text-fg transition-colors duration-300 hover:text-m"
+          >
+            <span className="border-b border-m/40 pb-0.5 transition-colors duration-300 group-hover/site:border-m">
+              {websiteProjects[websiteSlider.activeIndex].address}
+            </span>
+            <ArrowUpRight
+              size={15}
+              className="shrink-0 text-m transition-transform duration-300 group-hover/site:-translate-y-0.5 group-hover/site:translate-x-0.5"
+            />
+          </a>
           <button
             type="button"
             onClick={websiteSlider.onNext}
@@ -549,16 +579,6 @@ function StepCopy({
           >
             <ArrowRight size={15} />
           </button>
-          {/* Which project is on screen, spelled out — the tags name the
-              category, not the client. */}
-          <span
-            key={websiteSlider.activeIndex}
-            aria-live="polite"
-            className="ml-2 flex animate-[m-rise-in_400ms_ease-out] items-center gap-2 text-sm font-medium text-fg"
-          >
-            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-m" />
-            {websiteProjects[websiteSlider.activeIndex].title}
-          </span>
         </div>
       )}
     </div>

@@ -34,6 +34,14 @@
 }
 
 @theme inline {
+  /* ── Per-mockup accent as a real theme colour ─────────── */
+  /* `inline` so each utility reads the element's own --m-accent. Being a
+     theme colour is what gives `m` its variants and opacity modifiers —
+     `hover:text-m`, `border-m/50`, `focus-visible:outline-m`. As plain
+     classes those were never generated: hovers did nothing and the /50
+     borders fell back to the text colour. */
+  --color-m: var(--m-accent, var(--color-accent));
+
   /* ── Typography ───────────────────────────────────────── */
   --font-display: var(--font-space-grotesk);
   --font-sans: var(--font-geist-sans);
@@ -312,14 +320,19 @@ html.lenis body {
 .aurora-a { animation: aurora-a 18s ease-in-out infinite; }
 .aurora-b { animation: aurora-b 22s ease-in-out infinite; }
 
-/* Per-mockup accent tints (driven by the inline --m-accent var) */
-.text-m     { color: var(--m-accent, var(--color-accent)); }
-.bg-m       { background: var(--m-accent, var(--color-accent)); }
-.bg-m-soft  { background: color-mix(in oklab, var(--m-accent, var(--color-accent)) 16%, transparent); }
-.bg-m-softer{ background: color-mix(in oklab, var(--m-accent, var(--color-accent)) 8%, transparent); }
+/* Per-mockup accent tints (driven by the inline --m-accent var).
+   text-m / bg-m / fill-m / stroke-m come from `--color-m` in @theme. The
+   soft fills are utilities so they take variants too (`hover:bg-m-soft`). */
+@utility bg-m-soft {
+  background: color-mix(in oklab, var(--m-accent, var(--color-accent)) 16%, transparent);
+}
+@utility bg-m-softer {
+  background: color-mix(in oklab, var(--m-accent, var(--color-accent)) 8%, transparent);
+}
+/* Bare `border-m` is a softened 38% stroke, as it always was — kept
+   unlayered so it outranks the theme utility of the same name. The variants
+   and modifiers (`hover:border-m`, `border-m/50`) come from the theme. */
 .border-m   { border-color: color-mix(in oklab, var(--m-accent, var(--color-accent)) 38%, transparent); }
-.fill-m     { fill: var(--m-accent, var(--color-accent)); }
-.stroke-m   { stroke: var(--m-accent, var(--color-accent)); }
 
 /* ── Page transition overlay (driven by app/template.tsx) ─── */
 #transition-overlay {
