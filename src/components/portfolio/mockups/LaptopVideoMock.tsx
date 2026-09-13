@@ -80,6 +80,9 @@ function fanPhoneStyle(index: number, count: number): React.CSSProperties {
   } as React.CSSProperties;
 }
 
+/** Phones in the fan; any further screens only appear in the viewer. */
+const FAN_SIZE = 3;
+
 const LOADER_DURATION_MS = 2200;
 const LOADER_TIMEOUT_MS = 8000;
 const LOADER_FADE_MS = 400;
@@ -327,11 +330,16 @@ export function LaptopVideoMock({
   const motionReadyRef = useRef(false);
   const loaderFading = introComplete && videoLoaded;
   const id = ytId(url);
-  const screens = mobileScreens?.length
+  const allScreens = mobileScreens?.length
     ? mobileScreens
     : PLACEHOLDER_MOBILE_SCREENS;
+  // The fan always shows three phones — the middle three of the list, so a
+  // project's lead screen (placed mid-list) stays in the centre. Every
+  // screen, the extra ones included, is in the full-size viewer.
+  const fanStart = Math.max(0, Math.floor((allScreens.length - FAN_SIZE) / 2));
+  const screens = allScreens.slice(fanStart, fanStart + FAN_SIZE);
   const screenCount = screens.length;
-  const lightboxScreens = screens.filter(
+  const lightboxScreens = allScreens.filter(
     (screen): screen is LightboxScreen => Boolean(screen.src),
   );
   const usesAvangardLoader = address === "avangardstyle.kg";
@@ -674,10 +682,7 @@ export function LaptopVideoMock({
 
       <div
         ref={mobileStageRef}
-        className={cn(
-          styles.mobileStage,
-          screenCount > 3 && styles.mobileStageWide,
-        )}
+        className={styles.mobileStage}
         aria-hidden={view !== "mobile"}
       >
         {screens.map(({ src, width, height }, index) => (

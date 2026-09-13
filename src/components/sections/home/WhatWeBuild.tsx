@@ -249,6 +249,38 @@ export function WhatWeBuild() {
     );
   };
 
+  const websiteSliderControls: WebsiteSliderControls = {
+    activeIndex: websiteProjectIndex,
+    onSelect: setWebsiteProjectIndex,
+    onPrevious: showPreviousWebsite,
+    onNext: showNextWebsite,
+  };
+
+  // Horizontal swipe on the inline (phone/tablet) laptop changes project.
+  // `pan-y` keeps vertical scrolling native while handing horizontal
+  // gestures to us; a mostly-vertical drag or a tap (e.g. opening a phone
+  // screenshot) is ignored.
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const websiteSwipe = {
+    style: { touchAction: "pan-y" } as React.CSSProperties,
+    onPointerDown: (event: React.PointerEvent) => {
+      swipeStart.current = { x: event.clientX, y: event.clientY };
+    },
+    onPointerUp: (event: React.PointerEvent) => {
+      const start = swipeStart.current;
+      swipeStart.current = null;
+      if (!start) return;
+      const dx = event.clientX - start.x;
+      const dy = event.clientY - start.y;
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      if (dx < 0) showNextWebsite();
+      else showPreviousWebsite();
+    },
+    onPointerCancel: () => {
+      swipeStart.current = null;
+    },
+  };
+
   // Drive the active step from which block is centered in the viewport.
   // CSS sticky handles the visual — no fragile ScrollTrigger pin.
   useEffect(() => {
@@ -313,19 +345,14 @@ export function WhatWeBuild() {
                     step={step}
                     active={i === active}
                     websiteSlider={
-                      isWebsiteStep
-                        ? {
-                            activeIndex: websiteProjectIndex,
-                            onSelect: setWebsiteProjectIndex,
-                            onPrevious: showPreviousWebsite,
-                            onNext: showNextWebsite,
-                          }
-                        : undefined
+                      isWebsiteStep ? websiteSliderControls : undefined
                     }
                   />
 
                   {/* Mobile inline mockup (reveals on scroll) */}
                   {!isDesktop && (
+                    // Swipe the laptop to change project (website step).
+                    <div {...(isWebsiteStep ? websiteSwipe : {})}>
                     <ClipReveal
                       className={cn(
                         "rounded-xl lg:hidden",
@@ -382,6 +409,16 @@ export function WhatWeBuild() {
                         />
                       </div>
                     </ClipReveal>
+                    </div>
+                  )}
+
+                  {/* Below lg the project controls sit under the laptop,
+                      centred on it — right next to what they change. */}
+                  {!isDesktop && isWebsiteStep && (
+                    <SliderControls
+                      controls={websiteSliderControls}
+                      className="-mt-2 justify-center lg:hidden"
+                    />
                   )}
                 </div>
               );
@@ -461,7 +498,9 @@ function Header() {
           {/* От первого лендинга до масштабных AI-систем для вашего бизнеса. */}
         </h2>
       </div>
-      <p className="max-w-xs text-sm leading-relaxed text-fg-secondary">
+      {/* Hidden on phones: under the headline it read as a stray caption
+          and pushed the first project further down. */}
+      <p className="hidden max-w-xs text-sm leading-relaxed text-fg-secondary sm:block">
         Полный цикл: проектирование, дизайн, разработка, тестирование и
         автоматизация.
       </p>
@@ -540,47 +579,62 @@ function StepCopy({
         )}
       </div>
 
+      {/* Desktop: under the tags. Below lg the same controls sit under the
+          laptop instead (see WhatWeBuild), next to the thing they change. */}
       {websiteSlider && (
-        <div className="mt-4 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={websiteSlider.onPrevious}
-            aria-label="Предыдущий проект"
-            className="grid h-9 w-9 place-items-center rounded-full border border-m/50 text-m transition-all duration-300 hover:border-m hover:bg-m-soft hover:-translate-x-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m"
-          >
-            <ArrowLeft size={15} />
-          </button>
-          {/* The project on screen, between the arrows, as a way to go and
-              see it — the tags name the category, this names (and opens) the
-              real site. Fixed width (the longest domain) so the «next» arrow
-              doesn't jump under the pointer when the name changes. */}
-          <a
-            key={websiteSlider.activeIndex}
-            href={`https://${websiteProjects[websiteSlider.activeIndex].address}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Открыть сайт ${websiteProjects[websiteSlider.activeIndex].address} в новой вкладке`}
-            data-cursor="link"
-            className="group/site inline-flex min-w-38 animate-[m-rise-in_400ms_ease-out] items-center justify-center gap-1.5 px-2 text-sm font-medium text-fg transition-colors duration-300 hover:text-m"
-          >
-            <span className="border-b border-m/40 pb-0.5 transition-colors duration-300 group-hover/site:border-m">
-              {websiteProjects[websiteSlider.activeIndex].address}
-            </span>
-            <ArrowUpRight
-              size={15}
-              className="shrink-0 text-m transition-transform duration-300 group-hover/site:-translate-y-0.5 group-hover/site:translate-x-0.5"
-            />
-          </a>
-          <button
-            type="button"
-            onClick={websiteSlider.onNext}
-            aria-label="Следующий проект"
-            className="grid h-9 w-9 place-items-center rounded-full border border-m/50 text-m transition-all duration-300 hover:border-m hover:bg-m-soft hover:translate-x-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m"
-          >
-            <ArrowRight size={15} />
-          </button>
-        </div>
+        <SliderControls controls={websiteSlider} className="mt-4 hidden lg:flex" />
       )}
+    </div>
+  );
+}
+
+/** Prev / live-site link / next for the website projects. */
+function SliderControls({
+  controls,
+  className,
+}: {
+  controls: WebsiteSliderControls;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <button
+        type="button"
+        onClick={controls.onPrevious}
+        aria-label="Предыдущий проект"
+        className="grid h-9 w-9 place-items-center rounded-full border border-m/50 text-m transition-all duration-300 hover:border-m hover:bg-m-soft hover:-translate-x-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m"
+      >
+        <ArrowLeft size={15} />
+      </button>
+      {/* The project on screen, between the arrows, as a way to go and
+          see it — the tags name the category, this names (and opens) the
+          real site. Fixed width (the longest domain) so the «next» arrow
+          doesn't jump under the pointer when the name changes. */}
+      <a
+        key={controls.activeIndex}
+        href={`https://${websiteProjects[controls.activeIndex].address}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Открыть сайт ${websiteProjects[controls.activeIndex].address} в новой вкладке`}
+        data-cursor="link"
+        className="group/site inline-flex min-w-38 animate-[m-rise-in_400ms_ease-out] items-center justify-center gap-1.5 px-2 text-sm font-medium text-fg transition-colors duration-300 hover:text-m"
+      >
+        <span className="border-b border-m/40 pb-0.5 transition-colors duration-300 group-hover/site:border-m">
+          {websiteProjects[controls.activeIndex].address}
+        </span>
+        <ArrowUpRight
+          size={15}
+          className="shrink-0 text-m transition-transform duration-300 group-hover/site:-translate-y-0.5 group-hover/site:translate-x-0.5"
+        />
+      </a>
+      <button
+        type="button"
+        onClick={controls.onNext}
+        aria-label="Следующий проект"
+        className="grid h-9 w-9 place-items-center rounded-full border border-m/50 text-m transition-all duration-300 hover:border-m hover:bg-m-soft hover:translate-x-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-m"
+      >
+        <ArrowRight size={15} />
+      </button>
     </div>
   );
 }

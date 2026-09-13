@@ -157,10 +157,15 @@ h4 {
   background: rgba(255, 255, 255, 0.28);
 }
 
-/* Focus visible */
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
+/* Focus visible — the site-wide default, in the base layer so components
+   can restyle it with utilities (`focus-visible:outline-m`). Unlayered, it
+   outranked every utility: the slider arrows got a purple ring instead of
+   the project colour, and the chat input a hard box inside its pill. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
 }
 
 /* ── Film grain (premium texture on dark) ─────────────────── */

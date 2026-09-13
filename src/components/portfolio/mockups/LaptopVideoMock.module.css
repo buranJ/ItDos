@@ -136,8 +136,9 @@
   opacity: 0;
 }
 
-/* Avangard's logo is blue and white: its ground is pinned to the brand
-   blue rather than the scene accent, which is now gold for this project. */
+/* Avangard's logo is blue and white on its deep brand blue: the ground is
+   pinned to that, not to the scene accent (a lighter azure, tuned for UI
+   on the dark page). */
 .avangardLoader {
   background: color-mix(in srgb, #004281 68%, #070709);
 }
@@ -532,12 +533,6 @@
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.045);
 }
 
-/* A five-phone fan is ~2.9 phone widths across instead of ~1.9, so the
-   phones shrink against the container width to keep the outer pair inside. */
-.mobileStageWide .mobilePhone {
-  height: min(84cqh, 68cqw, 30rem);
-}
-
 /* No `transform` on the phones on purpose — GSAP owns their placement.
    When a percentage translate sits in a compound transform next to rotate()
    and scale(), GSAP decomposes it to a pixel `x` and then adds its own
@@ -763,12 +758,6 @@
 
   .mobileStage {
     inset: 18% 0 2%;
-  }
-
-  /* Inline the mock is clipped to the viewport edge, so leave the outer
-     pair a margin instead of letting them overhang into the text column. */
-  .mobileStageWide .mobilePhone {
-    height: min(84cqh, 58cqw, 30rem);
   }
 }
 
