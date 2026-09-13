@@ -1,0 +1,262 @@
+.overlay {
+  --lightbox-accent: #6e56ff;
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: clamp(0.75rem, 2vh, 1.25rem);
+  padding: clamp(1rem, 3vh, 1.75rem) clamp(1rem, 3vw, 2rem);
+  color: #f4f2ed;
+  background: rgba(6, 6, 8, 0.84);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  touch-action: pan-y;
+  animation: overlayIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.overlayClosing {
+  animation: overlayOut 260ms ease-in both;
+}
+
+.overlayClosing .figure {
+  animation: figureOut 260ms ease-in both;
+}
+
+/* A soft bloom of the project's colour behind the screenshot. */
+.glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      42% 50% at 50% 50%,
+      color-mix(in srgb, var(--lightbox-accent) 30%, transparent),
+      transparent 72%
+    );
+  opacity: 0.8;
+}
+
+.topBar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.caption {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.caption strong {
+  overflow: hidden;
+  font-family: var(--font-space-grotesk);
+  font-size: 1rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.captionDot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--lightbox-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--lightbox-accent) 22%, transparent);
+}
+
+.captionCounter {
+  color: rgba(244, 242, 237, 0.5);
+  font-family: var(--font-geist-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+}
+
+.iconButton {
+  display: grid;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  cursor: pointer;
+  place-items: center;
+  color: #f4f2ed;
+  border: 1px solid rgba(244, 242, 237, 0.14);
+  border-radius: 50%;
+  background: rgba(20, 20, 24, 0.72);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    transform 220ms ease;
+}
+
+.iconButton:hover {
+  border-color: color-mix(in srgb, var(--lightbox-accent) 70%, white);
+  background: color-mix(in srgb, var(--lightbox-accent) 26%, #141418);
+}
+
+.iconButton:focus-visible {
+  outline: 2px solid var(--lightbox-accent);
+  outline-offset: 3px;
+}
+
+/* Narrower than the viewport so the arrows stay beside the screenshot. */
+.stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(100%, 52rem);
+  min-height: 0;
+  align-items: center;
+  justify-self: center;
+  gap: clamp(0.75rem, 3vw, 2rem);
+}
+
+.figure {
+  display: flex;
+  flex: 1 1 0;
+  align-self: stretch;
+  min-width: 0;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  container-type: size;
+  animation: figureIn 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* The largest box of the screenshot's own ratio that fits the figure, so it
+   is never letterboxed whichever side — height or width — runs out first. */
+.frame {
+  position: relative;
+  width: min(100cqw, 100cqh * var(--ratio), 32rem);
+  aspect-ratio: var(--ratio);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: clamp(1rem, 2.4vh, 1.6rem);
+  background: #fff;
+  box-shadow:
+    0 40px 120px rgba(0, 0, 0, 0.6),
+    0 0 0 6px rgba(255, 255, 255, 0.03);
+}
+
+.image {
+  object-fit: contain;
+  object-position: top;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.navButton:hover.navPrev {
+  transform: translateX(-2px);
+}
+
+.navButton:hover.navNext {
+  transform: translateX(2px);
+}
+
+.thumbs {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.thumb {
+  position: relative;
+  width: 2.6rem;
+  height: 4.2rem;
+  cursor: pointer;
+  overflow: hidden;
+  border: 1px solid rgba(244, 242, 237, 0.16);
+  border-radius: 0.55rem;
+  background: #fff;
+  opacity: 0.45;
+  transition:
+    opacity 220ms ease,
+    border-color 220ms ease,
+    transform 220ms ease;
+}
+
+.thumb:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+.thumb:focus-visible {
+  outline: 2px solid var(--lightbox-accent);
+  outline-offset: 2px;
+}
+
+.thumbActive {
+  opacity: 1;
+  border-color: var(--lightbox-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lightbox-accent) 55%, transparent);
+  transform: translateY(-2px);
+}
+
+.thumbImage {
+  object-fit: cover;
+  object-position: top;
+}
+
+/* On phones the arrows sit over the screenshot's edges; swipe does the rest. */
+@media (max-width: 47.999rem) {
+  .navButton {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    margin-top: -1.2rem;
+  }
+
+  .navPrev {
+    left: 0;
+  }
+
+  .navNext {
+    right: 0;
+  }
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes overlayOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes figureIn {
+  from {
+    opacity: 0;
+    transform: translateX(var(--swap-from, 0)) scale(0.96);
+  }
+}
+
+@keyframes figureOut {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .overlayClosing,
+  .figure,
+  .overlayClosing .figure {
+    animation-duration: 1ms;
+  }
+}

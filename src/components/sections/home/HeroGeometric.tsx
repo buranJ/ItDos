@@ -103,6 +103,28 @@ export function HeroGeometric() {
     return () => ctx.revert();
   }, [reduced]);
 
+  /* ── Cluster scale ──
+     The chip/card offsets are authored for a 1440×900 viewport. Scale the
+     cluster by whichever side is tighter so it never crowds the headline on
+     a short or narrow screen, clamped so the chips stay legible on a 1024
+     tablet and don't balloon on a 2560 monitor. */
+  useEffect(() => {
+    const root = sectionRef.current;
+    if (!root) return;
+    const update = () => {
+      const fit = Math.min(window.innerWidth / 1440, window.innerHeight / 900);
+      const s = Math.min(1.3, Math.max(0.62, fit));
+      // The cluster is sized in rem, and the root font grows on big monitors
+      // (globals.css) — divide that growth back out so it isn't applied twice.
+      const rem =
+        parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
+      root.style.setProperty("--hg-s", (s / rem).toFixed(3));
+    };
+    update();
+    window.addEventListener("resize", update, { passive: true });
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   /* ── Mouse parallax ── */
   useEffect(() => {
     const root = sectionRef.current;
@@ -368,76 +390,104 @@ export function HeroGeometric() {
           ))}
         </div>
 
-        {/* ── Service chips ── */}
-        <div aria-hidden className="hidden lg:block pointer-events-none absolute inset-0">
-          {chips.map((chip, i) => (
+        {/* ── Chat card + service chips (lg+) ──
+            One cluster, pinned to the content grid rather than the viewport:
+            the chips used to sit at percentages of the whole section, so they
+            piled onto the card at 1024–1280 and drifted off past the header's
+            edge on wide monitors. Now every chip is an offset from the card's
+            centre, the cluster is anchored at 77% of the container, and
+            `--hg-s` scales the group as one — the arrangement is identical at
+            every width, only its size changes. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 hidden lg:block"
+        >
+          <div className="relative mx-auto h-full max-w-7xl">
             <div
-              key={chip.id}
-              ref={(el) => {
-                chipsRef.current[i] = el;
-              }}
-              className="hg-chip absolute"
-              style={
-                {
-                  left: chip.x,
-                  top: chip.y,
-                  /* base centering + mouse offset via CSS vars */
-                  transform:
-                    "translate(calc(-50% + var(--px, 0px)), calc(-50% + var(--py, 0px)))",
-                  animation: `chip-float-${chip.id} ${chip.floatDur} ${chip.floatDelay} ease-in-out infinite`,
-                  willChange: "transform",
-                } as React.CSSProperties
-              }
+              className="absolute left-[77%] top-1/2 h-0 w-0"
+              style={{ scale: "var(--hg-s, 1)" }}
             >
+              {/* Three layers per chip, one transform each — GSAP's entrance
+                  tween writes `transform` on `.hg-chip`, which used to wipe
+                  out the centring and the pointer parallax sharing it. */}
+              {chips.map((chip, i) => (
+                <div
+                  key={chip.id}
+                  ref={(el) => {
+                    chipsRef.current[i] = el;
+                  }}
+                  className="absolute"
+                  style={{
+                    left: `${chip.dx / 16}rem`,
+                    top: `${chip.dy / 16}rem`,
+                    transform:
+                      "translate(calc(-50% + var(--px, 0px)), calc(-50% + var(--py, 0px)))",
+                    willChange: "transform",
+                  }}
+                >
+                  <div className="hg-chip">
+                    <div
+                      className={`
+                        flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium
+                        transition-shadow duration-300
+                        ${variantStyles[chip.variant]}
+                      `}
+                      style={{
+                        animation: `chip-float-${chip.id} ${chip.floatDur} ${chip.floatDelay} ease-in-out infinite`,
+                      }}
+                    >
+                      <chip.Icon
+                        size={15}
+                        className={`size-3.75 ${iconColor[chip.variant]}`}
+                        strokeWidth={1.75}
+                      />
+                      <span>{chip.label}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
               <div
-                className={`
-                  flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium
-                  transition-shadow duration-300
-                  ${variantStyles[chip.variant]}
-                `}
+                ref={chatWrapRef}
+                className="absolute left-0 top-0 z-10"
+                style={
+                  {
+                    width: "18.75rem",
+                    height: "15.25rem",
+                    transform:
+                      "translate(calc(-50% + var(--px, 0px)), calc(-50% + var(--py, 0px)))",
+                    willChange: "transform",
+                  } as React.CSSProperties
+                }
               >
-                <chip.Icon
-                  size={15}
-                  className={iconColor[chip.variant]}
-                  strokeWidth={1.75}
-                />
-                <span>{chip.label}</span>
+                <div
+                  className="hg-chat h-full w-full"
+                  style={{
+                    animation: "chat-float 12s 0.6s ease-in-out infinite",
+                    perspective: "900px",
+                  }}
+                >
+                  <div
+                    ref={chatTiltRef}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      transform: "rotateX(2deg) rotateY(-11deg)",
+                      transformStyle: "preserve-3d",
+                      willChange: "transform",
+                      filter:
+                        "drop-shadow(0 16px 48px rgba(0,0,0,0.13)) drop-shadow(0 2px 10px rgba(0,0,0,0.07))",
+                    }}
+                  >
+                    <ChatMock
+                      accent="#6e56ff"
+                      typing
+                      className="h-full rounded-2xl"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* ── ChatMock card ── */}
-        <div
-          ref={chatWrapRef}
-          className="hg-chat hidden lg:block pointer-events-none absolute z-10"
-          style={
-            {
-              left: "72%",
-              top: "48%",
-              width: 300,
-              height: 244,
-              transform:
-                "translate(calc(-50% + var(--px, 0px)), calc(-50% + var(--py, 0px)))",
-              animation: "chat-float 12s 0.6s ease-in-out infinite",
-              perspective: "900px",
-              willChange: "transform",
-            } as React.CSSProperties
-          }
-        >
-          <div
-            ref={chatTiltRef}
-            style={{
-              width: "100%",
-              height: "100%",
-              transform: "rotateX(2deg) rotateY(-11deg)",
-              transformStyle: "preserve-3d",
-              willChange: "transform",
-              filter:
-                "drop-shadow(0 16px 48px rgba(0,0,0,0.13)) drop-shadow(0 2px 10px rgba(0,0,0,0.07))",
-            }}
-          >
-            <ChatMock accent="#6e56ff" typing className="h-full rounded-2xl" />
           </div>
         </div>
 

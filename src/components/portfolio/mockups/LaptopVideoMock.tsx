@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Laptop, Smartphone } from "lucide-react";
+import { Expand, Laptop, Smartphone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
 import { DURATION, EASE, useReducedMotion } from "@/lib/motion";
+import { ScreenLightbox, type LightboxScreen } from "./ScreenLightbox";
 import styles from "./LaptopVideoMock.module.css";
 
 type MobileScreen = {
@@ -31,6 +32,53 @@ const PLACEHOLDER_MOBILE_SCREENS: readonly MobileScreen[] = [
   { width: 393, height: 852 },
   { width: 393, height: 852 },
 ] as const;
+
+type FanPosition = {
+  xPercent: number;
+  yPercent: number;
+  rotation: number;
+  scale: number;
+};
+
+// Per ring of the fan, counted from the centre phone outwards. Offsets are a
+// share of a phone's own width: ±54% keeps the side screenshots peeking out
+// from behind the middle phone; the outer ring sits further out and smaller.
+const FAN_RINGS = [
+  { x: 0, y: 0, rotation: 0, scale: 1 },
+  { x: 54, y: 4, rotation: 7, scale: 0.84 },
+  { x: 98, y: 8, rotation: 11, scale: 0.7 },
+] as const;
+
+/** Signed distance of a phone from the centre of the fan (…, -1, 0, 1, …). */
+function fanOffset(index: number, count: number) {
+  return index - (count - 1) / 2;
+}
+
+function fanPosition(index: number, count: number): FanPosition {
+  const offset = fanOffset(index, count);
+  const ring =
+    FAN_RINGS[Math.min(Math.round(Math.abs(offset)), FAN_RINGS.length - 1)];
+  const side = Math.sign(offset);
+  return {
+    xPercent: -50 + side * ring.x,
+    yPercent: -50 + ring.y,
+    rotation: side * ring.rotation,
+    scale: ring.scale,
+  };
+}
+
+/** Stacking and dimming: the centre on top, the left side a touch darker. */
+function fanPhoneStyle(index: number, count: number): React.CSSProperties {
+  const offset = fanOffset(index, count);
+  const depth = Math.round(Math.abs(offset));
+  if (depth === 0) return { zIndex: 10 };
+  const brightness = (offset < 0 ? 0.7 : 0.78) - (depth - 1) * 0.16;
+  // A variable rather than `filter` itself, so :hover in CSS can lift it.
+  return {
+    zIndex: 10 - depth * 2 - (offset < 0 ? 1 : 0),
+    "--phone-brightness": brightness,
+  } as React.CSSProperties;
+}
 
 const LOADER_DURATION_MS = 2200;
 const LOADER_TIMEOUT_MS = 8000;
@@ -206,6 +254,7 @@ export function LaptopVideoMock({
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [introComplete, setIntroComplete] = useState(false);
   const [loaderHidden, setLoaderHidden] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const reduced = useReducedMotion();
   const [viewRef, inView] = useInView<HTMLDivElement>("0px");
   const photoStageRef = useRef<HTMLDivElement>(null);
@@ -217,6 +266,10 @@ export function LaptopVideoMock({
   const screens = mobileScreens?.length
     ? mobileScreens
     : PLACEHOLDER_MOBILE_SCREENS;
+  const screenCount = screens.length;
+  const lightboxScreens = screens.filter(
+    (screen): screen is LightboxScreen => Boolean(screen.src),
+  );
   const usesAvangardLoader = address === "avangardstyle.kg";
   const usesToolorLoader = projectTitle.toLowerCase() === "toolor";
   const src =
@@ -257,19 +310,31 @@ export function LaptopVideoMock({
   useEffect(() => {
     const photoStage = photoStageRef.current;
     const mobileStage = mobileStageRef.current;
-    const [leftPhone, centerPhone, rightPhone] = phoneRefs.current;
+    const phones = phoneRefs.current.slice(0, screenCount);
 
     if (
       !photoStage ||
       !mobileStage ||
-      !leftPhone ||
-      !centerPhone ||
-      !rightPhone
+      phones.length !== screenCount ||
+      !phones.every(Boolean)
     ) {
       return;
     }
 
-    const phones = [leftPhone, centerPhone, rightPhone];
+    const centerIndex = Math.floor((screenCount - 1) / 2);
+    const centerPhone = phones[centerIndex] as HTMLDivElement;
+    const sidePhones = phones.filter(
+      (_, index) => index !== centerIndex,
+    ) as HTMLDivElement[];
+    // Rings of side phones from the centre outwards — each ring fans out a
+    // beat after the one inside it.
+    const phoneRings: HTMLDivElement[][] = [];
+    phones.forEach((phone, index) => {
+      if (index === centerIndex) return;
+      const ring =
+        Math.round(Math.abs(fanOffset(index, screenCount))) - 1;
+      (phoneRings[ring] ??= []).push(phone as HTMLDivElement);
+    });
     const collapsedSidePhone = {
       xPercent: -50,
       yPercent: -50,
@@ -285,14 +350,9 @@ export function LaptopVideoMock({
       scaleY: 0.72,
       autoAlpha: 0,
     };
-    // ±54% of a phone's own width from the centre one. Tighter than this and
-    // the side screenshots vanish behind the middle phone; wider and the fan
-    // stops reading as one group.
-    const mobilePhonePositions = [
-      { xPercent: -104, yPercent: -46, rotation: -7, scale: 0.84 },
-      { xPercent: -50, yPercent: -50, rotation: 0, scale: 1 },
-      { xPercent: 4, yPercent: -46, rotation: 7, scale: 0.84 },
-    ];
+    const mobilePhonePositions = phones.map((_, index) =>
+      fanPosition(index, screenCount),
+    );
 
     const setDesktopState = () => {
       gsap.set(photoStage, {
@@ -311,7 +371,7 @@ export function LaptopVideoMock({
         visibility: "hidden",
         pointerEvents: "none",
       });
-      gsap.set([leftPhone, rightPhone], collapsedSidePhone);
+      gsap.set(sidePhones, collapsedSidePhone);
       gsap.set(centerPhone, collapsedCenterPhone);
     };
 
@@ -388,35 +448,30 @@ export function LaptopVideoMock({
         .to(
           centerPhone,
           {
-            ...mobilePhonePositions[1],
+            ...mobilePhonePositions[centerIndex],
             autoAlpha: 1,
             duration: DURATION.base,
           },
           0.08,
-        )
-        .to(
-          leftPhone,
-          {
-            ...mobilePhonePositions[0],
-            autoAlpha: 1,
-            duration: DURATION.base,
-          },
-          0.26,
-        )
-        .to(
-          rightPhone,
-          {
-            ...mobilePhonePositions[2],
-            autoAlpha: 1,
-            duration: DURATION.base,
-          },
-          0.26,
         );
+      phoneRings.forEach((ring, ringIndex) => {
+        ring.forEach((phone) => {
+          timeline.to(
+            phone,
+            {
+              ...mobilePhonePositions[phones.indexOf(phone)],
+              autoAlpha: 1,
+              duration: DURATION.base,
+            },
+            0.26 + ringIndex * 0.12,
+          );
+        });
+      });
     } else {
       timeline
         .set(photoStage, { visibility: "visible", pointerEvents: "auto" })
         .to(
-          [leftPhone, rightPhone],
+          sidePhones,
           { ...collapsedSidePhone, duration: DURATION.base },
           0,
         )
@@ -453,7 +508,7 @@ export function LaptopVideoMock({
     return () => {
       timeline.kill();
     };
-  }, [reduced, view]);
+  }, [reduced, screenCount, view]);
 
   const showDesktopView = () => {
     if (view === "mobile") {
@@ -552,7 +607,10 @@ export function LaptopVideoMock({
 
       <div
         ref={mobileStageRef}
-        className={styles.mobileStage}
+        className={cn(
+          styles.mobileStage,
+          screenCount > 3 && styles.mobileStageWide,
+        )}
         aria-hidden={view !== "mobile"}
       >
         {screens.map(({ src, width, height }, index) => (
@@ -561,14 +619,13 @@ export function LaptopVideoMock({
             ref={(element) => {
               phoneRefs.current[index] = element;
             }}
-            className={cn(
-              styles.mobilePhone,
-              index === 0 && styles.mobilePhoneLeft,
-              index === 1 && styles.mobilePhoneCenter,
-              index === 2 && styles.mobilePhoneRight,
-            )}
+            className={styles.mobilePhone}
+            data-fan-center={
+              fanOffset(index, screenCount) === 0 ? "" : undefined
+            }
             style={
               {
+                ...fanPhoneStyle(index, screenCount),
                 "--phone-aspect": `${width + 16} / ${height + 40}`,
               } as React.CSSProperties
             }
@@ -592,10 +649,37 @@ export function LaptopVideoMock({
                 />
               )}
               <div aria-hidden="true" className={styles.mobileGlass} />
+              {src && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLightboxIndex(
+                      lightboxScreens.findIndex((screen) => screen.src === src),
+                    )
+                  }
+                  aria-label={`Открыть экран ${index + 1} проекта ${projectTitle}`}
+                  data-cursor="card"
+                  data-cursor-label="СМОТРЕТЬ"
+                  className={styles.mobileScreenOpen}
+                >
+                  <span aria-hidden="true" className={styles.mobileScreenHint}>
+                    <Expand size={14} strokeWidth={1.8} />
+                  </span>
+                </button>
+              )}
             </div>
           </div>
         ))}
       </div>
+
+      <ScreenLightbox
+        screens={lightboxScreens}
+        index={lightboxIndex}
+        onIndexChange={setLightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        projectTitle={projectTitle}
+        accent={accent}
+      />
     </div>
   );
 }

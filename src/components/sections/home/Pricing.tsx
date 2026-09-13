@@ -36,10 +36,14 @@ export async function Pricing() {
         </div>
 
         {/* ── Folder cards ── */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-5 lg:items-end">
+        {/* Stretched, not bottom-aligned: the plans differ in length, and
+            `items-end` left the three folder tabs stepping up at different
+            heights. Equal cards with the CTA pinned to the bottom keep the
+            tabs, prices and buttons on shared lines. */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-5">
           {plans.map((plan, i) => (
-            <FadeIn key={plan.name} delay={i * 0.1}>
-              <div className="group relative">
+            <FadeIn key={plan.name} delay={i * 0.1} className="h-full">
+              <div className="group relative flex h-full flex-col">
                 {/* Folder tab */}
                 <div
                   className={cn(
@@ -64,7 +68,7 @@ export async function Pricing() {
                     {plan.name.split(" /")[0]}
                   </span>
                   {plan.popular && (
-                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent-text">
+                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold leading-none text-accent-text">
                       ТОП
                     </span>
                   )}
@@ -73,24 +77,31 @@ export async function Pricing() {
                 {/* Card body */}
                 <div
                   className={cn(
-                    "overflow-hidden rounded-b-2xl rounded-tr-2xl transition-shadow duration-300",
+                    "flex-1 overflow-hidden rounded-b-2xl rounded-tr-2xl transition-shadow duration-300",
                     plan.popular
                       ? "border-2 border-accent/20 bg-panel shadow-[0_8px_40px_rgba(110,86,255,0.09)] group-hover:shadow-[0_20px_60px_rgba(110,86,255,0.16)]"
                       : "border border-line bg-panel shadow-md group-hover:shadow-xl",
                   )}
                 >
-                  <div className="flex flex-col items-center p-7 text-center lg:p-8">
+                  {/* lg:p-6 — at 1024–1279 three cards are ~295px wide, and
+                      the 32px padding wrapped the longer feature lines. */}
+                  <div className="flex h-full flex-col items-center p-7 text-center lg:p-6 xl:p-8">
                     {/* Name & tagline */}
                     <h3 className="font-display text-xl font-semibold leading-tight tracking-tight text-fg">
                       {plan.name}
                     </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-fg-secondary">
+                    {/* Two reserved lines in the narrow 1024–1279 band, where
+                        one tagline wraps and pushed its price below the
+                        other two. */}
+                    <p className="mt-2 text-sm leading-relaxed text-fg-secondary lg:max-xl:min-h-[2lh]">
                       {plan.tagline}
                     </p>
 
                     {/* Price */}
                     <div className="mt-7 w-full border-t border-line pt-7">
-                      <p className="font-display font-semibold leading-none tracking-tight text-fg text-[clamp(1.9rem,3.5vw,2.5rem)]">
+                      {/* Its own curve in the three-column layout: 3.5vw let
+                          «Индивидуально» run past the card edge at 1024. */}
+                      <p className="font-display font-semibold leading-none tracking-tight text-fg text-[clamp(1.9rem,8vw,2.5rem)] lg:text-[clamp(1.6rem,2.6vw,2.5rem)]">
                         {plan.price}
                       </p>
                       <p className="mt-2 text-xs text-fg-muted">
@@ -99,7 +110,7 @@ export async function Pricing() {
                     </div>
 
                     {/* Features */}
-                    <ul className="mt-6 flex w-full flex-col gap-2.5">
+                    <ul className="mb-9 mt-6 flex w-full flex-col gap-2.5">
                       {plan.features.map((f) => (
                         <li
                           key={f}
@@ -123,7 +134,7 @@ export async function Pricing() {
                       className={buttonClass(
                         plan.popular ? "accent" : "outline",
                         "md",
-                        "group/btn mt-9 w-full",
+                        "group/btn mt-auto w-full",
                       )}
                     >
                       Обсудить проект

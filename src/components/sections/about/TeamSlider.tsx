@@ -65,7 +65,7 @@ export function TeamSlider({ team }: { team: TeamMember[] }) {
 
       {/* Stage */}
       <div
-        className="relative mx-auto flex h-[400px] items-center justify-center sm:h-[500px]"
+        className="relative mx-auto flex h-100 items-center justify-center sm:h-125"
         style={{ perspective: 2000 }}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
@@ -86,7 +86,7 @@ export function TeamSlider({ team }: { team: TeamMember[] }) {
               onClick={() => select(i)}
               aria-label={`${m.name} — ${m.role}`}
               data-cursor={isActive ? undefined : "link"}
-              className="absolute h-[340px] w-[244px] sm:h-[452px] sm:w-[322px]"
+              className="absolute h-85 w-61 sm:h-113 sm:w-[20.125rem]"
               style={{
                 transform: `translateX(${offset * 50}%) rotateY(${offset * -22}deg) scale(${
                   isActive ? 1 : Math.max(0.6, 0.82 - (abs - 1) * 0.08)

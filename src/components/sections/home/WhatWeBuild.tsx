@@ -57,14 +57,29 @@ const websiteProjects: WebsiteProject[] = [
     video: "nNYSL7SbYsM",
     address: "toolor",
     accent: "#0033a1",
+    // Hero in the middle of the fan, the purchase path fanning out around it.
+    mobileScreens: [
+      { src: "/pr/3.jpg", width: 1319, height: 2371 },
+      { src: "/pr/5.jpg", width: 1319, height: 2336 },
+      { src: "/pr/4.jpg", width: 1316, height: 2155 },
+      { src: "/pr/2.jpg", width: 1269, height: 2560 },
+      { src: "/pr/1.jpg", width: 1272, height: 2560 },
+    ],
   },
   {
     id: "landing",
     label: "Лендинги",
-    title: "Новый лендинг",
-    video: "",
-    address: "landing.itdos",
-    accent: "#5c7cfa",
+    title: "Bilmont",
+    video: "SO5efpX3Xw0",
+    address: "bilmont",
+    accent: "#7d9955",
+    mobileScreens: [
+      { src: "/pr/8.jpg", width: 1305, height: 2560 },
+      { src: "/pr/6.jpg", width: 1316, height: 2553 },
+      { src: "/pr/10.jpg", width: 1316, height: 2560 },
+      { src: "/pr/9.jpg", width: 1290, height: 2560 },
+      { src: "/pr/7.jpg", width: 1280, height: 2560 },
+    ],
   },
 ];
 
@@ -373,9 +388,14 @@ export function WhatWeBuild() {
                     ? websiteProject.accent
                     : step.accent;
 
+                  // `inert`, not just `pointer-events-none`: some mocks set
+                  // `pointer-events: auto` on their own panels, which beats
+                  // the inherited value — the invisible AI mock stacked on
+                  // top swallowed clicks meant for the website phones.
                   return (
                     <div
                     key={step.n}
+                    inert={i !== active}
                     className={cn(
                       "absolute inset-0 transition-all duration-700 ease-out",
                       i === active

@@ -930,8 +930,10 @@ export type Chip = {
   id: number;
   label: string;
   Icon: React.ElementType;
-  x: string;
-  y: string;
+  /** Offset from the chat card centre, in px at the 1440×900 reference
+   *  scale — the whole cluster is scaled as one (see HeroGeometric). */
+  dx: number;
+  dy: number;
   depth: number;
   floatDelay: string;
   floatDur: string;
@@ -939,13 +941,15 @@ export type Chip = {
 };
 
 export const chips: Chip[] = [
-  // ── правая колонка ──────────────────────────────────────────
+  // ── орбита вокруг чат-карточки (карточка 300×244, центр = 0,0) ──
+  // Зазор до карточки и до заголовка слева — не меньше 25px в базовом
+  // масштабе; dx + полуширина чипа ≤ 310, иначе на 1280 чип режется краем.
   {
     id: 1,
     label: "AI-агенты",
     Icon: Bot,
-    x: "62%",
-    y: "10%",
+    dx: -60,
+    dy: -215,
     depth: 0.055,
     floatDelay: "0s",
     floatDur: "8s",
@@ -955,8 +959,8 @@ export const chips: Chip[] = [
     id: 2,
     label: "Разработка",
     Icon: Code2,
-    x: "82%",
-    y: "18%",
+    dx: 225,
+    dy: -225,
     depth: 0.03,
     floatDelay: "1.2s",
     floatDur: "10s",
@@ -966,8 +970,8 @@ export const chips: Chip[] = [
     id: 3,
     label: "Telegram",
     Icon: MessageSquare,
-    x: "60%",
-    y: "24%",
+    dx: 235,
+    dy: -50,
     depth: 0.04,
     floatDelay: "0.6s",
     floatDur: "9s",
@@ -977,8 +981,8 @@ export const chips: Chip[] = [
     id: 4,
     label: "Автоматизация",
     Icon: Settings2,
-    x: "88%",
-    y: "40%",
+    dx: 200,
+    dy: 265,
     depth: 0.025,
     floatDelay: "2s",
     floatDur: "11s",
@@ -988,8 +992,8 @@ export const chips: Chip[] = [
     id: 5,
     label: "AI-интеграции",
     Icon: Sparkles,
-    x: "89%",
-    y: "56%",
+    dx: 40,
+    dy: 190,
     depth: 0.05,
     floatDelay: "0.9s",
     floatDur: "9s",
@@ -999,8 +1003,8 @@ export const chips: Chip[] = [
     id: 6,
     label: "CRM / ERP",
     Icon: Database,
-    x: "57%",
-    y: "73%",
+    dx: -230,
+    dy: 300,
     depth: 0.035,
     floatDelay: "1.7s",
     floatDur: "12s",
@@ -1010,8 +1014,8 @@ export const chips: Chip[] = [
     id: 7,
     label: "Маркетплейс",
     Icon: ShoppingBag,
-    x: "85%",
-    y: "66%",
+    dx: 215,
+    dy: 175,
     depth: 0.04,
     floatDelay: "0.3s",
     floatDur: "10s",
@@ -1021,8 +1025,8 @@ export const chips: Chip[] = [
     id: 8,
     label: "Аналитика",
     Icon: BarChart3,
-    x: "69%",
-    y: "80%",
+    dx: -95,
+    dy: 262,
     depth: 0.02,
     floatDelay: "2.6s",
     floatDur: "13s",
@@ -1032,8 +1036,8 @@ export const chips: Chip[] = [
     id: 9,
     label: "SEO",
     Icon: TrendingUp,
-    x: "91%",
-    y: "82%",
+    dx: 218,
+    dy: 55,
     depth: 0.03,
     floatDelay: "1.5s",
     floatDur: "11s",
@@ -1044,8 +1048,8 @@ export const chips: Chip[] = [
     id: 10,
     label: "Сайты",
     Icon: Globe,
-    x: "54%",
-    y: "6%",
+    dx: -190,
+    dy: -290,
     depth: 0.04,
     floatDelay: "0.7s",
     floatDur: "8s",
@@ -1055,8 +1059,8 @@ export const chips: Chip[] = [
     id: 11,
     label: "Приложения",
     Icon: Layout,
-    x: "93%",
-    y: "12%",
+    dx: 80,
+    dy: -290,
     depth: 0.05,
     floatDelay: "1.8s",
     floatDur: "9s",

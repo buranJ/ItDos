@@ -72,7 +72,7 @@
   z-index: 1;
   top: 53%;
   left: 50%;
-  width: min(175%, 1060px);
+  width: min(175%, 66.25rem);
   aspect-ratio: 3 / 2;
   transform: translate(-50%, -50%);
   opacity: 1;
@@ -398,8 +398,16 @@
   box-shadow:
     0 28px 60px rgba(0, 0, 0, 0.58),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  filter: brightness(var(--phone-brightness, 1));
   backface-visibility: hidden;
+  transition: filter 280ms ease;
   will-change: transform, opacity;
+}
+
+/* The dimmed side phones light up under the pointer — a cue they open. */
+.mobilePhone:has(.mobileScreenOpen:hover),
+.mobilePhone:has(.mobileScreenOpen:focus-visible) {
+  filter: brightness(1);
 }
 
 .mobilePhone::after {
@@ -416,27 +424,21 @@
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.045);
 }
 
-/* No `transform` on these three on purpose — GSAP owns their placement.
+/* A five-phone fan is ~2.9 phone widths across instead of ~1.9, so the
+   phones shrink against the container width to keep the outer pair inside. */
+.mobileStageWide .mobilePhone {
+  height: min(84cqh, 68cqw, 30rem);
+}
+
+/* No `transform` on the phones on purpose — GSAP owns their placement.
    When a percentage translate sits in a compound transform next to rotate()
    and scale(), GSAP decomposes it to a pixel `x` and then adds its own
    `xPercent` on top, so the offset was applied twice and the left phone ended
    up ~194px further out than the right one. The centre phone escaped it only
    because a bare translate(-50%,-50%) is parsed straight into xPercent.
    The stage starts hidden, so there is no unpositioned frame before JS runs.
-   Offsets live in `mobilePhonePositions` in LaptopVideoMock.tsx. */
-.mobilePhoneLeft {
-  z-index: 1;
-  filter: brightness(0.7);
-}
-
-.mobilePhoneCenter {
-  z-index: 3;
-}
-
-.mobilePhoneRight {
-  z-index: 2;
-  filter: brightness(0.78);
-}
+   Offsets, stacking and dimming live in `FAN_RINGS` / `fanPhoneStyle` in
+   LaptopVideoMock.tsx. */
 
 .mobilePhoneScreen {
   position: absolute;
@@ -508,6 +510,54 @@
     transparent 34%
   );
   mix-blend-mode: screen;
+}
+
+.mobileScreenOpen {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  cursor: zoom-in;
+  border-radius: inherit;
+}
+
+.mobileScreenOpen:focus-visible {
+  outline: 2px solid var(--scene-accent);
+  outline-offset: -2px;
+}
+
+.mobileScreenHint {
+  position: absolute;
+  right: 6%;
+  bottom: 3.5%;
+  display: grid;
+  width: 1.9rem;
+  height: 1.9rem;
+  place-items: center;
+  color: #f4f2ed;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(10, 10, 12, 0.62);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateY(4px) scale(0.9);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.mobileScreenOpen:hover .mobileScreenHint,
+.mobileScreenOpen:focus-visible .mobileScreenHint {
+  opacity: 1;
+  transform: none;
+}
+
+/* Touch has no hover, so the centre phone always shows the hint there. */
+@media (hover: none) {
+  .mobilePhone[data-fan-center] .mobileScreenHint {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes togglePulse {
@@ -605,6 +655,12 @@
 
   .mobileStage {
     inset: 18% 0 2%;
+  }
+
+  /* Inline the mock is clipped to the viewport edge, so leave the outer
+     pair a margin instead of letting them overhang into the text column. */
+  .mobileStageWide .mobilePhone {
+    height: min(84cqh, 58cqw, 30rem);
   }
 }
 

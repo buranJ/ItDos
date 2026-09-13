@@ -44,13 +44,16 @@ export function Manifesto() {
 
   return (
     <Section spacing="lg" className="theme-light border-t border-line">
-      <Container size="lg">
+      {/* Default container so the left edge lines up with every other
+          section; the old `size="lg"` pushed this block ~64px in. The
+          measure stays the same via max-w on the text itself. */}
+      <Container>
         {/* <p className="mb-10 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
           Манифест
         </p> */}
         <div
           ref={ref}
-          className="font-display text-[clamp(1.9rem,4.4vw,3.6rem)] font-medium leading-[1.18] tracking-tight"
+          className="max-w-264 font-display text-[clamp(1.9rem,4.4vw,3.6rem)] font-medium leading-[1.18] tracking-tight"
         >
           {[LEAD, BODY].map((sentence, si) => (
             <span key={si}>
