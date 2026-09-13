@@ -136,6 +136,12 @@
   opacity: 0;
 }
 
+/* Avangard's logo is blue and white: its ground is pinned to the brand
+   blue rather than the scene accent, which is now gold for this project. */
+.avangardLoader {
+  background: color-mix(in srgb, #004281 68%, #070709);
+}
+
 .genericLoaderContent {
   display: flex;
   align-items: center;

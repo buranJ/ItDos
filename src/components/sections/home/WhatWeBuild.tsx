@@ -43,7 +43,11 @@ const websiteProjects: WebsiteProject[] = [
     title: "Avangard Style",
     video: "o1USBxQkmvU",
     address: "avangardstyle.kg",
-    accent: "#004281",
+    // Accents are the tint of the copy, tags and arrows on the dark canvas,
+    // so they have to read on #08080a AND differ from each other. The brand
+    // blues (#004281, #0033a1) failed both: near-invisible, near-identical.
+    // Gold matches Avangard's own case-study page.
+    accent: "#c8a97e",
     mobileScreens: [
       { src: "/project/avangard-mob1.png", width: 430, height: 932 },
       { src: "/project/avangard-mob2.png", width: 370, height: 772 },
@@ -56,7 +60,7 @@ const websiteProjects: WebsiteProject[] = [
     title: "Toolor",
     video: "nNYSL7SbYsM",
     address: "toolor",
-    accent: "#0033a1",
+    accent: "#5b8cff",
     // Hero in the middle of the fan, the purchase path fanning out around it.
     mobileScreens: [
       { src: "/pr/3.jpg", width: 1319, height: 2371 },
@@ -72,7 +76,7 @@ const websiteProjects: WebsiteProject[] = [
     title: "Bilmont",
     video: "SO5efpX3Xw0",
     address: "bilmont",
-    accent: "#7d9955",
+    accent: "#9cba6e",
     mobileScreens: [
       { src: "/pr/8.jpg", width: 1305, height: 2560 },
       { src: "/pr/6.jpg", width: 1316, height: 2553 },
@@ -95,7 +99,7 @@ const steps: Step[] = [
     kind: "laptop-video",
     url: "o1USBxQkmvU",
     address: "avangardstyle.kg",
-    accent: "#004281",
+    accent: "#c8a97e",
   },
   {
     n: "02",
@@ -496,6 +500,9 @@ function StepCopy({
       <div className="mt-6 flex flex-wrap gap-2">
         {step.tags.map((t, index) =>
           websiteSlider ? (
+            // Active = filled with the project colour, the rest = neutral
+            // outlines. It used to be two shades of the same tint, and on
+            // the dark canvas you couldn't tell which project was showing.
             <button
               key={t}
               type="button"
@@ -504,8 +511,8 @@ function StepCopy({
               className={cn(
                 "rounded-full border px-3 py-1 text-xs transition-all duration-300",
                 websiteSlider.activeIndex === index
-                  ? "border-m bg-m-soft text-m shadow-[0_0_18px_color-mix(in_srgb,var(--m-accent)_20%,transparent)]"
-                  : "border-m/50 bg-m-softer text-m hover:border-m hover:bg-m-soft",
+                  ? "border-transparent bg-m font-medium text-[#0b0b0d] shadow-[0_0_22px_color-mix(in_srgb,var(--m-accent)_35%,transparent)]"
+                  : "border-line text-fg-secondary hover:border-m hover:text-m",
               )}
             >
               {t}
@@ -542,6 +549,16 @@ function StepCopy({
           >
             <ArrowRight size={15} />
           </button>
+          {/* Which project is on screen, spelled out — the tags name the
+              category, not the client. */}
+          <span
+            key={websiteSlider.activeIndex}
+            aria-live="polite"
+            className="ml-2 flex animate-[m-rise-in_400ms_ease-out] items-center gap-2 text-sm font-medium text-fg"
+          >
+            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-m" />
+            {websiteProjects[websiteSlider.activeIndex].title}
+          </span>
         </div>
       )}
     </div>

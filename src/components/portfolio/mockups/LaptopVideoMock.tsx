@@ -93,7 +93,11 @@ function ytId(input: string): string {
 function AvangardLoader({ fading }: { fading: boolean }) {
   return (
     <div
-      className={cn(styles.videoLoader, fading && styles.videoLoaderFading)}
+      className={cn(
+        styles.videoLoader,
+        styles.avangardLoader,
+        fading && styles.videoLoaderFading,
+      )}
       role="status"
       aria-label="Загружается видео проекта Avangard Style"
     >

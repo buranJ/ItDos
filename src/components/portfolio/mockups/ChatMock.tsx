@@ -152,10 +152,14 @@ export function ChatMock({
         {interactive ? (
           <form
             onSubmit={send}
-            className="flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface py-1.5 pl-4 pr-1.5 transition-colors focus-within:border-m"
+            className="flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface py-1.5 pl-4 pr-1.5 transition-[border-color,box-shadow] focus-within:border-m focus-within:shadow-[0_0_0_3px_color-mix(in_oklab,var(--m-accent)_18%,transparent)]"
           >
-            {/* 16px: anything smaller makes iOS Safari zoom the page on focus. */}
+            {/* 16px: anything smaller makes iOS Safari zoom the page on focus.
+                `outline: none` inline — the global `:focus-visible` outline is
+                unlayered and outranks the utility, and it drew a hard box
+                inside the pill. Focus shows on the pill itself instead. */}
             <input
+              style={{ outline: "none" }}
               type="text"
               name="message"
               value={draft}
