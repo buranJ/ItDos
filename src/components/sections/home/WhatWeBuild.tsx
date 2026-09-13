@@ -484,26 +484,18 @@ export function WhatWeBuild() {
 }
 
 function Header() {
+  // One centred line: the section title alone, over both columns. The
+  // "Полный цикл…" aside is gone — it competed with the title for a job
+  // the steps below already do. Balanced, so on phones it breaks into two
+  // even lines rather than leaving one word behind.
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-          Что мы создаём
-        </p> */}
-        <h2 className="font-display text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-tight tracking-tight text-fg">
-          {/* Один партнёр — от сайта до
-          AI-системы */}
-          Наше портфолио
-          <br className="hidden sm:block" /> внедренных решений
-          {/* От первого лендинга до масштабных AI-систем для вашего бизнеса. */}
-        </h2>
-      </div>
-      {/* Hidden on phones: under the headline it read as a stray caption
-          and pushed the first project further down. */}
-      <p className="hidden max-w-xs text-sm leading-relaxed text-fg-secondary sm:block">
-        Полный цикл: проектирование, дизайн, разработка, тестирование и
-        автоматизация.
-      </p>
+    <div className="text-center">
+      {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
+        Что мы создаём
+      </p> */}
+      <h2 className="text-balance font-display text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-tight tracking-tight text-fg">
+        Наше портфолио внедренных решений
+      </h2>
     </div>
   );
 }
