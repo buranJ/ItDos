@@ -62,22 +62,6 @@
   white-space: nowrap;
 }
 
-.captionDot {
-  flex: none;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--lightbox-accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--lightbox-accent) 22%, transparent);
-}
-
-.captionCounter {
-  color: rgba(244, 242, 237, 0.5);
-  font-family: var(--font-geist-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-}
-
 .iconButton {
   display: grid;
   flex: none;

@@ -155,13 +155,18 @@ export function HeroGeometric() {
         el.style.setProperty("--py", `${dy}px`);
       });
 
-      if (chatWrapRef.current) {
+      // The card is a real form now: while its input has focus it holds
+      // still, rather than sliding out from under the caret.
+      const chatFocused =
+        chatWrapRef.current?.contains(document.activeElement) ?? false;
+
+      if (chatWrapRef.current && !chatFocused) {
         const dx = lerped.current.x * CHAT_DEPTH * 420;
         const dy = lerped.current.y * CHAT_DEPTH * 260;
         chatWrapRef.current.style.setProperty("--px", `${dx}px`);
         chatWrapRef.current.style.setProperty("--py", `${dy}px`);
       }
-      if (chatTiltRef.current) {
+      if (chatTiltRef.current && !chatFocused) {
         const rx = lerped.current.y * 7;
         const ry = lerped.current.x * -9;
         chatTiltRef.current.style.transform = `rotateX(${2 + rx}deg) rotateY(${-11 + ry}deg)`;
@@ -395,16 +400,16 @@ export function HeroGeometric() {
             the chips used to sit at percentages of the whole section, so they
             piled onto the card at 1024–1280 and drifted off past the header's
             edge on wide monitors. Now every chip is an offset from the card's
-            centre, the cluster is anchored at 77% of the container, and
+            centre, the cluster is anchored at 79% of the container, and
             `--hg-s` scales the group as one — the arrangement is identical at
-            every width, only its size changes. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 hidden lg:block"
-        >
+            every width, only its size changes.
+            z-20 so the card sits above the full-width text layer (z-10) and
+            can take clicks; only the card itself is `pointer-events-auto`,
+            the chips stay decorative and click-through. */}
+        <div className="pointer-events-none absolute inset-0 z-20 hidden lg:block">
           <div className="relative mx-auto h-full max-w-7xl">
             <div
-              className="absolute left-[77%] top-1/2 h-0 w-0"
+              className="absolute left-[79%] top-1/2 h-0 w-0"
               style={{ scale: "var(--hg-s, 1)" }}
             >
               {/* Three layers per chip, one transform each — GSAP's entrance
@@ -416,6 +421,7 @@ export function HeroGeometric() {
                   ref={(el) => {
                     chipsRef.current[i] = el;
                   }}
+                  aria-hidden
                   className="absolute"
                   style={{
                     left: `${chip.dx / 16}rem`,
@@ -447,21 +453,24 @@ export function HeroGeometric() {
                 </div>
               ))}
 
+              {/* 25% larger than the original 300×244 card. */}
               <div
                 ref={chatWrapRef}
-                className="absolute left-0 top-0 z-10"
+                className="pointer-events-auto absolute left-0 top-0 z-10"
                 style={
                   {
-                    width: "18.75rem",
-                    height: "15.25rem",
+                    width: "23.4375rem",
+                    height: "19.0625rem",
                     transform:
                       "translate(calc(-50% + var(--px, 0px)), calc(-50% + var(--py, 0px)))",
                     willChange: "transform",
                   } as React.CSSProperties
                 }
               >
+                {/* The idle float pauses under the pointer and while the
+                    visitor is typing — a drifting input is hard to aim at. */}
                 <div
-                  className="hg-chat h-full w-full"
+                  className="hg-chat h-full w-full hover:[animation-play-state:paused] focus-within:[animation-play-state:paused]"
                   style={{
                     animation: "chat-float 12s 0.6s ease-in-out infinite",
                     perspective: "900px",
@@ -482,6 +491,8 @@ export function HeroGeometric() {
                     <ChatMock
                       accent="#6e56ff"
                       typing
+                      interactive
+                      size="lg"
                       className="h-full rounded-2xl"
                     />
                   </div>
@@ -602,7 +613,12 @@ export function HeroGeometric() {
                     backfaceVisibility: "hidden",
                   }}
                 >
-                  <ChatMock accent="#6e56ff" typing className="h-full rounded-2xl" />
+                  <ChatMock
+                    accent="#6e56ff"
+                    typing
+                    interactive
+                    className="h-full rounded-2xl"
+                  />
                 </div>
               </div>
 

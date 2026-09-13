@@ -47,7 +47,10 @@ export function Frame({
           </span>
         )}
       </div>
-      <div className="relative flex-1">{children}</div>
+      {/* `min-h-0`: a flex item's automatic minimum is its content height, so
+          a long typed reply stretched this body past the frame and the chat
+          input — send button included — was clipped off the bottom. */}
+      <div className="relative min-h-0 flex-1">{children}</div>
     </div>
   );
 }

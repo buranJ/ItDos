@@ -136,7 +136,6 @@ export function ScreenLightbox({
   const screen = screens[index];
   if (!screen) return null;
 
-  const counter = (n: number) => String(n).padStart(2, "0");
 
   return createPortal(
     <div
@@ -164,12 +163,10 @@ export function ScreenLightbox({
       <div aria-hidden="true" className={styles.glow} />
 
       <header className={styles.topBar}>
+        {/* Title only — the position is already shown by the thumbnail
+            strip, and screen readers get it from the dialog's label. */}
         <div className={styles.caption}>
-          <span className={styles.captionDot} />
           <strong>{projectTitle}</strong>
-          <span className={styles.captionCounter}>
-            {counter(index + 1)} / {counter(count)}
-          </span>
         </div>
         <button
           ref={closeRef}

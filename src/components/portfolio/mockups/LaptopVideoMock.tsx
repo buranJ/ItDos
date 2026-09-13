@@ -259,8 +259,12 @@ function BilmontLoader({ fading }: { fading: boolean }) {
       aria-label="Загружается видео проекта Bilmont"
     >
       <div className={styles.bilmontStage} aria-hidden="true">
+        {/* The bowls touch in the source logo; at loader size that read as
+            one glued blob, so the lower one sits 12 units down. The offset
+            lives on a <g> because the CSS animation owns the path's own
+            transform. */}
         <svg
-          viewBox="0 0 160 220"
+          viewBox="0 0 160 232"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className={styles.bilmontMark}
@@ -270,11 +274,13 @@ function BilmontLoader({ fading }: { fading: boolean }) {
             d="M0 12C0 5.373 5.373 0 12 0H92C126 0 160 27 160 55C160 83 126 110 92 110H12C5.373 110 0 104.627 0 98V12Z"
             fill="#7D9955"
           />
-          <path
-            className={styles.bilmontBowlBottom}
-            d="M0 122C0 115.373 5.373 110 12 110H92C126 110 160 137 160 165C160 193 126 220 92 220H12C5.373 220 0 214.627 0 208V122Z"
-            fill="#7D9955"
-          />
+          <g transform="translate(0 12)">
+            <path
+              className={styles.bilmontBowlBottom}
+              d="M0 122C0 115.373 5.373 110 12 110H92C126 110 160 137 160 165C160 193 126 220 92 220H12C5.373 220 0 214.627 0 208V122Z"
+              fill="#7D9955"
+            />
+          </g>
         </svg>
 
         <span className={styles.bilmontWord}>
