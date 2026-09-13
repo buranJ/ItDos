@@ -484,17 +484,16 @@ export function WhatWeBuild() {
 }
 
 function Header() {
-  // One centred line: the section title alone, over both columns. The
+  // One centred line: a short section title alone, over both columns. The
   // "Полный цикл…" aside is gone — it competed with the title for a job
-  // the steps below already do. Balanced, so on phones it breaks into two
-  // even lines rather than leaving one word behind.
+  // the steps below already do.
   return (
     <div className="text-center">
       {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
         Что мы создаём
       </p> */}
       <h2 className="text-balance font-display text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-tight tracking-tight text-fg">
-        Наше портфолио внедренных решений
+        Наши работы
       </h2>
     </div>
   );
