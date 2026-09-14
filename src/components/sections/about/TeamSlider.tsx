@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, RotateCw, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, RotateCw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -86,7 +86,9 @@ export function TeamSlider({ team }: { team: TeamMember[] }) {
               onClick={() => select(i)}
               aria-label={`${m.name} — ${m.role}`}
               data-cursor={isActive ? undefined : "link"}
-              className="absolute h-85 w-61 sm:h-113 sm:w-[20.125rem]"
+              // rounded-3xl so the focus ring follows the card's corners
+              // instead of drawing a hard rectangle around it.
+              className="absolute h-85 w-61 rounded-3xl sm:h-113 sm:w-[20.125rem]"
               style={{
                 transform: `translateX(${offset * 50}%) rotateY(${offset * -22}deg) scale(${
                   isActive ? 1 : Math.max(0.6, 0.82 - (abs - 1) * 0.08)
@@ -165,9 +167,14 @@ export function TeamSlider({ team }: { team: TeamMember[] }) {
                   </div>
                 </div>
 
-                {/* ── BACK ── */}
+                {/* ── BACK ──
+                    Scannable, not a read: who (tag, name, role, one line of
+                    experience) → what they own (three short lines) → stack
+                    (four at most, three on the phone card). The prose bio
+                    made it heavy, so it isn't shown here. Left-aligned —
+                    a <button> centres text by default. */}
                 <div
-                  className="absolute inset-0 flex flex-col overflow-hidden rounded-3xl border border-accent/40 bg-panel p-6"
+                  className="absolute inset-0 flex flex-col overflow-hidden rounded-3xl border border-accent/40 bg-panel p-5 text-left sm:p-6"
                   style={{
                     backfaceVisibility: "hidden",
                     transform: "rotateY(180deg)",
@@ -186,27 +193,45 @@ export function TeamSlider({ team }: { team: TeamMember[] }) {
                         {m.tag}
                       </span>
                     )}
-                    <h3 className="mt-4 font-display text-2xl font-semibold tracking-tight text-fg">
+                    <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-fg">
                       {m.name}
                     </h3>
                     <p className="text-sm text-fg-secondary">{m.role}</p>
                     {m.experience && (
-                      <p className="mt-1 font-mono text-xs text-accent-text">{m.experience}</p>
+                      <p className="mt-2 inline-flex items-center gap-1.5 font-mono text-[11px] text-accent-text">
+                        <span className="h-1 w-1 rounded-full bg-accent" />
+                        {m.experience}
+                      </p>
                     )}
                   </div>
 
-                  {m.bio && (
-                    <p className="relative mt-4 text-sm leading-relaxed text-fg-secondary">
-                      {m.bio}
-                    </p>
+                  {m.focus && m.focus.length > 0 && (
+                    <div className="relative mt-4 border-t border-line pt-3">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+                        Отвечает за
+                      </p>
+                      <ul className="mt-2 flex flex-col gap-1.5">
+                        {m.focus.map((f) => (
+                          <li key={f} className="flex items-center gap-2 text-[13px] leading-snug text-fg">
+                            <Check size={13} strokeWidth={2.4} className="shrink-0 text-accent-text" />
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
 
-                  {m.skills && (
-                    <div className="relative mt-auto flex flex-wrap gap-2 pt-4">
-                      {m.skills.map((s) => (
+                  {m.skills && m.skills.length > 0 && (
+                    <div className="relative mt-auto flex flex-wrap gap-1.5 pt-4">
+                      {/* Four at most; three on the small phone card. */}
+                      {m.skills.map((s, i) => (
                         <span
                           key={s}
-                          className="rounded-full border border-line px-2.5 py-1 text-xs text-fg-secondary"
+                          className={cn(
+                            "rounded-full border border-line bg-white/3 px-2.5 py-1 text-[11px] text-fg-secondary",
+                            i >= 4 && "hidden",
+                            i === 3 && "hidden sm:inline-block",
+                          )}
                         >
                           {s}
                         </span>
@@ -214,7 +239,7 @@ export function TeamSlider({ team }: { team: TeamMember[] }) {
                     </div>
                   )}
 
-                  <span className="relative mt-4 inline-flex items-center gap-1.5 text-xs text-fg-muted">
+                  <span className="relative mt-3 inline-flex items-center gap-1.5 text-xs text-fg-muted">
                     <X size={12} /> Свернуть
                   </span>
                 </div>

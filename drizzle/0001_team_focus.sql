@@ -1,0 +1,1 @@
+ALTER TABLE `team_members` ADD `focus` text DEFAULT '[]' NOT NULL;

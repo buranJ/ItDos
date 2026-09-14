@@ -19,6 +19,8 @@ export type TeamMember = {
   /** Shown on the flipped (back) side. */
   bio?: string;
   skills?: string[];
+  /** "Отвечает за" — 2–3 short lines. */
+  focus?: string[];
   experience?: string;
 };
 
@@ -30,8 +32,10 @@ export const team: TeamMember[] = [
     tag: "Разработка",
     tagColor: "#6e56ff",
     photo: "/prof/beka-card-close.jpg",
-    bio: "Превращает макеты в быстрые, отзывчивые интерфейсы. Фанат чистого кода и плавных анимаций.",
-    skills: ["React", "Next.js", "TypeScript", "Анимации"],
+    experience: "5+ лет во frontend",
+    bio: "Собирает интерфейсы, которые открываются мгновенно и одинаково хорошо работают на телефоне и на большом экране.",
+    focus: ["Вёрстка до пикселя", "Адаптив под все экраны", "Анимации интерфейса"],
+    skills: ["React", "Next.js", "TypeScript", "Tailwind", "GSAP"],
   },
   {
     name: "Автандил",
@@ -40,8 +44,10 @@ export const team: TeamMember[] = [
     tag: "Мобайл",
     tagColor: "#2bd4c4",
     photo: "/prof/avto-card-close.jpg",
-    bio: "Создаёт нативные и кроссплатформенные мобильные приложения с чистой архитектурой.",
-    skills: ["Flutter", "React Native", "iOS", "Android"],
+    experience: "5+ лет в мобильной разработке",
+    bio: "Делает приложения для iOS и Android из одной кодовой базы — без потери в скорости и нативном ощущении.",
+    focus: ["iOS и Android", "Оплаты и push-уведомления", "Публикация в сторах"],
+    skills: ["Flutter", "React Native", "Swift", "Kotlin", "Firebase"],
   },
 
   {
@@ -51,8 +57,10 @@ export const team: TeamMember[] = [
     tag: "Разработка",
     tagColor: "#6e56ff",
     photo: "/prof/dos-card-close.jpg",
-    bio: "Проектирует архитектуру, которая держит нагрузку и легко масштабируется.",
-    skills: ["Python", "FastAPI", "PostgreSQL", "Docker"],
+    experience: "5+ лет в backend",
+    bio: "Проектирует серверную часть, которая выдерживает рост нагрузки и спокойно масштабируется вместе с бизнесом.",
+    focus: ["API и интеграции", "Базы данных и скорость", "Безопасность и бэкапы"],
+    skills: ["Python", "FastAPI", "PostgreSQL", "Redis", "Docker"],
   },
   {
     name: "Буран",
@@ -61,8 +69,10 @@ export const team: TeamMember[] = [
     tag: "Разработка",
     tagColor: "#ff6a3d",
     photo: "/prof/buran-card-close.jpg",
-    bio: "Отвечает за техническую архитектуру и качество всех продуктов команды.",
-    skills: ["Архитектура", "DevOps", "Стратегия", "Code Review"],
+    experience: "Руководит разработкой",
+    bio: "Переводит задачи бизнеса на язык разработки и отвечает перед клиентом за сроки, архитектуру и качество.",
+    focus: ["Архитектура и технологии", "Сроки и еженедельные демо", "Code review и качество"],
+    skills: ["Архитектура", "DevOps", "CI/CD", "Code Review", "AI-интеграции"],
   },
   {
     name: "Урмат",
@@ -71,8 +81,10 @@ export const team: TeamMember[] = [
     tag: "Дизайн",
     tagColor: "#d6ff3d",
     photo: "/prof/mentor-3-card-close.jpg",
-    bio: "Создаёт интерфейсы, которые выглядят дорого и понятны с первого касания.",
-    skills: ["UX/UI", "Figma", "Дизайн-системы", "Прототипы"],
+    experience: "5+ лет в продуктовом дизайне",
+    bio: "Проектирует продукт от сценариев пользователя до дизайн-системы — так, чтобы им было понятно пользоваться с первого касания.",
+    focus: ["UX-исследования", "Прототипы и тесты", "Дизайн-системы"],
+    skills: ["Figma", "UX/UI", "Прототипы", "Дизайн-системы", "Motion"],
   },
   {
     name: "Сейтек",
@@ -81,8 +93,10 @@ export const team: TeamMember[] = [
     tag: "Разработка",
     tagColor: "#6e56ff",
     photo: "/prof/mentor-7-card-close.jpg",
-    bio: "Строит масштабируемые фронтенд-решения с акцентом на производительность.",
-    skills: ["React", "Vue", "TypeScript", "Performance"],
+    experience: "5+ лет во frontend",
+    bio: "Строит сложные веб-приложения — личные кабинеты, дашборды, CRM — и следит, чтобы даже тяжёлые экраны работали быстро.",
+    focus: ["Кабинеты и дашборды", "Скорость загрузки", "Архитектура фронтенда"],
+    skills: ["React", "Vue", "TypeScript", "Next.js", "Performance"],
   },
 ];
 

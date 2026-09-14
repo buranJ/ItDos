@@ -238,6 +238,7 @@ export type TeamMember = {
   tagColor?: string;
   bio?: string;
   skills?: string[];
+  focus?: string[];
   experience?: string;
 };
 
@@ -257,6 +258,7 @@ export async function getTeam(): Promise<TeamMember[]> {
     tagColor: r.tagColor ?? undefined,
     bio: r.bio ?? undefined,
     skills: r.skills,
+    focus: r.focus,
     experience: r.experience ?? undefined,
   }));
 }

@@ -153,6 +153,7 @@ async function main() {
       tagColor: m.tagColor ?? null,
       bio: m.bio ?? null,
       skills: m.skills ?? [],
+      focus: m.focus ?? [],
       experience: m.experience ?? null,
       position: i,
     };

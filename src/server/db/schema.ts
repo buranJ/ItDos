@@ -177,6 +177,8 @@ export const teamMembers = sqliteTable("team_members", {
   tagColor: text("tag_color"),
   bio: text("bio"),
   skills: text("skills", { mode: "json" }).$type<string[]>().notNull().default([]),
+  /** "Отвечает за" — 2–3 short lines on the card's back. */
+  focus: text("focus", { mode: "json" }).$type<string[]>().notNull().default([]),
   experience: text("experience"),
   published: integer("published", { mode: "boolean" }).notNull().default(true),
   position: integer("position").notNull().default(0),
