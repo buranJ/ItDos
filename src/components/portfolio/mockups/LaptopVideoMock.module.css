@@ -783,8 +783,17 @@
 }
 
 @media (max-width: 63.999rem) {
+  /* Above whichever is higher — the laptop lid or the centre phone of the
+     fan (its top: the stage centre, 59%, minus half its height) — with a
+     clear gap. Placed from the lid alone, it sat on the phone's top edge. */
   .deviceToggle {
-    top: max(5cqh, calc(52cqh - 138cqw * 0.2267 - 3rem));
+    top: max(
+      1.5cqh,
+      min(
+        calc(52cqh - 138cqw * 0.2267 - 3.6rem),
+        calc(59cqh - min(88cqh, 84cqw, 30rem) / 2 - 3.3rem)
+      )
+    );
     transform: translateX(-50%) scale(0.88);
   }
 
@@ -794,7 +803,7 @@
   }
 
   .mobileStage {
-    inset: 18% 0 2%;
+    inset: 20% 0 2%;
   }
 }
 

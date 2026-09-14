@@ -11,6 +11,10 @@
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   animation: vlIn 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* The page behind must not scroll on phones (see ScreenLightbox). The
+     YouTube player is its own document, so its controls keep working. */
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .overlayClosing {

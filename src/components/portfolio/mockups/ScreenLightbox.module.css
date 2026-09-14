@@ -11,7 +11,12 @@
   background: rgba(6, 6, 8, 0.84);
   -webkit-backdrop-filter: blur(18px) saturate(1.2);
   backdrop-filter: blur(18px) saturate(1.2);
-  touch-action: pan-y;
+  /* No native panning at all: `pan-y` let a vertical drag scroll the page
+     behind the dialog on phones (touch scroll is native there, and body
+     overflow alone doesn't stop iOS). The overlay covers the screen and the
+     photo swipe is handled in JS, so nothing needs the browser's pan. */
+  touch-action: none;
+  overscroll-behavior: contain;
   animation: overlayIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 

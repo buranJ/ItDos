@@ -36,6 +36,11 @@ type MockupDispatchProps = {
   address?: string;
   /** Project name shown while media is loading or still a placeholder. */
   projectTitle?: string;
+  /** False while the mockup's step isn't on screen (video mockups). */
+  active?: boolean;
+  /** Controlled laptop/phones view for kind="laptop-video". */
+  view?: "desktop" | "mobile";
+  onViewChange?: (view: "desktop" | "mobile") => void;
   /** Crop for a browser-video recording (see BrowserVideoMock). */
   videoCrop?: { scale: number; top: number };
   /** Optional project-specific mobile screens for the laptop showcase. */
@@ -57,6 +62,9 @@ export function Mockup({
   projectTitle,
   mobileScreens,
   videoCrop,
+  active,
+  view,
+  onViewChange,
 }: MockupDispatchProps) {
   const base = cn("h-full w-full", className);
   switch (kind) {
@@ -104,6 +112,9 @@ export function Mockup({
           address={address}
           projectTitle={projectTitle}
           mobileScreens={mobileScreens}
+          active={active}
+          view={view}
+          onViewChange={onViewChange}
           className={base}
         />
       );
@@ -115,6 +126,7 @@ export function Mockup({
           address={address}
           projectTitle={projectTitle}
           videoCrop={videoCrop}
+          active={active}
           className={base}
         />
       );

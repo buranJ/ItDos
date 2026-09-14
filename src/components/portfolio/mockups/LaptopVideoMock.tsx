@@ -8,7 +8,11 @@ import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
 import { DURATION, EASE, useReducedMotion } from "@/lib/motion";
 import { ScreenLightbox, type LightboxScreen } from "./ScreenLightbox";
-import { ExpandVideoButton, VideoLightbox } from "./VideoLightbox";
+import {
+  ExpandVideoButton,
+  VideoLightbox,
+  usePauseWhileFullView,
+} from "./VideoLightbox";
 import styles from "./LaptopVideoMock.module.css";
 
 type MobileScreen = {
@@ -26,6 +30,14 @@ type Props = {
   className?: string;
   projectTitle?: string;
   mobileScreens?: readonly MobileScreen[];
+  /** False while the mockup's step isn't the one on screen: no player is
+   *  created. The desktop column stacks every step's mockup, so otherwise a
+   *  second (hidden) video ran alongside — and could pause this one. */
+  active?: boolean;
+  /** Controlled laptop/phones view, so the choice survives a project
+   *  switch (each project remounts the mockup). Uncontrolled if omitted. */
+  view?: "desktop" | "mobile";
+  onViewChange?: (view: "desktop" | "mobile") => void;
 };
 
 const PLACEHOLDER_MOBILE_SCREENS: readonly MobileScreen[] = [
@@ -317,15 +329,27 @@ export function LaptopVideoMock({
   className,
   projectTitle = "Проект ITDOS",
   mobileScreens,
+  active = true,
+  view: viewProp,
+  onViewChange,
 }: Props) {
-  const [view, setView] = useState<"desktop" | "mobile">("desktop");
+  const [innerView, setInnerView] = useState<"desktop" | "mobile">(
+    viewProp ?? "desktop",
+  );
+  const view = viewProp ?? innerView;
+  const setView = (next: "desktop" | "mobile") => {
+    setInnerView(next);
+    onViewChange?.(next);
+  };
+  const playerRef = useRef<HTMLIFrameElement>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [introComplete, setIntroComplete] = useState(false);
   const [loaderHidden, setLoaderHidden] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [videoFullView, setVideoFullView] = useState(false);
   const reduced = useReducedMotion();
-  const [viewRef, inView] = useInView<HTMLDivElement>("0px");
+  const [viewRef, seen] = useInView<HTMLDivElement>("0px");
+  const inView = seen && active;
   const photoStageRef = useRef<HTMLDivElement>(null);
   const mobileStageRef = useRef<HTMLDivElement>(null);
   const phoneRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -351,7 +375,9 @@ export function LaptopVideoMock({
     `https://www.youtube-nocookie.com/embed/${id}` +
     `?autoplay=1&mute=1&loop=1&playlist=${id}` +
     "&controls=0&modestbranding=1&rel=0&iv_load_policy=3" +
-    "&disablekb=1&fs=0&playsinline=1";
+    "&disablekb=1&fs=0&playsinline=1&enablejsapi=1";
+
+  usePauseWhileFullView(playerRef, videoFullView);
 
   useEffect(() => {
     if (!id || !inView || view !== "desktop" || loaderHidden) return;
@@ -636,6 +662,7 @@ export function LaptopVideoMock({
 
           {inView && view === "desktop" && id && (
             <iframe
+              ref={playerRef}
               src={src}
               title={`Проект — ${address}`}
               allow="autoplay; encrypted-media; picture-in-picture"

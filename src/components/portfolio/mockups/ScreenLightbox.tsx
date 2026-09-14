@@ -146,13 +146,20 @@ export function ScreenLightbox({
       data-lenis-prevent
       className={cn(styles.overlay, closing && styles.overlayClosing)}
       style={{ "--lightbox-accent": accent } as React.CSSProperties}
+      // React events bubble through portals along the COMPONENT tree: a
+      // swipe here also reached the project slider's swipe wrapper around
+      // the mockup, and flipped the project instead of (as well as) the
+      // photo. Nothing that happens in the dialog leaves it.
       onClick={(event) => {
+        event.stopPropagation();
         if (event.target === event.currentTarget) requestClose();
       }}
       onPointerDown={(event) => {
+        event.stopPropagation();
         if (event.pointerType !== "mouse") swipeStartRef.current = event.clientX;
       }}
       onPointerUp={(event) => {
+        event.stopPropagation();
         const start = swipeStartRef.current;
         swipeStartRef.current = null;
         if (start === null) return;

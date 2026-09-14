@@ -1079,22 +1079,46 @@ export type MobileChip = {
   id: number;
   label: string;
   Icon: React.ElementType;
-  /** Percentage offsets within the visual block. */
+  /** Top-left, as a percentage of the visual block. */
   x: string;
   y: string;
-  depth: number;
-  floatId: number;
+  /** Idle drift loop length and start offset, in seconds. */
+  driftDur: number;
+  driftDelay: number;
   variant: "light" | "dark" | "outline";
 };
 
+/* Clear of the chat card at every width: the card spans ~13–87% of the
+   block's height (14–85% from sm), so the top row sits at y ≤ 1% and the
+   bottom row at y ≥ 91% — ≥10px of air beyond the ±5px drift. */
 export const mobileChips: MobileChip[] = [
-  { id: 1, label: "AI-агенты", Icon: Bot, x: "1%", y: "2%", depth: 0.9, floatId: 1, variant: "dark" },
-  { id: 2, label: "Сайты", Icon: Globe, x: "72%", y: "9%", depth: 0.55, floatId: 2, variant: "light" },
-  { id: 3, label: "Аналитика", Icon: BarChart3, x: "31%", y: "-3%", depth: 0.35, floatId: 7, variant: "outline" },
-  // CRM took over Telegram's slot; the AI-интеграции chip was dropped.
-  { id: 4, label: "CRM / ERP", Icon: Database, x: "2%", y: "88%", depth: 0.7, floatId: 6, variant: "light" },
-  { id: 5, label: "Разработка", Icon: Code2, x: "62%", y: "93%", depth: 0.75, floatId: 4, variant: "light" },
+  { id: 1, label: "AI-агенты", Icon: Bot, x: "0%", y: "1%", driftDur: 9, driftDelay: 0, variant: "dark" },
+  { id: 3, label: "Аналитика", Icon: BarChart3, x: "36%", y: "-9%", driftDur: 11, driftDelay: 1.4, variant: "outline" },
+  { id: 2, label: "Сайты", Icon: Globe, x: "72%", y: "1%", driftDur: 8, driftDelay: 0.7, variant: "light" },
+  { id: 4, label: "CRM / ERP", Icon: Database, x: "2%", y: "91%", driftDur: 10, driftDelay: 2.1, variant: "light" },
+  { id: 5, label: "Разработка", Icon: Code2, x: "60%", y: "94%", driftDur: 12, driftDelay: 0.3, variant: "light" },
 ];
+
+/* Each mobile chip wanders on its own small, irregular loop — a few points
+   within ±5px, different per chip, so the group never moves in step. */
+export const mobileDriftKf = mobileChips
+  .map((c, i) => {
+    const pts = [
+      [0, 0],
+      [[3, -4, 5, -2, 4][i], [-4, 3, -5, 4, -3][i]],
+      [[-4, 5, -3, 4, -5][i], [2, -5, 3, -4, 5][i]],
+      [[5, -3, 4, -5, 2][i], [4, 2, -3, -2, -4][i]],
+      [0, 0],
+    ];
+    const steps = [0, 27, 55, 80, 100];
+    return `
+    @keyframes chip-drift-${c.id} {${pts
+      .map(([x, y], k) => `
+      ${steps[k]}% { translate: ${x}px ${y}px; }`)
+      .join("")}
+    }`;
+  })
+  .join("\n");
 
 /** Percentage string → number, for the filters below. */
 function pct(v: string): number {

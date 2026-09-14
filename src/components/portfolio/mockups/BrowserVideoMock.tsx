@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Lock, Plus, RotateCw, ArrowLeft, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
-import { ExpandVideoButton, VideoLightbox } from "./VideoLightbox";
+import {
+  ExpandVideoButton,
+  VideoLightbox,
+  usePauseWhileFullView,
+} from "./VideoLightbox";
 import styles from "./BrowserVideoMock.module.css";
 
 type Props = {
@@ -21,6 +25,8 @@ type Props = {
    *  viewport, pushing letterbox bars and any recorded browser UI out of
    *  view. Horizontally it stays centred. */
   videoCrop?: { scale: number; top: number };
+  /** False while this step isn't on screen — no player is created. */
+  active?: boolean;
 };
 
 /** Minimum time the loader stays up, so it reads as a beat, not a flash. */
@@ -44,12 +50,16 @@ export function BrowserVideoMock({
   accent = "#2bd4c4",
   className,
   videoCrop,
+  active = true,
 }: Props) {
   const id = url ? ytId(url) : "";
-  const [viewRef, inView] = useInView<HTMLDivElement>("0px");
+  const [viewRef, seen] = useInView<HTMLDivElement>("0px");
+  const inView = seen && active;
+  const playerRef = useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useState(false);
   const [minElapsed, setMinElapsed] = useState(false);
   const [fullView, setFullView] = useState(false);
+  usePauseWhileFullView(playerRef, fullView);
 
   useEffect(() => {
     if (!inView || !id) return;
@@ -61,7 +71,7 @@ export function BrowserVideoMock({
     `https://www.youtube-nocookie.com/embed/${id}` +
     `?autoplay=1&mute=1&loop=1&playlist=${id}` +
     "&controls=0&modestbranding=1&rel=0&iv_load_policy=3" +
-    "&disablekb=1&fs=0&playsinline=1";
+    "&disablekb=1&fs=0&playsinline=1&enablejsapi=1";
   const showLoader = Boolean(id) && !(loaded && minElapsed);
 
   return (
@@ -101,6 +111,7 @@ export function BrowserVideoMock({
             <>
               {inView && (
                 <iframe
+                  ref={playerRef}
                   src={src}
                   title={`Видео проекта — ${projectTitle}`}
                   allow="autoplay; encrypted-media; picture-in-picture"

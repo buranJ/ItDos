@@ -98,12 +98,16 @@ export function FloatingContact() {
   return (
     <div
       ref={rootRef}
+      // The wrapper never takes taps itself (`pointer-events-none`): it is
+      // as wide as the option labels and as tall as the whole stack, so even
+      // with the options hidden its empty box sat over the bottom-right of
+      // the page and swallowed taps meant for what was underneath — the
+      // project slider's «next» arrow among them. Only the button, and the
+      // options while open, opt back in.
       className={cn(
         // Clear of the iPhone home indicator.
-        "fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-2.5 transition-all duration-300 sm:bottom-6 sm:right-6",
-        shown
-          ? "pointer-events-auto translate-y-0 opacity-100"
-          : "pointer-events-none translate-y-3 opacity-0",
+        "pointer-events-none fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-2.5 transition-all duration-300 sm:bottom-6 sm:right-6",
+        shown ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
       )}
       aria-hidden={!shown}
       inert={!shown}
@@ -113,7 +117,7 @@ export function FloatingContact() {
         inert={!isOpen}
         className={cn(
           "flex flex-col items-end gap-2.5",
-          !isOpen && "pointer-events-none",
+          isOpen ? "pointer-events-auto" : "pointer-events-none",
         )}
       >
         {OPTIONS.map((option, index) => (
@@ -158,7 +162,7 @@ export function FloatingContact() {
         aria-controls="quick-contact-options"
         aria-label={isOpen ? "Закрыть варианты связи" : "Связаться с нами"}
         data-cursor="button"
-        className="relative flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-ink shadow-[0_8px_28px_-6px_rgba(110,86,255,0.7)] transition-transform duration-200 hover:scale-105"
+        className="pointer-events-auto relative flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-ink shadow-[0_8px_28px_-6px_rgba(110,86,255,0.7)] transition-transform duration-200 hover:scale-105"
       >
         {!isOpen && (
           <span

@@ -80,9 +80,14 @@ export function VideoLightbox({ videoId, title, onClose }: Props) {
       aria-label={`Видео проекта — ${title}`}
       data-lenis-prevent
       className={cn(styles.overlay, closing && styles.overlayClosing)}
+      // Keep the dialog's events to itself — React bubbles them through the
+      // portal to the mockup's ancestors (the project slider's swipe).
       onClick={(event) => {
+        event.stopPropagation();
         if (event.target === event.currentTarget) setClosing(true);
       }}
+      onPointerDown={(event) => event.stopPropagation()}
+      onPointerUp={(event) => event.stopPropagation()}
     >
       <header className={styles.topBar}>
         <strong>{title}</strong>
@@ -115,6 +120,41 @@ export function VideoLightbox({ videoId, title, onClose }: Props) {
     </div>,
     document.body,
   );
+}
+
+/**
+ * Send a command to a YouTube embed (needs `enablejsapi=1` in its src).
+ * The mockups loop a muted video; when the full-size player starts, YouTube
+ * pauses other embeds on the page — and the mockup stayed frozen after the
+ * dialog closed. The mockups pause themselves on open and play on close.
+ */
+export function youtubeCommand(
+  frame: HTMLIFrameElement | null,
+  func: "playVideo" | "pauseVideo",
+) {
+  frame?.contentWindow?.postMessage(
+    JSON.stringify({ event: "command", func, args: "" }),
+    "*",
+  );
+}
+
+/** Keeps a mockup's looping video paused while its full-size view is open,
+ *  and restarts it after (twice, in case the player was mid-transition). */
+export function usePauseWhileFullView(
+  frameRef: React.RefObject<HTMLIFrameElement | null>,
+  fullView: boolean,
+) {
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    if (fullView) {
+      youtubeCommand(frame, "pauseVideo");
+      return;
+    }
+    youtubeCommand(frame, "playVideo");
+    const retry = window.setTimeout(() => youtubeCommand(frame, "playVideo"), 700);
+    return () => window.clearTimeout(retry);
+  }, [frameRef, fullView]);
 }
 
 /** The small "expand" control drawn over a playing mockup video. */

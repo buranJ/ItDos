@@ -20,6 +20,7 @@ import {
   squareKeyframes,
   chatFloatKf,
   chipFloatKf,
+  mobileDriftKf,
   CHAT_DEPTH,
 } from "./heroGeometric.data";
 
@@ -31,10 +32,6 @@ export function HeroGeometric() {
   const chatWrapRef = useRef<HTMLDivElement>(null);
   const chatTiltRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
-  const mobileStageRef = useRef<HTMLDivElement>(null);
-  const mobileChatRef = useRef<HTMLDivElement>(null);
-  const mobileChipRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const mobileRafRef = useRef<number>(0);
   const reduced = useReducedMotion();
 
   /* ── Entrance animations ── */
@@ -197,127 +194,15 @@ export function HeroGeometric() {
     };
   }, [reduced]);
 
-  /* ── Scatter for the < lg composition ──
-     Two inputs, summed: how far the hero has scrolled (the only "pointer" a
-     phone has) and, where a pointer exists, repulsion away from it. Each chip
-     carries its own depth and a deterministic jitter angle derived from its
-     id, so the group breaks apart unevenly instead of sliding as one block.
-     Offsets are lerped towards their target and rounded to whole pixels —
-     fractional translations blur the pill's text. */
-  useEffect(() => {
-    const stage = mobileStageRef.current;
-    if (!stage || reduced) return;
-    if (window.matchMedia("(min-width: 1024px)").matches) return;
+  /* Below lg there is no scroll/pointer parallax: it slid the chips into
+     the chat card and read as jitter. Each chip drifts on its own gentle
+     loop instead (`mobileDriftKf`), kept clear of the card by layout. */
 
-    const MAX_SCATTER = 18;
-    const current = mobileChips.map(() => ({ x: 0, y: 0 }));
-    const pointer = { x: 0, y: 0, active: false };
-    let running = false;
-
-    // Deterministic per-chip angle — random enough to read as chaos, stable
-    // between renders so nothing jumps on a re-render.
-    const jitter = mobileChips.map((c, i) => {
-      const a = ((c.id * 97 + i * 53) % 360) * (Math.PI / 180);
-      return { cos: Math.cos(a), sin: Math.sin(a) };
-    });
-
-    const frame = () => {
-      const rect = stage.getBoundingClientRect();
-      // -1 → below the fold, 0 → centred, 1 → scrolled past.
-      const p = Math.max(
-        -1,
-        Math.min(
-          1,
-          (window.innerHeight / 2 - (rect.top + rect.height / 2)) /
-            (window.innerHeight / 2 + rect.height / 2),
-        ),
-      );
-
-      let moving = false;
-
-      mobileChipRefs.current.forEach((el, i) => {
-        const chip = mobileChips[i];
-        const j = jitter[i];
-        if (!el || !chip || !j) return;
-
-        // scroll component — each chip drifts along its own angle
-        let tx = p * MAX_SCATTER * chip.depth * j.cos;
-        let ty = p * -MAX_SCATTER * 1.6 * chip.depth + p * 6 * j.sin;
-
-        // pointer component — push away, falling off with distance
-        if (pointer.active) {
-          const b = el.getBoundingClientRect();
-          const cx = b.left + b.width / 2 - rect.left;
-          const cy = b.top + b.height / 2 - rect.top;
-          const dx = cx - pointer.x;
-          const dy = cy - pointer.y;
-          const dist = Math.hypot(dx, dy) || 1;
-          const falloff = Math.max(0, 1 - dist / 220);
-          const push = falloff * 16 * (0.6 + chip.depth * 0.6);
-          tx += (dx / dist) * push;
-          ty += (dy / dist) * push;
-        }
-
-        const c = current[i];
-        c.x = lerp(c.x, tx, 0.12);
-        c.y = lerp(c.y, ty, 0.12);
-        if (Math.abs(c.x - tx) > 0.2 || Math.abs(c.y - ty) > 0.2) moving = true;
-
-        el.style.setProperty("--px", `${Math.round(c.x)}px`);
-        el.style.setProperty("--py", `${Math.round(c.y)}px`);
-      });
-
-      if (mobileChatRef.current) {
-        mobileChatRef.current.style.setProperty("--py", `${Math.round(p * -12)}px`);
-      }
-
-      // Keep ticking while anything is still settling or the pointer is down.
-      if (moving || pointer.active) {
-        mobileRafRef.current = requestAnimationFrame(frame);
-      } else {
-        mobileRafRef.current = 0;
-        running = false;
-      }
-    };
-
-    const kick = () => {
-      if (running) return;
-      running = true;
-      mobileRafRef.current = requestAnimationFrame(frame);
-    };
-
-    const onPointerMove = (e: PointerEvent) => {
-      const rect = stage.getBoundingClientRect();
-      pointer.x = e.clientX - rect.left;
-      pointer.y = e.clientY - rect.top;
-      pointer.active = true;
-      kick();
-    };
-    const onPointerLeave = () => {
-      pointer.active = false;
-      kick();
-    };
-
-    stage.addEventListener("pointermove", onPointerMove, { passive: true });
-    stage.addEventListener("pointerleave", onPointerLeave, { passive: true });
-    window.addEventListener("scroll", kick, { passive: true });
-    window.addEventListener("resize", kick, { passive: true });
-    kick();
-
-    return () => {
-      if (mobileRafRef.current) cancelAnimationFrame(mobileRafRef.current);
-      mobileRafRef.current = 0;
-      stage.removeEventListener("pointermove", onPointerMove);
-      stage.removeEventListener("pointerleave", onPointerLeave);
-      window.removeEventListener("scroll", kick);
-      window.removeEventListener("resize", kick);
-    };
-  }, [reduced]);
 
   return (
     <>
       {/* ── Injected keyframes ── */}
-      <style>{squareKeyframes + chipFloatKf + chatFloatKf}</style>
+      <style>{squareKeyframes + chipFloatKf + chatFloatKf + mobileDriftKf}</style>
 
       {/* ── Comparison label ── */}
 
@@ -572,7 +457,6 @@ export function HeroGeometric() {
           {/* ── Card + chips (< lg) ── */}
           <div className="mt-auto px-5 pb-2 pt-10 sm:px-8 lg:hidden">
             <div
-              ref={mobileStageRef}
               className="relative mx-auto h-[380px] w-full max-w-[360px] sm:h-[440px] sm:max-w-[520px]"
             >
               {/* ambient glow */}
@@ -591,18 +475,15 @@ export function HeroGeometric() {
                     · `transform-style: flat` — no preserve-3d chain, so there
                       is exactly one composite step;
                     · modest angles, and the type inside ChatMock went up from
-                      11px to 12px so the same resampling costs less.
-                  `--px/--py` are rounded to whole pixels for the same reason. */}
+                      11px to 12px so the same resampling costs less. */}
               <div
-                ref={mobileChatRef}
                 className="hg-chat-m absolute left-1/2 top-1/2 shadow-[0_22px_50px_-14px_rgba(10,10,10,0.24),0_4px_12px_-4px_rgba(10,10,10,0.1)]"
                 style={{
                   width: "min(82%, 310px)",
                   height: "min(74%, 310px)",
                   borderRadius: 16,
                   perspective: "1200px",
-                  transform:
-                    "translate(calc(-50% + var(--px, 0px)), calc(-50% + var(--py, 0px)))",
+                  transform: "translate(-50%, -50%)",
                 }}
               >
                 <div
@@ -622,33 +503,23 @@ export function HeroGeometric() {
                 </div>
               </div>
 
-              {/* Chips — positioned by percentage so the arrangement survives
-                  every width from 320px to the lg breakpoint. */}
-              {/* Three nested layers, each owning one transform, because they
-                  would otherwise overwrite each other:
-                    outer — scatter offset driven by JS (scroll + pointer)
-                    middle — GSAP entrance tween (this is why the scatter
-                             stopped working when both lived on one element)
-                    inner  — idle CSS float
-              */}
-              {mobileChips.map((chip, i) => (
+              {/* Chips — by percentage, three above the card and two below,
+                  so the arrangement survives every width from 320px to lg.
+                  Their idle drift is at most ±5px and every chip keeps ≥10px
+                  from the card, so none ever slides onto it.
+                  Two layers, one transform each: the outer takes GSAP's
+                  entrance tween, the inner the CSS drift (`translate`). */}
+              {mobileChips.map((chip) => (
                 <div
                   key={chip.id}
-                  ref={(el) => {
-                    mobileChipRefs.current[i] = el;
-                  }}
                   className="absolute"
-                  style={{
-                    left: chip.x,
-                    top: chip.y,
-                    transform: "translate(var(--px, 0px), var(--py, 0px))",
-                    willChange: "transform",
-                  }}
+                  style={{ left: chip.x, top: chip.y }}
                 >
                   <div className="hg-chip-m">
                     <div
                       style={{
-                        animation: `chip-float-${chip.floatId} ${9 + i * 1.3}s ${i * 0.45}s ease-in-out infinite`,
+                        animation: `chip-drift-${chip.id} ${chip.driftDur}s ${chip.driftDelay}s ease-in-out infinite`,
+                        willChange: "translate",
                       }}
                     >
                       <div

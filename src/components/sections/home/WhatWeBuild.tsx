@@ -278,6 +278,9 @@ const steps: Step[] = [
 
 export function WhatWeBuild() {
   const [active, setActive] = useState(0);
+  // Laptop or phones, shared by every website project: switching project
+  // remounts the mockup, which used to snap a visitor back to the laptop.
+  const [deviceView, setDeviceView] = useState<"desktop" | "mobile">("desktop");
   // Which project each slider step is showing, keyed by step number.
   const [projectIndexByStep, setProjectIndexByStep] = useState<
     Record<string, number>
@@ -372,8 +375,21 @@ export function WhatWeBuild() {
     let lastWheel = 0;
     let settleTimer = 0;
 
+    // A dialog (photo/video viewer, the mobile menu) stops Lenis — and a
+    // stopped Lenis ignores scrollTo without ever calling onComplete, so a
+    // wheel over an open dialog left `animating` stuck and the section
+    // frozen for good. Never page then; and self-heal if a glide is lost.
+    const blocked = () =>
+      lenis.isStopped ||
+      Boolean(document.querySelector("[role='dialog'][aria-modal='true']"));
+    let failsafe = 0;
     const glide = (y: number) => {
+      if (blocked()) return;
       animating = true;
+      window.clearTimeout(failsafe);
+      failsafe = window.setTimeout(() => {
+        animating = false;
+      }, DURATION * 1000 + 600);
       lenis.scrollTo(y, {
         duration: DURATION,
         easing: easeInOutCubic,
@@ -388,6 +404,7 @@ export function WhatWeBuild() {
 
     const onWheel = (event: WheelEvent) => {
       if (event.ctrlKey) return; // pinch-zoom
+      if (blocked()) return;
       const now = performance.now();
       const sinceLast = now - lastWheel;
       lastWheel = now;
@@ -450,6 +467,7 @@ export function WhatWeBuild() {
       window.removeEventListener("wheel", onWheel, { capture: true });
       offScroll();
       window.clearTimeout(settleTimer);
+      window.clearTimeout(failsafe);
     };
   }, [lenis, isDesktop]);
 
@@ -573,6 +591,8 @@ export function WhatWeBuild() {
                           projectTitle={project?.title}
                           mobileScreens={project?.mobileScreens}
                           videoCrop={project?.videoCrop}
+                          view={deviceView}
+                          onViewChange={setDeviceView}
                         />
                       </div>
                     </ClipReveal>
@@ -628,6 +648,10 @@ export function WhatWeBuild() {
                       projectTitle={project?.title}
                       mobileScreens={project?.mobileScreens}
                       videoCrop={project?.videoCrop}
+                      view={deviceView}
+                      onViewChange={setDeviceView}
+                      // Only the step on screen runs its video.
+                      active={i === active}
                     />
                   </div>
                   );
