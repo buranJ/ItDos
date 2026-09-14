@@ -20,6 +20,21 @@ export function PhoneMock({ url, className }: Props) {
   const screenRef = useRef<HTMLDivElement>(null);
   const [viewRef, inView] = useInView<HTMLDivElement>();
   const [scale, setScale] = useState(1);
+  // The app is a live cross-origin page: while it takes the pointer, wheel
+  // and swipe scroll IT, not the site — so a phone that slid under a resting
+  // cursor froze the page. A transparent shield keeps page scrolling by
+  // default; a click/tap hands the pointer to the app, and leaving the phone
+  // (or tapping elsewhere) gives it back.
+  const [live, setLive] = useState(false);
+
+  useEffect(() => {
+    if (!live) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!screenRef.current?.contains(event.target as Node)) setLive(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () => document.removeEventListener("pointerdown", onPointerDown, true);
+  }, [live]);
 
   useEffect(() => {
     const screen = screenRef.current;
@@ -36,7 +51,11 @@ export function PhoneMock({ url, className }: Props) {
   return (
     <div className={cn("relative h-full w-full", styles.scene, className)}>
       <div className={styles.stage}>
-        <div ref={screenRef} className={styles.screen}>
+        <div
+          ref={screenRef}
+          className={styles.screen}
+          onMouseLeave={() => setLive(false)}
+        >
           <div ref={viewRef} className={styles.observer} />
 
           {inView && (
@@ -50,6 +69,17 @@ export function PhoneMock({ url, className }: Props) {
                 height: APP_VIEWPORT_HEIGHT,
                 transform: `scale(${scale})`,
               }}
+            />
+          )}
+
+          {!live && (
+            <button
+              type="button"
+              onClick={() => setLive(true)}
+              aria-label="Включить живое приложение, чтобы листать его"
+              data-cursor="card"
+              data-cursor-label="НАЖМИТЕ"
+              className={styles.shield}
             />
           )}
 
@@ -74,7 +104,9 @@ export function PhoneMock({ url, className }: Props) {
           </span>
           <span className={styles.hintCopy}>
             <strong>Живое приложение</strong>
-            <span>Листайте экран прямо сейчас</span>
+            <span>
+              {live ? "Листайте экран прямо сейчас" : "Нажмите на экран, чтобы листать"}
+            </span>
           </span>
         </div>
       </div>

@@ -206,7 +206,7 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
         >
           <span>
             <span className="block text-[15px] font-semibold">Обсудить проект</span>
-            <span className="block text-xs text-white/75">Ответим в течение часа</span>
+            <span className="block text-xs text-white/75">Быстро ответим</span>
           </span>
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20">
             <ArrowUpRight size={17} />

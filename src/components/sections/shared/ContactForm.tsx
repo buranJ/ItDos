@@ -67,7 +67,7 @@ export function ContactForm() {
         <CheckCircle size={40} className="text-fg" />
         <h3 className="text-xl font-semibold text-fg">Заявка отправлена</h3>
         <p className="text-fg-secondary max-w-xs">
-          Мы получили вашу заявку и свяжемся с вами в течение часа.
+          Мы получили вашу заявку и скоро свяжемся с вами.
         </p>
       </div>
     );
@@ -184,7 +184,7 @@ export function ContactForm() {
       </div>
 
       <p className="text-xs text-fg-muted">
-        Ответим в течение часа · работаем по договору · нажимая кнопку, вы
+        Быстро ответим · работаем по договору · нажимая кнопку, вы
         соглашаетесь с{" "}
         <Link href="/privacy" className="underline underline-offset-2 hover:text-fg">
           политикой конфиденциальности

@@ -95,15 +95,17 @@ html {
   background: var(--color-bg);
 }
 
-/* Large monitors: grow the root size so the whole layout scales with it.
+/* Laptops and up: grow the root size so the whole layout scales with it.
    The site is built on rem (container, type, spacing), so on a 2560 screen
-   it used to be a 1280px column with 14px copy — half the screen empty.
-   Now it grows smoothly from 1600px to 131% (21px) at 2560. Media queries
-   are unaffected: rem in a query resolves against the browser's initial
-   16px, not this value, so every breakpoint still fires where it did. */
-@media (min-width: 100rem) {
+   it used to be a 1280px column with 14px copy — half the screen empty,
+   and on a 1512 MacBook the copy still read small. It now grows smoothly
+   from 1280px (16px) through ~17px at 1512 and ~18.5px at 1920 to a 131%
+   (21px) cap at 2560. Media queries are unaffected: rem in a query resolves
+   against the browser's initial 16px, not this value, so every breakpoint
+   still fires where it did. */
+@media (min-width: 80rem) {
   html {
-    font-size: min(calc(100% + (100vw - 1600px) * 0.0052), 131.25%);
+    font-size: min(calc(100% + (100vw - 1280px) * 0.0039), 131.25%);
   }
 }
 

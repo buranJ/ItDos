@@ -18,7 +18,7 @@ type CtaBannerProps = {
 
 export function CtaBanner({
   title = "Готовы начать\nпроект?",
-  description = "Расскажите о задаче — ответим в течение часа и предложим оптимальное решение.",
+  description = "Расскажите о задаче — быстро ответим и предложим оптимальное решение.",
   primaryCta = { label: "Начать проект", href: "/contact" },
   secondaryCta = { label: "Смотреть работы", href: "/portfolio" },
 }: CtaBannerProps) {

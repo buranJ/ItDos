@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
   title: "Контакт",
   description:
-    "Свяжитесь с ITDOS. Обсудим ваш проект и предложим оптимальное решение в течение часа.",
+    "Свяжитесь с ITDOS. Обсудим ваш проект, быстро ответим и предложим оптимальное решение.",
 };
 
 // Every contact detail comes from lib/site.ts so the label and the link can
@@ -38,7 +38,7 @@ export default function ContactPage() {
           </TextReveal>
           <FadeIn delay={0.2}>
             <p className="mt-6 text-lg text-fg-secondary max-w-md leading-relaxed">
-              Расскажите о задаче — ответим в течение часа и предложим решение.
+              Расскажите о задаче — быстро ответим и предложим решение.
             </p>
           </FadeIn>
         </Container>
@@ -83,7 +83,7 @@ export default function ContactPage() {
                     Время ответа
                   </p>
                   <p className="text-sm text-fg-secondary">
-                    Отвечаем в течение часа в рабочее время (Пн–Пт, 9:00–18:00 по Бишкеку). В выходные — на следующий рабочий день.
+                    Отвечаем быстро в рабочее время (Пн–Пт, 9:00–18:00 по Бишкеку). В выходные — на следующий рабочий день.
                   </p>
                 </div>
               </div>

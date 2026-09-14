@@ -5,7 +5,7 @@ import { TextReveal } from "@/components/motion/TextReveal";
 
 const facts = [
   { label: "Сколько занимает разработка сайта", value: "от 7 дней" },
-  { label: "Сколько стоит сайт", value: "от 300 $" },
+  { label: "Сколько стоит сайт", value: "от $300" },
 ];
 
 export function QuickFacts() {

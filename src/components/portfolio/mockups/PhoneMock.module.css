@@ -3,13 +3,18 @@
   overflow: visible;
 }
 
+/* Anchored by the phone, not by the artwork's right edge: the phone starts
+   at 15.3% of the artwork, so `left` puts it 1rem left of the column start
+   whatever the size, and the robot arm simply runs off the screen edge. That
+   let the device grow ~16% without drifting into the copy. Respects both
+   axes: width-only scaling made it taller than the sticky box on short
+   laptops and too small on tall displays. */
 .stage {
+  --stage-w: min(72vw, 170cqh, 80rem);
   position: absolute;
   top: 50%;
-  right: calc(min(0px, (80rem - 100vw) / 2) - 3rem);
-  /* Respect both axes. Width-only scaling made the composition taller than
-     the sticky viewport on short laptops and too small on tall displays. */
-  width: min(62vw, 147cqh, 66.25rem);
+  left: calc(var(--stage-w) * -0.153 - 1rem);
+  width: var(--stage-w);
   aspect-ratio: 3 / 2;
   transform: translateY(-50%);
 }
@@ -43,6 +48,23 @@
   display: block;
   border: 0;
   transform-origin: top left;
+}
+
+/* Transparent cover over the live app: takes wheel/swipe for the page
+   until clicked (see PhoneMock). Above the iframe, under the glass. */
+.shield {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  background: transparent;
+}
+
+.shield:focus-visible {
+  outline: 2px solid #e0b341;
+  outline-offset: -2px;
 }
 
 .observer {
@@ -218,7 +240,7 @@
    spacing is reduced so it remains in the right visual column. */
 @media (min-width: 64rem) and (max-width: 79.999rem) {
   .stage {
-    width: min(58vw, 147cqh);
+    --stage-w: min(64vw, 160cqh);
   }
 
   .hint {
@@ -251,6 +273,7 @@
   .stage {
     /* -123% put the device hard against the left edge; -134% is the same
        ~40px nudge to the right (the scene is 370px wide here). */
+    left: auto;
     right: -134%;
     width: 260%;
   }

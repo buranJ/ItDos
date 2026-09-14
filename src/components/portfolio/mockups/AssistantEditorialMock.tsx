@@ -38,7 +38,7 @@ function Conversation() {
         <p>Здравствуйте! Можно записаться на консультацию в субботу?</p>
         <p>Добрый день, Анна. Да, в 14:00 есть свободное время. Записать вас?</p>
         <small>
-          <Check size={11} /> Ответ отправлен за 0,8 сек
+          <Check size={11} /> Ответ отправлен за 0,8&nbsp;сек
         </small>
       </div>
       <div className={styles.note}>
@@ -243,7 +243,7 @@ export function AssistantEditorialMock({
           </div>
           <div className={styles.valueFoot}>
             <Clock size={13} />
-            Первый ответ — 0,8 сек
+            Первый ответ — 0,8&nbsp;сек
           </div>
         </aside>
       </div>

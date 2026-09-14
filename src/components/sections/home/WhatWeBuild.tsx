@@ -346,6 +346,10 @@ export function WhatWeBuild() {
 
     const DURATION = 1.15;
     const QUIET_MS = 180;
+    // Upper bound on that wait. Without it, a steady wheel (a free-spinning
+    // mouse wheel, or just scrolling on without pausing) never goes quiet,
+    // every event was swallowed, and the section froze.
+    const MAX_HOLD_MS = 350;
     const easeInOutCubic = (t: number) =>
       t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
@@ -362,8 +366,9 @@ export function WhatWeBuild() {
 
     let animating = false;
     // After a glide, a trackpad keeps emitting inertia for a moment; wait for
-    // a short silence so one swipe can't page twice.
+    // a short silence (at most MAX_HOLD_MS) so one swipe can't page twice.
     let waitForQuiet = false;
+    let glideEndedAt = 0;
     let lastWheel = 0;
     let settleTimer = 0;
 
@@ -376,6 +381,7 @@ export function WhatWeBuild() {
         onComplete: () => {
           animating = false;
           waitForQuiet = true;
+          glideEndedAt = performance.now();
         },
       });
     };
@@ -403,7 +409,9 @@ export function WhatWeBuild() {
       };
       if (animating) return swallow();
       if (waitForQuiet) {
-        if (sinceLast < QUIET_MS) return swallow();
+        if (sinceLast < QUIET_MS && now - glideEndedAt < MAX_HOLD_MS) {
+          return swallow();
+        }
         waitForQuiet = false;
       }
       if (Math.abs(event.deltaY) < 2) return;
@@ -588,7 +596,8 @@ export function WhatWeBuild() {
           {isDesktop && (
           <div className="hidden lg:block">
             <div className="sticky top-0 flex h-screen items-center justify-center">
-              <div className="relative h-[65vh] w-full">
+              {/* 74vh (was 65): room for the devices to read at laptop size. */}
+              <div className="relative h-[74vh] w-full">
                 {steps.map((step, i) => {
                   const project = projectOf(step);
                   const visualAccent = project?.accent ?? step.accent;

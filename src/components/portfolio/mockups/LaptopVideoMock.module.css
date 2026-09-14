@@ -13,7 +13,7 @@
 .deviceToggle {
   position: absolute;
   z-index: 20;
-  top: max(2.5cqh, calc(53cqh - min(175cqw, 66.25rem) * 0.2267 - 3.2rem));
+  top: max(2.5cqh, calc(53cqh - min(185cqw, 72rem) * 0.2267 - 3.2rem));
   left: 50%;
   display: inline-flex;
   gap: 0.2rem;
@@ -77,7 +77,7 @@
   z-index: 1;
   top: 53%;
   left: 50%;
-  width: min(175%, 66.25rem);
+  width: min(185%, 72rem);
   aspect-ratio: 3 / 2;
   transform: translate(-50%, -50%);
   opacity: 1;
@@ -747,6 +747,38 @@
   100% {
     opacity: 0;
     transform: scaleX(1);
+  }
+}
+
+/* Desktop: the laptop grew ~9% but its right edge already met the screen
+   edge, so the whole device group — laptop, toggle and phone fan — sits a
+   little left of the column centre (43%), growing into the column gap. The
+   phones also lose the 30rem cap and fill the taller (74vh) box. */
+@media (min-width: 64rem) {
+  .deviceToggle,
+  .photoStage {
+    left: 43%;
+  }
+
+  /* Above whichever is higher: the laptop lid, or the centre phone of the
+     (now taller) fan — whose top is the stage centre (56%) minus half its
+     height. It used to clip the phone's top edge. */
+  .deviceToggle {
+    top: max(
+      1.5cqh,
+      min(
+        calc(53cqh - min(185cqw, 72rem) * 0.2267 - 3.2rem),
+        calc(56cqh - min(88cqh, 100cqw, 38rem) / 2 - 3.6rem)
+      )
+    );
+  }
+
+  .mobileStage {
+    right: 14%;
+  }
+
+  .mobilePhone {
+    height: min(88cqh, 100cqw, 38rem);
   }
 }
 

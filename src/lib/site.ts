@@ -15,7 +15,7 @@ export const site = {
   /** Telegram username without @. */
   telegram: "itdos",
   // address: "Бишкек, Кыргызстан",
-  responseTime: "в течение часа",
+  responseTime: "быстро",
 } as const;
 
 export function whatsappLink(text?: string): string {

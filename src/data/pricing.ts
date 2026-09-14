@@ -34,7 +34,7 @@ export const plans: Plan[] = [
     name: "Лендинги / Корпоративные сайты",
     tagline: "Презентация бизнеса, которая продаёт",
     price: "от $300",
-    period: "1–3 недель",
+    period: "1–3 недели",
     popular: true,
     features: [
       "Индивидуальный дизайн",
@@ -52,7 +52,7 @@ export const plans: Plan[] = [
     period: "обсуждается",
     features: [
       "Аудит процессов",
-      "Ios/Android",
+      "iOS / Android",
       "AI-агенты и боты",
       "RAG на ваших данных",
       "Интеграция в ваши системы",

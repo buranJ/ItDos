@@ -44,7 +44,7 @@ export async function Faq() {
         <p className="mt-10 text-sm text-fg-muted">
           Не нашли ответ?{" "}
           <Link href="/contact" className="text-accent-text hover:underline">
-            Напишите — ответим в течение часа →
+            Напишите — быстро ответим →
           </Link>
         </p>
       </Container>

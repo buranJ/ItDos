@@ -40,7 +40,7 @@ const reasons = [
   {
     icon: MessageCircle,
     title: "На связи в мессенджерах",
-    desc: "WhatsApp и Telegram, ответ в течение часа. Общаетесь напрямую с командой.",
+    desc: "WhatsApp и Telegram — отвечаем быстро. Общаетесь напрямую с командой.",
   },
 ];
 

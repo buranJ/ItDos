@@ -1,4 +1,4 @@
-/* Small print sizes raised ~1.4× with a ~9.6px floor: the originals
+/* Small print sizes raised with a ~11.5px floor (0.72rem): the originals
    bottomed out at 0.3rem (under 5px) and read as scribbles on a laptop. */
 .scene {
   --paper: #f0eee9;
@@ -43,7 +43,7 @@
 .valueLabel {
   color: var(--muted);
   font-family: var(--font-geist-mono);
-  font-size: clamp(0.6rem, 1.4cqh, 0.78rem);
+  font-size: clamp(0.72rem, 1.4cqh, 0.82rem);
   letter-spacing: 0.13em;
 }
 
@@ -127,12 +127,12 @@
 
 .steps button small {
   font-family: var(--font-geist-mono);
-  font-size: clamp(0.6rem, 1.01cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.01cqh, 0.82rem);
 }
 
 .steps button strong {
   overflow: hidden;
-  font-size: clamp(0.61rem, 1.48cqh, 0.83rem);
+  font-size: clamp(0.72rem, 1.48cqh, 0.83rem);
   font-weight: 550;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -184,7 +184,7 @@
   justify-content: space-between;
   color: var(--muted);
   font-family: var(--font-geist-mono);
-  font-size: clamp(0.6rem, 1.15cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.15cqh, 0.82rem);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -286,7 +286,7 @@
 .appointmentHead small,
 .contact time {
   color: var(--muted);
-  font-size: clamp(0.6rem, 1.18cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.18cqh, 0.82rem);
 }
 
 .dialog {
@@ -304,7 +304,7 @@
   border: 1px solid #e2dfd8;
   border-radius: 0.8rem 0.8rem 0.8rem 0.2rem;
   background: #f0eee9;
-  font-size: clamp(0.7rem, 1.68cqh, 0.92rem);
+  font-size: clamp(0.72rem, 1.68cqh, 0.92rem);
   line-height: 1.42;
 }
 
@@ -330,7 +330,7 @@
   align-items: center;
   gap: 0.25rem;
   color: var(--green);
-  font-size: clamp(0.6rem, 1.12cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
 }
 
 .panelActive .dialog small {
@@ -343,7 +343,7 @@
   color: #69675f;
   border-left: 2px solid #b7b3aa;
   background: #f1efe9;
-  font-size: clamp(0.6rem, 1.26cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.26cqh, 0.82rem);
 }
 
 .note strong {
@@ -374,7 +374,7 @@
   border-radius: 0.45rem;
   background: #f3f1ec;
   font-family: var(--font-geist-mono);
-  font-size: clamp(0.6rem, 1.12cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
 }
 
 .dateRow {
@@ -396,7 +396,7 @@
 }
 
 .dateRow span {
-  font-size: clamp(0.6rem, 1.04cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.04cqh, 0.82rem);
 }
 
 .dateRow strong {
@@ -448,7 +448,7 @@
 
 .booking strong {
   overflow: hidden;
-  font-size: clamp(0.65rem, 1.61cqh, 0.88rem);
+  font-size: clamp(0.72rem, 1.61cqh, 0.88rem);
   font-weight: 560;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -456,12 +456,12 @@
 
 .booking small {
   color: #66736c;
-  font-size: clamp(0.6rem, 1.12cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
 }
 
 .booking em {
   color: var(--green);
-  font-size: clamp(0.6rem, 1.09cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.09cqh, 0.82rem);
   font-style: normal;
 }
 
@@ -490,7 +490,7 @@
   color: #fff;
   border-radius: 0.45rem;
   background: var(--ink);
-  font-size: clamp(0.6rem, 1.26cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.26cqh, 0.82rem);
   font-weight: 700;
 }
 
@@ -500,13 +500,13 @@
 }
 
 .invoiceTitle strong {
-  font-size: clamp(0.7rem, 1.68cqh, 0.91rem);
+  font-size: clamp(0.72rem, 1.68cqh, 0.91rem);
   font-weight: 560;
 }
 
 .invoiceTitle small {
   color: var(--muted);
-  font-size: clamp(0.6rem, 1.09cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.09cqh, 0.82rem);
 }
 
 .invoiceTable {
@@ -523,7 +523,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: clamp(0.6rem, 1.34cqh, 0.74rem);
+  font-size: clamp(0.72rem, 1.34cqh, 0.82rem);
 }
 
 .invoiceTable span,
@@ -546,7 +546,7 @@
   align-items: center;
   gap: 0.3rem;
   color: var(--green);
-  font-size: clamp(0.6rem, 1.18cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.18cqh, 0.82rem);
 }
 
 .panelActive .invoice {
@@ -584,7 +584,7 @@
 
 .complete > p small {
   color: var(--muted);
-  font-size: clamp(0.6rem, 1.19cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.19cqh, 0.82rem);
 }
 
 .complete > p strong {
@@ -609,7 +609,7 @@
   border: 1px solid #c9d9d0;
   border-radius: 999px;
   background: #edf4f0;
-  font-size: clamp(0.6rem, 1.09cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.09cqh, 0.82rem);
 }
 
 .value {
@@ -636,7 +636,7 @@
 .mainMetric span {
   margin-top: 0.22rem;
   color: var(--muted);
-  font-size: clamp(0.6rem, 1.4cqh, 0.78rem);
+  font-size: clamp(0.72rem, 1.4cqh, 0.82rem);
 }
 
 .metrics {
@@ -662,7 +662,7 @@
 
 .metrics span {
   color: var(--muted);
-  font-size: clamp(0.6rem, 0.98cqh, 0.7rem);
+  font-size: clamp(0.72rem, 0.98cqh, 0.82rem);
 }
 
 .valueFoot {
@@ -672,7 +672,7 @@
   margin-top: auto;
   padding-top: 0.5rem;
   color: var(--green);
-  font-size: clamp(0.6rem, 1.12cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
 }
 
 .footer {
@@ -682,7 +682,7 @@
   gap: clamp(0.45rem, 1.3cqw, 0.7rem);
   overflow: hidden;
   color: #75736d;
-  font-size: clamp(0.6rem, 1.12cqh, 0.7rem);
+  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
 }
 
 .footer > span {
