@@ -570,11 +570,15 @@ export function WhatWeBuild() {
                           step.kind === "phone" && "aspect-4/7",
                           // Tab strip + toolbar over a 16:9 viewport.
                           step.kind === "browser-video" && "aspect-9/7",
+                          // 4:5, not square: each of the AI mock's four
+                          // stages needs more height than a 350px square
+                          // gave, and spilled over its own header and stats.
+                          step.kind === "assistant-editorial" && "aspect-4/5",
                           step.kind !== "phone" &&
                             step.kind !== "browser-video" &&
+                            step.kind !== "assistant-editorial" &&
                             (step.kind === "laptop-video" ||
                             step.kind === "assistant-enhanced" ||
-                            step.kind === "assistant-editorial" ||
                             step.kind === "automation" ||
                             step.kind === "journey"
                               ? "aspect-square"

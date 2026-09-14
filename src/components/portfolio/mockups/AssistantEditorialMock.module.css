@@ -1,5 +1,8 @@
 /* Small print sizes raised with a ~11.5px floor (0.72rem): the originals
-   bottomed out at 0.3rem (under 5px) and read as scribbles on a laptop. */
+   bottomed out at 0.3rem (under 5px) and read as scribbles on a laptop.
+   Every small size is multiplied by --ae-k, which the narrow (phone)
+   layout lowers — the laptop floor was too big for a 350px card there and
+   pushed the chat bubbles over the header. */
 .scene {
   --paper: #f0eee9;
   --card: #faf9f6;
@@ -43,7 +46,7 @@
 .valueLabel {
   color: var(--muted);
   font-family: var(--font-geist-mono);
-  font-size: clamp(0.72rem, 1.4cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.4cqh, calc(0.82rem * var(--ae-k, 1)));
   letter-spacing: 0.13em;
 }
 
@@ -127,12 +130,12 @@
 
 .steps button small {
   font-family: var(--font-geist-mono);
-  font-size: clamp(0.72rem, 1.01cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.01cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .steps button strong {
   overflow: hidden;
-  font-size: clamp(0.72rem, 1.48cqh, 0.83rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.48cqh, calc(0.83rem * var(--ae-k, 1)));
   font-weight: 550;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -184,7 +187,7 @@
   justify-content: space-between;
   color: var(--muted);
   font-family: var(--font-geist-mono);
-  font-size: clamp(0.72rem, 1.15cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.15cqh, calc(0.82rem * var(--ae-k, 1)));
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -266,7 +269,7 @@
   color: #fff;
   border-radius: 50%;
   background: #32312e;
-  font-size: clamp(0.73rem, 1.68cqh, 0.95rem);
+  font-size: clamp(calc(0.73rem * var(--ae-k, 1)), 1.68cqh, calc(0.95rem * var(--ae-k, 1)));
 }
 
 .contact p,
@@ -278,7 +281,7 @@
 
 .contact strong,
 .appointmentHead strong {
-  font-size: clamp(0.75rem, 1.82cqh, 1.01rem);
+  font-size: clamp(calc(0.75rem * var(--ae-k, 1)), 1.82cqh, calc(1.01rem * var(--ae-k, 1)));
   font-weight: 560;
 }
 
@@ -286,7 +289,7 @@
 .appointmentHead small,
 .contact time {
   color: var(--muted);
-  font-size: clamp(0.72rem, 1.18cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.18cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .dialog {
@@ -304,7 +307,7 @@
   border: 1px solid #e2dfd8;
   border-radius: 0.8rem 0.8rem 0.8rem 0.2rem;
   background: #f0eee9;
-  font-size: clamp(0.72rem, 1.68cqh, 0.92rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.68cqh, calc(0.92rem * var(--ae-k, 1)));
   line-height: 1.42;
 }
 
@@ -330,7 +333,7 @@
   align-items: center;
   gap: 0.25rem;
   color: var(--green);
-  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.12cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .panelActive .dialog small {
@@ -343,7 +346,7 @@
   color: #69675f;
   border-left: 2px solid #b7b3aa;
   background: #f1efe9;
-  font-size: clamp(0.72rem, 1.26cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.26cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .note strong {
@@ -374,7 +377,7 @@
   border-radius: 0.45rem;
   background: #f3f1ec;
   font-family: var(--font-geist-mono);
-  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.12cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .dateRow {
@@ -396,12 +399,12 @@
 }
 
 .dateRow span {
-  font-size: clamp(0.72rem, 1.04cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.04cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .dateRow strong {
   color: var(--ink);
-  font-size: clamp(0.78rem, 1.89cqh, 1.01rem);
+  font-size: clamp(calc(0.78rem * var(--ae-k, 1)), 1.89cqh, calc(1.01rem * var(--ae-k, 1)));
   font-weight: 550;
 }
 
@@ -448,7 +451,7 @@
 
 .booking strong {
   overflow: hidden;
-  font-size: clamp(0.72rem, 1.61cqh, 0.88rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.61cqh, calc(0.88rem * var(--ae-k, 1)));
   font-weight: 560;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -456,12 +459,12 @@
 
 .booking small {
   color: #66736c;
-  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.12cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .booking em {
   color: var(--green);
-  font-size: clamp(0.72rem, 1.09cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.09cqh, calc(0.82rem * var(--ae-k, 1)));
   font-style: normal;
 }
 
@@ -490,7 +493,7 @@
   color: #fff;
   border-radius: 0.45rem;
   background: var(--ink);
-  font-size: clamp(0.72rem, 1.26cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.26cqh, calc(0.82rem * var(--ae-k, 1)));
   font-weight: 700;
 }
 
@@ -500,13 +503,13 @@
 }
 
 .invoiceTitle strong {
-  font-size: clamp(0.72rem, 1.68cqh, 0.91rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.68cqh, calc(0.91rem * var(--ae-k, 1)));
   font-weight: 560;
 }
 
 .invoiceTitle small {
   color: var(--muted);
-  font-size: clamp(0.72rem, 1.09cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.09cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .invoiceTable {
@@ -523,7 +526,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: clamp(0.72rem, 1.34cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.34cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .invoiceTable span,
@@ -546,7 +549,7 @@
   align-items: center;
   gap: 0.3rem;
   color: var(--green);
-  font-size: clamp(0.72rem, 1.18cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.18cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .panelActive .invoice {
@@ -584,12 +587,12 @@
 
 .complete > p small {
   color: var(--muted);
-  font-size: clamp(0.72rem, 1.19cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.19cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .complete > p strong {
   font-family: var(--font-space-grotesk);
-  font-size: clamp(0.78rem, 2cqh, 1.05rem);
+  font-size: clamp(calc(0.78rem * var(--ae-k, 1)), 2cqh, calc(1.05rem * var(--ae-k, 1)));
   font-weight: 560;
 }
 
@@ -609,7 +612,7 @@
   border: 1px solid #c9d9d0;
   border-radius: 999px;
   background: #edf4f0;
-  font-size: clamp(0.72rem, 1.09cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.09cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .value {
@@ -636,7 +639,7 @@
 .mainMetric span {
   margin-top: 0.22rem;
   color: var(--muted);
-  font-size: clamp(0.72rem, 1.4cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.4cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .metrics {
@@ -656,13 +659,13 @@
 
 .metrics strong {
   font-family: var(--font-space-grotesk);
-  font-size: clamp(0.84rem, 2.03cqh, 1.09rem);
+  font-size: clamp(calc(0.84rem * var(--ae-k, 1)), 2.03cqh, calc(1.09rem * var(--ae-k, 1)));
   font-weight: 560;
 }
 
 .metrics span {
   color: var(--muted);
-  font-size: clamp(0.72rem, 0.98cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 0.98cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .valueFoot {
@@ -672,7 +675,7 @@
   margin-top: auto;
   padding-top: 0.5rem;
   color: var(--green);
-  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.12cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .footer {
@@ -682,7 +685,7 @@
   gap: clamp(0.45rem, 1.3cqw, 0.7rem);
   overflow: hidden;
   color: #75736d;
-  font-size: clamp(0.72rem, 1.12cqh, 0.82rem);
+  font-size: clamp(calc(0.72rem * var(--ae-k, 1)), 1.12cqh, calc(0.82rem * var(--ae-k, 1)));
 }
 
 .footer > span {
@@ -754,6 +757,28 @@
 }
 
 @container (max-width: 26rem) {
+  .scene > * {
+    --ae-k: 0.7;
+  }
+
+  /* The phone card has no room for every line of the dialog: keep the two
+     messages, drop the secondary ones, and never let the messages spill
+     over the contact row or out onto the stats bar (they were centred, so
+     overflow went both ways). */
+  .note,
+  .contact small {
+    display: none;
+  }
+
+  .dialog {
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .dialog > p {
+    max-width: 94%;
+  }
+
   .scene {
     gap: 0.45rem;
     padding: 0.72rem;

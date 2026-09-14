@@ -29,8 +29,11 @@ type Props = {
   active?: boolean;
 };
 
-/** Minimum time the loader stays up, so it reads as a beat, not a flash. */
+/** Minimum time the loader stays up, so it reads as a beat, not a flash;
+ *  a branded one gets long enough to play its intro. */
 const LOADER_MIN_MS = 1200;
+const BRANDED_LOADER_MIN_MS = 2300;
+const LOADER_FADE_MS = 450;
 
 function ytId(input: string): string {
   if (!/[/.]/.test(input)) return input;
@@ -58,21 +61,34 @@ export function BrowserVideoMock({
   const playerRef = useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useState(false);
   const [minElapsed, setMinElapsed] = useState(false);
+  const [loaderGone, setLoaderGone] = useState(false);
   const [fullView, setFullView] = useState(false);
   usePauseWhileFullView(playerRef, fullView);
+  const branded = projectTitle.toLowerCase().includes("водоканал");
 
   useEffect(() => {
     if (!inView || !id) return;
-    const timer = window.setTimeout(() => setMinElapsed(true), LOADER_MIN_MS);
+    const timer = window.setTimeout(
+      () => setMinElapsed(true),
+      branded ? BRANDED_LOADER_MIN_MS : LOADER_MIN_MS,
+    );
     return () => window.clearTimeout(timer);
-  }, [id, inView]);
+  }, [branded, id, inView]);
+
+  // Fade, THEN unmount — dropping it the moment it was ready skipped the
+  // fade entirely and the loader vanished in one frame.
+  const loaderFading = loaded && minElapsed;
+  useEffect(() => {
+    if (!loaderFading) return;
+    const timer = window.setTimeout(() => setLoaderGone(true), LOADER_FADE_MS);
+    return () => window.clearTimeout(timer);
+  }, [loaderFading]);
 
   const src =
     `https://www.youtube-nocookie.com/embed/${id}` +
     `?autoplay=1&mute=1&loop=1&playlist=${id}` +
     "&controls=0&modestbranding=1&rel=0&iv_load_policy=3" +
     "&disablekb=1&fs=0&playsinline=1&enablejsapi=1";
-  const showLoader = Boolean(id) && !(loaded && minElapsed);
 
   return (
     <div
@@ -131,15 +147,27 @@ export function BrowserVideoMock({
                   }
                 />
               )}
-              <ExpandVideoButton onClick={() => setFullView(true)} />
-              {showLoader && (
+              {loaderGone && (
+                <ExpandVideoButton onClick={() => setFullView(true)} />
+              )}
+              {!loaderGone && (
                 <div
-                  className={cn(styles.loader, loaded && minElapsed && styles.loaderDone)}
+                  className={cn(
+                    styles.loader,
+                    branded && styles.vkLoader,
+                    loaderFading && styles.loaderDone,
+                  )}
                   role="status"
                   aria-label={`Загружается видео проекта ${projectTitle}`}
                 >
-                  <span className={styles.spinner} />
-                  <strong>{projectTitle}</strong>
+                  {branded ? (
+                    <VodokanalLoaderArt />
+                  ) : (
+                    <>
+                      <span className={styles.spinner} />
+                      <strong>{projectTitle}</strong>
+                    </>
+                  )}
                 </div>
               )}
             </>
@@ -154,6 +182,53 @@ export function BrowserVideoMock({
         title={projectTitle}
         onClose={() => setFullView(false)}
       />
+    </div>
+  );
+}
+
+/** Бишкекводоканал: the drop falls into the blue disc, rings spread across
+ *  the water, the wave rises and rolls, then the name — the logo from their
+ *  system, on the deep navy of its sidebar. */
+function VodokanalLoaderArt() {
+  return (
+    <div className={styles.vkStage} aria-hidden="true">
+      <span className={styles.vkMarkWrap}>
+        <span className={styles.vkRipple} />
+        <span className={cn(styles.vkRipple, styles.vkRippleLate)} />
+        <svg viewBox="0 0 64 64" className={styles.vkMark}>
+          <defs>
+            <clipPath id="vk-disc">
+              <circle cx="32" cy="32" r="30" />
+            </clipPath>
+          </defs>
+          <circle cx="32" cy="32" r="30" fill="#1f6fe0" className={styles.vkDisc} />
+          <g clipPath="url(#vk-disc)">
+            <g className={styles.vkWaveRise}>
+              <g className={styles.vkWaveFlow}>
+                <path
+                  d="M-20 44 C-10 38 0 50 10 44 S30 38 40 44 S60 50 70 44 S90 38 100 44 S120 50 130 44 S150 38 160 44 V70 H-20 Z"
+                  fill="#0b3a82"
+                />
+                <path
+                  d="M-20 44 C-10 38 0 50 10 44 S30 38 40 44 S60 50 70 44 S90 38 100 44 S120 50 130 44 S150 38 160 44"
+                  fill="none"
+                  stroke="#ffffff"
+                  strokeWidth="2.6"
+                />
+              </g>
+            </g>
+          </g>
+          <path
+            className={styles.vkDrop}
+            d="M32 11 C32 11 22 24 22 31 A10 10 0 0 0 42 31 C42 24 32 11 32 11 Z"
+            fill="#c4e6ff"
+          />
+        </svg>
+      </span>
+      <span className={styles.vkWord}>
+        Бишкекводоканал
+        <span className={styles.vkTrack} />
+      </span>
     </div>
   );
 }
