@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
 import { DURATION, EASE, useReducedMotion } from "@/lib/motion";
 import { ScreenLightbox, type LightboxScreen } from "./ScreenLightbox";
+import { ExpandVideoButton, VideoLightbox } from "./VideoLightbox";
 import styles from "./LaptopVideoMock.module.css";
 
 type MobileScreen = {
@@ -322,6 +323,7 @@ export function LaptopVideoMock({
   const [introComplete, setIntroComplete] = useState(false);
   const [loaderHidden, setLoaderHidden] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [videoFullView, setVideoFullView] = useState(false);
   const reduced = useReducedMotion();
   const [viewRef, inView] = useInView<HTMLDivElement>("0px");
   const photoStageRef = useRef<HTMLDivElement>(null);
@@ -668,6 +670,10 @@ export function LaptopVideoMock({
           )}
 
           <div aria-hidden="true" className={styles.glass} />
+
+          {id && view === "desktop" && (
+            <ExpandVideoButton onClick={() => setVideoFullView(true)} />
+          )}
         </div>
 
         <Image
@@ -743,6 +749,12 @@ export function LaptopVideoMock({
           </div>
         ))}
       </div>
+
+      <VideoLightbox
+        videoId={videoFullView ? id : null}
+        title={projectTitle}
+        onClose={() => setVideoFullView(false)}
+      />
 
       <ScreenLightbox
         screens={lightboxScreens}

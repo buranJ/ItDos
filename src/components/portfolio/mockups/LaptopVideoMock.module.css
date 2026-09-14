@@ -5,10 +5,15 @@
   animation: projectSwapIn 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Sits just above the laptop lid rather than at the top of the box: the
+   laptop is sized from the column width, so on taller screens the box grew
+   and the toggle floated far above the machine. 0.2267 × stage width is
+   the lid's distance above the stage centre (0.34 × its 3:2 height), and
+   3.2rem is the toggle's own height plus a small gap. */
 .deviceToggle {
   position: absolute;
   z-index: 20;
-  top: 2.5%;
+  top: max(2.5cqh, calc(53cqh - min(175cqw, 66.25rem) * 0.2267 - 3.2rem));
   left: 50%;
   display: inline-flex;
   gap: 0.2rem;
@@ -747,7 +752,7 @@
 
 @media (max-width: 63.999rem) {
   .deviceToggle {
-    top: 5%;
+    top: max(5cqh, calc(52cqh - 138cqw * 0.2267 - 3rem));
     transform: translateX(-50%) scale(0.88);
   }
 

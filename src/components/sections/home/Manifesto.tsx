@@ -18,7 +18,8 @@ const STATEMENT: { text: string; accent?: boolean }[] = [
   { text: "Не подгоняем бизнес под готовый продукт." },
   { text: "Делаем продукт под бизнес.", accent: true },
 ];
-const SCOPE = "Сайты, CRM, приложения, внутренние системы и автоматизация.";
+const SCOPE =
+  "Сайты, CRM, мобильные приложения, внутренние системы и автоматизация процессов.";
 
 export function Manifesto() {
   const ref = useRef<HTMLHeadingElement>(null);
@@ -97,7 +98,7 @@ export function Manifesto() {
               aria-hidden="true"
               className="h-px w-8 shrink-0 translate-y-[-0.3em] bg-accent sm:w-10"
             />
-            <p className="max-w-104 text-[clamp(1.05rem,1.5vw,1.3rem)] leading-relaxed text-fg-secondary text-pretty">
+            <p className="max-w-128 text-[clamp(1.05rem,1.5vw,1.3rem)] leading-relaxed text-fg-secondary text-pretty">
               {SCOPE}
             </p>
           </div>

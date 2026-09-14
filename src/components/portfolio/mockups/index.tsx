@@ -9,6 +9,7 @@ import { IframeMock } from "./IframeMock";
 import { PhoneMock } from "./PhoneMock";
 import { LaptopMock } from "./LaptopMock";
 import { LaptopVideoMock } from "./LaptopVideoMock";
+import { BrowserVideoMock } from "./BrowserVideoMock";
 import { ShowcaseMock } from "./ShowcaseMock";
 import { FlowMock } from "./FlowMock";
 import { AgentMock } from "./AgentMock";
@@ -21,7 +22,7 @@ import { AutomationJourneyMock } from "./AutomationJourneyMock";
 import { AssistantEnhancedMock } from "./AssistantEnhancedMock";
 import { AssistantEditorialMock } from "./AssistantEditorialMock";
 
-export { BrowserMock, DashboardMock, MarketplaceMock, PortalMock, ChatMock, IframeMock, PhoneMock, LaptopMock, LaptopVideoMock, ShowcaseMock, FlowMock, AgentMock, NeuralMock, CommandCenterMock, UnifiedMock, AssistantMock, AutomationFlowMock, AutomationJourneyMock, AssistantEnhancedMock, AssistantEditorialMock };
+export { BrowserMock, DashboardMock, MarketplaceMock, PortalMock, ChatMock, IframeMock, PhoneMock, LaptopMock, LaptopVideoMock, BrowserVideoMock, ShowcaseMock, FlowMock, AgentMock, NeuralMock, CommandCenterMock, UnifiedMock, AssistantMock, AutomationFlowMock, AutomationJourneyMock, AssistantEnhancedMock, AssistantEditorialMock };
 
 type MockupDispatchProps = {
   kind: MockupKind;
@@ -31,10 +32,12 @@ type MockupDispatchProps = {
   live?: boolean;
   /** Required when kind="iframe". */
   url?: string;
-  /** Domain shown in the mock browser bar (kind="laptop-video"). */
+  /** Domain / address-bar text (kind="laptop-video" | "browser-video"). */
   address?: string;
   /** Project name shown while media is loading or still a placeholder. */
   projectTitle?: string;
+  /** Crop for a browser-video recording (see BrowserVideoMock). */
+  videoCrop?: { scale: number; top: number };
   /** Optional project-specific mobile screens for the laptop showcase. */
   mobileScreens?: readonly {
     src?: string;
@@ -53,6 +56,7 @@ export function Mockup({
   address,
   projectTitle,
   mobileScreens,
+  videoCrop,
 }: MockupDispatchProps) {
   const base = cn("h-full w-full", className);
   switch (kind) {
@@ -100,6 +104,17 @@ export function Mockup({
           address={address}
           projectTitle={projectTitle}
           mobileScreens={mobileScreens}
+          className={base}
+        />
+      );
+    case "browser-video":
+      return (
+        <BrowserVideoMock
+          accent={accent}
+          url={url}
+          address={address}
+          projectTitle={projectTitle}
+          videoCrop={videoCrop}
           className={base}
         />
       );

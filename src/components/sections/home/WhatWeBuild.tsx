@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/Container";
+import { useLenis } from "@/components/layout/LenisProvider";
 import { ClipReveal } from "@/components/motion/ClipReveal";
 import { Mockup } from "@/components/portfolio/mockups";
 import type { MockupKind } from "@/types/portfolio";
@@ -20,15 +21,23 @@ type Step = {
   url?: string;
   /** Domain shown in the mock browser bar (kind="laptop-video"). */
   address?: string;
+  /** Several projects behind one step: its tags become a slider. */
+  projects?: readonly ShowcaseProject[];
 };
 
-type WebsiteProject = {
+type ShowcaseProject = {
   id: string;
   label: string;
   title: string;
+  /** YouTube id; empty → the mockup's placeholder UI. */
   video: string;
-  /** The live site's domain — shown as the "visit" link, and the video title. */
-  address: string;
+  /** Text in the mockup's address bar / laptop label. */
+  address?: string;
+  /** Public domain, if any — shown between the arrows as a "visit" link.
+   *  Internal systems have none, and show their name instead. */
+  site?: string;
+  /** Crop for a recording that isn't a clean 16:9 capture (browser-video). */
+  videoCrop?: { scale: number; top: number };
   accent: string;
   /** Text colour on a fill of `accent` (the active tag), picked for contrast. */
   ink: string;
@@ -39,13 +48,14 @@ type WebsiteProject = {
   }[];
 };
 
-const websiteProjects: WebsiteProject[] = [
+const websiteProjects: ShowcaseProject[] = [
   {
     id: "corporate",
     label: "Корпоративные сайты",
     title: "Avangard Style",
     video: "o1USBxQkmvU",
     address: "avangardstyle.kg",
+    site: "avangardstyle.kg",
     // Accents tint the tags, arrows and link on the dark canvas, so each is
     // its brand colour lifted until it reads on #08080a. Both brands are
     // blue, so they are kept apart by hue and weight: Avangard's bright
@@ -64,6 +74,7 @@ const websiteProjects: WebsiteProject[] = [
     title: "Toolor",
     video: "nNYSL7SbYsM",
     address: "toolor.store",
+    site: "toolor.store",
     // Toolor's logo #0033a1, lifted — and dark enough to want white text.
     accent: "#3d63f5",
     ink: "#ffffff",
@@ -82,6 +93,7 @@ const websiteProjects: WebsiteProject[] = [
     title: "Bilmont",
     video: "SO5efpX3Xw0",
     address: "bilmont.school",
+    site: "bilmont.school",
     accent: "#9cba6e",
     ink: "#0a0a0a",
     mobileScreens: [
@@ -91,6 +103,40 @@ const websiteProjects: WebsiteProject[] = [
       { src: "/pr/9.jpg", width: 1290, height: 2560 },
       { src: "/pr/7.jpg", width: 1280, height: 2560 },
     ],
+  },
+];
+
+// CRM / ERP work: internal systems — no public site, no phone version, so
+// they play in a browser window and the slider names them instead of
+// linking out. The last two are placeholders until their recordings exist.
+const systemProjects: ShowcaseProject[] = [
+  {
+    id: "vodokanal",
+    label: "AIS",
+    title: "Бишкек суу Водоканал",
+    video: "z5q2Siv12X0",
+    // The recording is ~16:10 and includes the recorder's own Chrome tab
+    // and address bar: scaled 1.21× and lifted 19.6%, the window shows only
+    // the app — no pillarbox bars, no browser-inside-a-browser.
+    videoCrop: { scale: 1.21, top: 19.6 },
+    accent: "#2bd4c4",
+    ink: "#0a0a0a",
+  },
+  {
+    id: "crm",
+    label: "CRM",
+    title: "CRM-система",
+    video: "",
+    accent: "#7aa2ff",
+    ink: "#0a0a0a",
+  },
+  {
+    id: "erp",
+    label: "ERP",
+    title: "ERP-система",
+    video: "",
+    accent: "#ff8a5b",
+    ink: "#0a0a0a",
   },
 ];
 
@@ -107,6 +153,7 @@ const steps: Step[] = [
     url: "o1USBxQkmvU",
     address: "avangardstyle.kg",
     accent: "#0090fc",
+    projects: websiteProjects,
   },
   {
     n: "02",
@@ -123,9 +170,11 @@ const steps: Step[] = [
     label: "CRM / ERP",
     title: "CRM и ERP-системы ",
     desc: "Автоматизируем процессы, документооборот и продажи в единой системе, заточенной под ваш бизнес.",
-    tags: ["CRM", "ERP", "AIS"],
-    kind: "portal",
+    // Tags map to `systemProjects` by position — AIS first (Водоканал).
+    tags: ["AIS", "CRM", "ERP"],
+    kind: "browser-video",
     accent: "#2bd4c4",
+    projects: systemProjects,
   },
   // ── Шаг 04 (AI). Активен светлый редакционный вариант.
   //    Остальные варианты сохранены в комментариях для быстрого возврата. ──
@@ -229,39 +278,41 @@ const steps: Step[] = [
 
 export function WhatWeBuild() {
   const [active, setActive] = useState(0);
-  const [websiteProjectIndex, setWebsiteProjectIndex] = useState(0);
+  // Which project each slider step is showing, keyed by step number.
+  const [projectIndexByStep, setProjectIndexByStep] = useState<
+    Record<string, number>
+  >({});
   const blockRefs = useRef<(HTMLDivElement | null)[]>([]);
   // The mobile and the sticky desktop column used to BOTH sit in the DOM,
   // hidden from each other only by CSS — so every live-site iframe and the
   // video player were fetched twice on every visit. Mount one or the other.
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const websiteProject = websiteProjects[websiteProjectIndex];
 
-  const showPreviousWebsite = () => {
-    setWebsiteProjectIndex((current) =>
-      (current - 1 + websiteProjects.length) % websiteProjects.length,
-    );
+  const projectOf = (step: Step) =>
+    step.projects?.[projectIndexByStep[step.n] ?? 0];
+
+  const sliderFor = (step: Step): SliderState | undefined => {
+    const projects = step.projects;
+    if (!projects?.length) return undefined;
+    const n = projects.length;
+    const activeIndex = projectIndexByStep[step.n] ?? 0;
+    const select = (index: number) =>
+      setProjectIndexByStep((current) => ({ ...current, [step.n]: index }));
+    return {
+      projects,
+      activeIndex,
+      onSelect: select,
+      onPrevious: () => select((activeIndex - 1 + n) % n),
+      onNext: () => select((activeIndex + 1) % n),
+    };
   };
 
-  const showNextWebsite = () => {
-    setWebsiteProjectIndex((current) =>
-      (current + 1) % websiteProjects.length,
-    );
-  };
-
-  const websiteSliderControls: WebsiteSliderControls = {
-    activeIndex: websiteProjectIndex,
-    onSelect: setWebsiteProjectIndex,
-    onPrevious: showPreviousWebsite,
-    onNext: showNextWebsite,
-  };
-
-  // Horizontal swipe on the inline (phone/tablet) laptop changes project.
+  // Horizontal swipe on an inline (phone/tablet) mockup changes project.
   // `pan-y` keeps vertical scrolling native while handing horizontal
   // gestures to us; a mostly-vertical drag or a tap (e.g. opening a phone
   // screenshot) is ignored.
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
-  const websiteSwipe = {
+  const swipeFor = (slider: SliderState) => ({
     style: { touchAction: "pan-y" } as React.CSSProperties,
     onPointerDown: (event: React.PointerEvent) => {
       swipeStart.current = { x: event.clientX, y: event.clientY };
@@ -273,13 +324,126 @@ export function WhatWeBuild() {
       const dx = event.clientX - start.x;
       const dy = event.clientY - start.y;
       if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-      if (dx < 0) showNextWebsite();
-      else showPreviousWebsite();
+      if (dx < 0) slider.onNext();
+      else slider.onPrevious();
     },
     onPointerCancel: () => {
       swipeStart.current = null;
     },
-  };
+  });
+
+  // ── Step paging (desktop) ──
+  // Free scrolling could leave the page between two steps: last step's copy
+  // dimmed, the sticky device mid-swap. Here one wheel/trackpad gesture
+  // glides to the next (or previous) step and the page never rests between
+  // them. It acts only between the first and the last step: the way in and
+  // out is ordinary scrolling, and scrolling up from the first or down from
+  // the last carries on as normal, so the section never traps you. Lenis owns the scroll, so this is desktop-only — touch keeps
+  // native scrolling (Lenis is off there, and `lenis` is null).
+  const lenis = useLenis();
+  useEffect(() => {
+    if (!lenis || !isDesktop) return;
+
+    const DURATION = 1.15;
+    const QUIET_MS = 180;
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    // Scroll positions that centre each step block in the viewport.
+    const points = () =>
+      blockRefs.current
+        .filter((el): el is HTMLDivElement => Boolean(el))
+        .map((el) => {
+          const r = el.getBoundingClientRect();
+          return Math.round(
+            window.scrollY + r.top + r.height / 2 - window.innerHeight / 2,
+          );
+        });
+
+    let animating = false;
+    // After a glide, a trackpad keeps emitting inertia for a moment; wait for
+    // a short silence so one swipe can't page twice.
+    let waitForQuiet = false;
+    let lastWheel = 0;
+    let settleTimer = 0;
+
+    const glide = (y: number) => {
+      animating = true;
+      lenis.scrollTo(y, {
+        duration: DURATION,
+        easing: easeInOutCubic,
+        lock: true,
+        onComplete: () => {
+          animating = false;
+          waitForQuiet = true;
+        },
+      });
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey) return; // pinch-zoom
+      const now = performance.now();
+      const sinceLast = now - lastWheel;
+      lastWheel = now;
+
+      const pts = points();
+      if (!pts.length) return;
+      const first = pts[0];
+      const last = pts[pts.length - 1];
+      const y = lenis.scroll;
+      // Only inside the projects block — between the first and the last
+      // step. Reaching out to catch the page on its way in (it used to grab
+      // from 60% of a screen away, over the manifesto) felt like the site
+      // jerking; outside the block, scrolling is left alone.
+      if (y < first - 2 || y > last + 2) return;
+
+      const swallow = () => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      };
+      if (animating) return swallow();
+      if (waitForQuiet) {
+        if (sinceLast < QUIET_MS) return swallow();
+        waitForQuiet = false;
+      }
+      if (Math.abs(event.deltaY) < 2) return;
+
+      const target =
+        event.deltaY > 0
+          ? pts.find((p) => p > y + 4)
+          : [...pts].reverse().find((p) => p < y - 4);
+      // Past the last step going down, or before the first going up.
+      if (target === undefined) return;
+      swallow();
+      glide(target);
+    };
+
+    // Scrollbar drags and keyboard scrolling bypass the wheel: if they stop
+    // between two steps, ease to the nearest one.
+    const offScroll = lenis.on("scroll", () => {
+      if (animating) return;
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        const pts = points();
+        if (pts.length < 2) return;
+        const y = lenis.scroll;
+        if (y <= pts[0] || y >= pts[pts.length - 1]) return;
+        const nearest = pts.reduce((a, b) =>
+          Math.abs(b - y) < Math.abs(a - y) ? b : a,
+        );
+        if (Math.abs(nearest - y) > 6) glide(nearest);
+      }, 220);
+    });
+
+    // Capture on window: runs before Lenis' own wheel listener, so a
+    // swallowed event never reaches it.
+    window.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    return () => {
+      window.removeEventListener("wheel", onWheel, { capture: true });
+      offScroll();
+      window.clearTimeout(settleTimer);
+    };
+  }, [lenis, isDesktop]);
 
   // Drive the active step from which block is centered in the viewport.
   // CSS sticky handles the visual — no fragile ScrollTrigger pin.
@@ -311,7 +475,11 @@ export function WhatWeBuild() {
   return (
     <section className="relative overflow-x-clip border-t border-line">
       <Container>
-        <div className="pt-24 md:pt-28">
+        {/* Below lg the title leads the section on its own. On desktop it
+            moves into the first step (below): each step is a screen tall
+            with its copy centred, so a standalone title sat half a screen
+            above the first project, with nothing in between. */}
+        <div className="pt-24 md:pt-28 lg:hidden">
           <Header />
         </div>
 
@@ -323,13 +491,10 @@ export function WhatWeBuild() {
               container on 320px phones. */}
           <div className="min-w-0">
             {steps.map((step, i) => {
-              const isWebsiteStep = i === 0;
-              const visualAccent = isWebsiteStep
-                ? websiteProject.accent
-                : step.accent;
-              const visualKey = isWebsiteStep
-                ? websiteProject.id
-                : step.kind;
+              const project = projectOf(step);
+              const slider = sliderFor(step);
+              const visualAccent = project?.accent ?? step.accent;
+              const visualKey = project ? `${step.n}-${project.id}` : step.kind;
 
               return (
                 <div
@@ -341,18 +506,21 @@ export function WhatWeBuild() {
                   className="flex min-h-[68vh] flex-col justify-center gap-7 py-10 lg:min-h-screen lg:py-0"
                   style={{ "--m-accent": visualAccent } as React.CSSProperties}
                 >
+                  {i === 0 && (
+                    <div className="hidden lg:mb-5 lg:block">
+                      <Header />
+                    </div>
+                  )}
                   <StepCopy
                     step={step}
                     active={i === active}
-                    websiteSlider={
-                      isWebsiteStep ? websiteSliderControls : undefined
-                    }
+                    slider={slider}
                   />
 
                   {/* Mobile inline mockup (reveals on scroll) */}
                   {!isDesktop && (
-                    // Swipe the laptop to change project (website step).
-                    <div {...(isWebsiteStep ? websiteSwipe : {})}>
+                    // Swipe the mockup to change project (slider steps).
+                    <div {...(slider ? swipeFor(slider) : {})}>
                     <ClipReveal
                       className={cn(
                         "rounded-xl lg:hidden",
@@ -362,6 +530,7 @@ export function WhatWeBuild() {
                           "-mx-5 rounded-none sm:-mx-8",
                         step.kind !== "phone" &&
                           step.kind !== "laptop-video" &&
+                          step.kind !== "browser-video" &&
                           step.kind !== "assistant-enhanced" &&
                           step.kind !== "assistant-editorial" &&
                           step.kind !== "automation" &&
@@ -372,8 +541,11 @@ export function WhatWeBuild() {
                       <div
                         className={cn(
                           "relative w-full",
-                          step.kind === "phone" && "aspect-[4/7]",
+                          step.kind === "phone" && "aspect-4/7",
+                          // Tab strip + toolbar over a 16:9 viewport.
+                          step.kind === "browser-video" && "aspect-9/7",
                           step.kind !== "phone" &&
+                            step.kind !== "browser-video" &&
                             (step.kind === "laptop-video" ||
                             step.kind === "assistant-enhanced" ||
                             step.kind === "assistant-editorial" ||
@@ -388,35 +560,22 @@ export function WhatWeBuild() {
                           kind={step.kind}
                           accent={visualAccent}
                           live={step.kind === "chat"}
-                          url={
-                            isWebsiteStep
-                              ? websiteProject.video
-                              : step.url
-                          }
-                          address={
-                            isWebsiteStep
-                              ? websiteProject.address
-                              : step.address
-                          }
-                          projectTitle={
-                            isWebsiteStep ? websiteProject.title : undefined
-                          }
-                          mobileScreens={
-                            isWebsiteStep
-                              ? websiteProject.mobileScreens
-                              : undefined
-                          }
+                          url={project ? project.video : step.url}
+                          address={project ? project.address : step.address}
+                          projectTitle={project?.title}
+                          mobileScreens={project?.mobileScreens}
+                          videoCrop={project?.videoCrop}
                         />
                       </div>
                     </ClipReveal>
                     </div>
                   )}
 
-                  {/* Below lg the project controls sit under the laptop,
+                  {/* Below lg the project controls sit under the mockup,
                       centred on it — right next to what they change. */}
-                  {!isDesktop && isWebsiteStep && (
+                  {!isDesktop && slider && (
                     <SliderControls
-                      controls={websiteSliderControls}
+                      controls={slider}
                       className="-mt-2 justify-center lg:hidden"
                     />
                   )}
@@ -431,10 +590,8 @@ export function WhatWeBuild() {
             <div className="sticky top-0 flex h-screen items-center justify-center">
               <div className="relative h-[65vh] w-full">
                 {steps.map((step, i) => {
-                  const isWebsiteStep = i === 0;
-                  const visualAccent = isWebsiteStep
-                    ? websiteProject.accent
-                    : step.accent;
+                  const project = projectOf(step);
+                  const visualAccent = project?.accent ?? step.accent;
 
                   // `inert`, not just `pointer-events-none`: some mocks set
                   // `pointer-events: auto` on their own panels, which beats
@@ -453,22 +610,15 @@ export function WhatWeBuild() {
                     style={{ "--m-accent": visualAccent } as React.CSSProperties}
                   >
                     <Mockup
-                      key={isWebsiteStep ? websiteProject.id : step.kind}
+                      key={project ? `${step.n}-${project.id}` : step.kind}
                       kind={step.kind}
                       accent={visualAccent}
                       live={i === active && step.kind === "chat"}
-                      url={isWebsiteStep ? websiteProject.video : step.url}
-                      address={
-                        isWebsiteStep ? websiteProject.address : step.address
-                      }
-                      projectTitle={
-                        isWebsiteStep ? websiteProject.title : undefined
-                      }
-                      mobileScreens={
-                        isWebsiteStep
-                          ? websiteProject.mobileScreens
-                          : undefined
-                      }
+                      url={project ? project.video : step.url}
+                      address={project ? project.address : step.address}
+                      projectTitle={project?.title}
+                      mobileScreens={project?.mobileScreens}
+                      videoCrop={project?.videoCrop}
                     />
                   </div>
                   );
@@ -484,22 +634,23 @@ export function WhatWeBuild() {
 }
 
 function Header() {
-  // One centred line: a short section title alone, over both columns. The
+  // One line: a short section title alone, left-aligned with the grid. The
   // "Полный цикл…" aside is gone — it competed with the title for a job
   // the steps below already do.
   return (
-    <div className="text-center">
+    <div>
       {/* <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
         Что мы создаём
       </p> */}
       <h2 className="text-balance font-display text-[clamp(2rem,4.5vw,3.4rem)] font-semibold leading-tight tracking-tight text-fg">
-        Наши работы
+        Наши проекты
       </h2>
     </div>
   );
 }
 
-type WebsiteSliderControls = {
+type SliderState = {
+  projects: readonly ShowcaseProject[];
   activeIndex: number;
   onSelect: (index: number) => void;
   onPrevious: () => void;
@@ -509,11 +660,11 @@ type WebsiteSliderControls = {
 function StepCopy({
   step,
   active,
-  websiteSlider,
+  slider,
 }: {
   step: Step;
   active: boolean;
-  websiteSlider?: WebsiteSliderControls;
+  slider?: SliderState;
 }) {
   return (
     <div
@@ -536,24 +687,24 @@ function StepCopy({
       </p>
       <div className="mt-6 flex flex-wrap gap-2">
         {step.tags.map((t, index) =>
-          websiteSlider ? (
+          slider ? (
             // Active = filled with the project colour, the rest = neutral
             // outlines. It used to be two shades of the same tint, and on
             // the dark canvas you couldn't tell which project was showing.
             <button
               key={t}
               type="button"
-              onClick={() => websiteSlider.onSelect(index)}
-              aria-pressed={websiteSlider.activeIndex === index}
+              onClick={() => slider.onSelect(index)}
+              aria-pressed={slider.activeIndex === index}
               className={cn(
                 "rounded-full border px-3 py-1 text-xs transition-all duration-300",
-                websiteSlider.activeIndex === index
+                slider.activeIndex === index
                   ? "border-transparent bg-m font-medium shadow-[0_0_22px_color-mix(in_srgb,var(--m-accent)_35%,transparent)]"
                   : "border-line text-fg-secondary hover:border-m hover:text-m",
               )}
               style={
-                websiteSlider.activeIndex === index
-                  ? { color: websiteProjects[index].ink }
+                slider.activeIndex === index
+                  ? { color: slider.projects[index]?.ink }
                   : undefined
               }
             >
@@ -572,21 +723,28 @@ function StepCopy({
 
       {/* Desktop: under the tags. Below lg the same controls sit under the
           laptop instead (see WhatWeBuild), next to the thing they change. */}
-      {websiteSlider && (
-        <SliderControls controls={websiteSlider} className="mt-4 hidden lg:flex" />
+      {slider && (
+        <SliderControls controls={slider} className="mt-4 hidden lg:flex" />
       )}
     </div>
   );
 }
 
-/** Prev / live-site link / next for the website projects. */
+/** Prev / project / next. The middle names the project on screen — a
+ *  "visit" link when it has a public site, its name when it doesn't. */
 function SliderControls({
   controls,
   className,
 }: {
-  controls: WebsiteSliderControls;
+  controls: SliderState;
   className?: string;
 }) {
+  const project = controls.projects[controls.activeIndex];
+  // Fixed width so the «next» arrow doesn't jump under the pointer when
+  // the name changes length.
+  const middle =
+    "inline-flex min-w-44 animate-[m-rise-in_400ms_ease-out] items-center justify-center gap-1.5 px-2 text-sm font-medium text-fg";
+
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <button
@@ -597,27 +755,29 @@ function SliderControls({
       >
         <ArrowLeft size={15} />
       </button>
-      {/* The project on screen, between the arrows, as a way to go and
-          see it — the tags name the category, this names (and opens) the
-          real site. Fixed width (the longest domain) so the «next» arrow
-          doesn't jump under the pointer when the name changes. */}
-      <a
-        key={controls.activeIndex}
-        href={`https://${websiteProjects[controls.activeIndex].address}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`Открыть сайт ${websiteProjects[controls.activeIndex].address} в новой вкладке`}
-        data-cursor="link"
-        className="group/site inline-flex min-w-38 animate-[m-rise-in_400ms_ease-out] items-center justify-center gap-1.5 px-2 text-sm font-medium text-fg transition-colors duration-300 hover:text-m"
-      >
-        <span className="border-b border-m/40 pb-0.5 transition-colors duration-300 group-hover/site:border-m">
-          {websiteProjects[controls.activeIndex].address}
+      {project?.site ? (
+        <a
+          key={controls.activeIndex}
+          href={`https://${project.site}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Открыть сайт ${project.site} в новой вкладке`}
+          data-cursor="link"
+          className={cn(middle, "group/site transition-colors duration-300 hover:text-m")}
+        >
+          <span className="border-b border-m/40 pb-0.5 transition-colors duration-300 group-hover/site:border-m">
+            {project.site}
+          </span>
+          <ArrowUpRight
+            size={15}
+            className="shrink-0 text-m transition-transform duration-300 group-hover/site:-translate-y-0.5 group-hover/site:translate-x-0.5"
+          />
+        </a>
+      ) : (
+        <span key={controls.activeIndex} aria-live="polite" className={middle}>
+          {project?.title}
         </span>
-        <ArrowUpRight
-          size={15}
-          className="shrink-0 text-m transition-transform duration-300 group-hover/site:-translate-y-0.5 group-hover/site:translate-x-0.5"
-        />
-      </a>
+      )}
       <button
         type="button"
         onClick={controls.onNext}

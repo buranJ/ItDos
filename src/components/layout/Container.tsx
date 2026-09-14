@@ -10,7 +10,9 @@ const sizeClasses = {
   sm: "max-w-3xl",
   md: "max-w-5xl",
   lg: "max-w-6xl",
-  xl: "max-w-7xl",
+  // 90rem (1440px): at 1280 a 1512px laptop screen left ~160px of empty
+  // margin a side. Screens under 1440 are unaffected.
+  xl: "max-w-[90rem]",
   full: "max-w-full",
 };
 

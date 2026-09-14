@@ -58,6 +58,7 @@ export type MockupKind =
   | "phone"
   | "laptop"
   | "laptop-video"
+  | "browser-video"
   | "showcase"
   | "flow"
   | "agent"

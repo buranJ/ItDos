@@ -122,13 +122,13 @@ export function Header() {
         data-header-island
         className={cn(
           // `lg:pl-12` lines the logo up with the page's content edge
-          // (Container is max-w-7xl with lg:px-12), so the island reads as
+          // (Container is max-w-[90rem] with lg:px-12), so the island reads as
           // part of the grid rather than floating loose above it.
           "mx-auto flex items-center justify-between gap-4 rounded-full border py-2 pl-4 pr-2 sm:pl-5 lg:pl-12",
           settled && "transition-all duration-500",
           // Contracting on scroll gives a physical sense of the page moving
           // past a fixed object, without changing its height.
-          scrolled ? "max-w-5xl" : "max-w-7xl",
+          scrolled ? "max-w-6xl" : "max-w-[90rem]",
           onLight
             ? scrolled
               ? "border-black/8 bg-white/80 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.18)] backdrop-blur-2xl"

@@ -1,0 +1,387 @@
+.scene {
+  --bv-accent: #2bd4c4;
+  /* Height of the tab strip + toolbar, used to fit a 16:9 viewport. */
+  --bv-chrome: 4.9rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  container-type: size;
+  animation: bvSwapIn 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Much wider than its column so a recorded interface stays legible. It is
+   pinned to the column's right edge and overhangs into the page margin
+   (12%) and leftwards into the gap — the copy on the left is only
+   max-w-md, so it never reaches it. Narrower in the 1024–1279 band, where
+   there's less room. The height cap keeps the 16:9 viewport in the box. */
+.window {
+  position: relative;
+  flex: none;
+  width: min(118cqw, (100cqh - var(--bv-chrome)) * 16 / 9);
+  margin-right: -4cqw;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.85rem;
+  background: #202124;
+  box-shadow:
+    0 40px 90px -20px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+/* The rightward overhang never exceeds the real page margin (the space
+   between the 90rem container and the viewport edge, keeping 1rem clear),
+   so the window isn't cut off where that margin is only the 3rem gutter. */
+@media (min-width: 80rem) {
+  .window {
+    width: min(136cqw, (100cqh - var(--bv-chrome)) * 16 / 9);
+    margin-right: calc(-1 * min(12cqw, max(2rem, (100vw - 90rem) / 2 + 2rem)));
+  }
+}
+
+/* ── Tab strip ── */
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  height: 2.35rem;
+  padding: 0 0.75rem;
+  background: #1a1b1e;
+}
+
+.lights {
+  display: flex;
+  align-self: center;
+  gap: 0.4rem;
+  margin-right: 0.35rem;
+}
+
+.lights span {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.lights span:nth-child(2) {
+  background: #febc2e;
+}
+
+.lights span:nth-child(3) {
+  background: #28c840;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  max-width: 15rem;
+  height: 1.9rem;
+  padding: 0 0.85rem;
+  border-radius: 0.6rem 0.6rem 0 0;
+  background: #35363a;
+}
+
+.favicon {
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 0.2rem;
+  background: var(--bv-accent);
+}
+
+.tabTitle {
+  overflow: hidden;
+  color: #e8eaed;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.newTab {
+  align-self: center;
+  width: 0.9rem;
+  height: 0.9rem;
+  color: #9aa0a6;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  height: 2.55rem;
+  padding: 0 0.85rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+  background: #35363a;
+  color: #9aa0a6;
+}
+
+.toolbar > svg {
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.omnibox {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  height: 1.75rem;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  background: #202124;
+  color: #bdc1c6;
+  font-size: 0.72rem;
+}
+
+.omnibox svg {
+  flex: none;
+  width: 0.72rem;
+  height: 0.72rem;
+}
+
+.omnibox span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Viewport ── */
+.viewport {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #0d0e10;
+}
+
+.viewport iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.loader {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.8rem;
+  color: #f4f2ed;
+  background:
+    radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--bv-accent) 22%, transparent), transparent 55%),
+    #0d0e10;
+  transition: opacity 400ms ease;
+}
+
+.loaderDone {
+  opacity: 0;
+}
+
+.loader strong {
+  font-family: var(--font-space-grotesk);
+  font-size: clamp(0.9rem, 3.2cqh, 1.35rem);
+  font-weight: 600;
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-top-color: var(--bv-accent);
+  border-radius: 50%;
+  animation: bvSpin 900ms linear infinite;
+}
+
+/* ── Placeholder app (no recording yet) ── */
+.app {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 17% 1fr;
+  background: #111215;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1rem 0.8rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: #16171b;
+}
+
+.brand {
+  width: 60%;
+  height: 0.7rem;
+  margin-bottom: 0.6rem;
+  border-radius: 0.3rem;
+  background: var(--bv-accent);
+}
+
+.navItem {
+  height: 0.55rem;
+  border-radius: 0.3rem;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.navActive {
+  background: color-mix(in srgb, var(--bv-accent) 55%, transparent);
+}
+
+.main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 0.6rem;
+  background: #16171b;
+}
+
+.kpi span {
+  width: 55%;
+  height: 0.4rem;
+  border-radius: 0.2rem;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.kpi strong {
+  width: 38%;
+  height: 0.85rem;
+  border-radius: 0.25rem;
+  background: color-mix(in srgb, var(--bv-accent) 70%, transparent);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 0.6rem;
+  background: #16171b;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.7rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.avatar {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cell {
+  height: 0.45rem;
+  border-radius: 0.25rem;
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.badge {
+  width: 2.6rem;
+  height: 0.9rem;
+  margin-left: auto;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+.badgeOn {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--bv-accent) 30%, transparent);
+}
+
+.soon {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 0.9rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--bv-accent) 40%, transparent);
+  border-radius: 999px;
+  color: var(--bv-accent);
+  font-family: var(--font-geist-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(13, 14, 16, 0.8);
+}
+
+/* Inline on phones/tablets the box is the full column: no overhang, and a
+   slightly smaller chrome. */
+@media (max-width: 63.999rem) {
+  .scene {
+    --bv-chrome: 4.4rem;
+    justify-content: center;
+  }
+
+  .window {
+    width: min(100cqw, (100cqh - var(--bv-chrome)) * 16 / 9);
+    margin-right: 0;
+    border-radius: 0.7rem;
+  }
+
+  .tabs {
+    height: 2.1rem;
+  }
+
+  .toolbar {
+    height: 2.3rem;
+    gap: 0.6rem;
+  }
+}
+
+@keyframes bvSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bvSwapIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .spinner {
+    animation: none;
+  }
+}

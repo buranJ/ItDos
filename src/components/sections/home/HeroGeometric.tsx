@@ -407,7 +407,7 @@ export function HeroGeometric() {
             can take clicks; only the card itself is `pointer-events-auto`,
             the chips stay decorative and click-through. */}
         <div className="pointer-events-none absolute inset-0 z-20 hidden lg:block">
-          <div className="relative mx-auto h-full max-w-7xl">
+          <div className="relative mx-auto h-full max-w-[90rem]">
             <div
               className="absolute left-[79%] top-1/2 h-0 w-0"
               style={{ scale: "var(--hg-s, 1)" }}
