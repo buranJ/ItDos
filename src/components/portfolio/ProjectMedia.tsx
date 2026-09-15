@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { PortfolioProject } from "@/types/portfolio";
 import { Mockup } from "./mockups";
+import { showcaseMedia } from "@/data/showcaseMedia";
 import { cn } from "@/lib/utils";
 
 type ProjectMediaProps = {
@@ -10,6 +11,9 @@ type ProjectMediaProps = {
   /** Pass-through for live mockup behaviours (e.g. chat typing). */
   live?: boolean;
   sizes?: string;
+  /** False where the media sits inside a link (list rows, "next project"):
+   *  a live mockup then has no controls and takes no clicks. */
+  interactive?: boolean;
 };
 
 /**
@@ -23,8 +27,57 @@ export function ProjectMedia({
   priority,
   live,
   sizes = "(max-width: 768px) 100vw, 55vw",
+  interactive = true,
 }: ProjectMediaProps) {
   const { coverVideo, coverImage, mockup, accent, title } = project;
+  const media = showcaseMedia[project.slug];
+
+  // Live device mockup — the screen recording in a laptop or a browser
+  // window, the phone screenshots — the same one as on the home page.
+  if (media) {
+    return (
+      <div
+        className={cn(
+          "relative flex h-full w-full items-center justify-center overflow-hidden",
+          className,
+        )}
+        // Inside a link the mockup is a picture: `inert` keeps its player
+        // controls out of the tab order and lets clicks reach the link.
+        inert={!interactive}
+      >
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background: `radial-gradient(120% 120% at 50% -10%, color-mix(in oklab, ${
+              accent ?? "var(--color-accent)"
+            } 18%, transparent), transparent 60%)`,
+          }}
+        />
+        {/* The laptop artwork carries wide transparent margins, so its box
+            is narrower than the frame; the browser window fills it. */}
+        <div
+          className={cn(
+            "relative",
+            media.kind === "laptop-video" ? "h-full w-[76%]" : "h-[86%] w-[88%]",
+          )}
+          style={{ "--m-accent": accent } as React.CSSProperties}
+        >
+          <Mockup
+            kind={media.kind}
+            accent={accent}
+            url={media.video}
+            address={media.address}
+            projectTitle={title}
+            mobileScreens={media.mobileScreens}
+            videoCrop={media.videoCrop}
+            controls={interactive}
+            centered
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (coverVideo) {
     return (

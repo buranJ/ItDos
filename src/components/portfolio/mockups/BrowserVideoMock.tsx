@@ -9,6 +9,7 @@ import {
   VideoLightbox,
   usePauseWhileFullView,
 } from "./VideoLightbox";
+import { BrandVideoLoader, videoBrand } from "./LaptopVideoMock";
 import styles from "./BrowserVideoMock.module.css";
 
 type Props = {
@@ -27,6 +28,17 @@ type Props = {
   videoCrop?: { scale: number; top: number };
   /** False while this step isn't on screen — no player is created. */
   active?: boolean;
+  /** False where the mockup is only a picture inside a link: no
+   *  full-screen button. */
+  controls?: boolean;
+  /** Fit the window inside its box, centred — no overhang (portfolio). */
+  centered?: boolean;
+  /** "minimal": one bar — three dots and the address, centred — instead of
+   *  Chrome's tab strip and toolbar. */
+  chrome?: "full" | "minimal";
+  /** Width-driven: the window fills its box's width and takes the height
+   *  it needs, instead of fitting into a box of fixed height. */
+  fluid?: boolean;
 };
 
 /** Minimum time the loader stays up, so it reads as a beat, not a flash;
@@ -54,6 +66,10 @@ export function BrowserVideoMock({
   className,
   videoCrop,
   active = true,
+  controls = true,
+  centered = false,
+  chrome = "full",
+  fluid = false,
 }: Props) {
   const id = url ? ytId(url) : "";
   const [viewRef, seen] = useInView<HTMLDivElement>("0px");
@@ -65,15 +81,14 @@ export function BrowserVideoMock({
   const [fullView, setFullView] = useState(false);
   usePauseWhileFullView(playerRef, fullView);
   const branded = projectTitle.toLowerCase().includes("водоканал");
+  const brand = videoBrand(projectTitle, address);
+  const introMs = branded || brand ? BRANDED_LOADER_MIN_MS : LOADER_MIN_MS;
 
   useEffect(() => {
     if (!inView || !id) return;
-    const timer = window.setTimeout(
-      () => setMinElapsed(true),
-      branded ? BRANDED_LOADER_MIN_MS : LOADER_MIN_MS,
-    );
+    const timer = window.setTimeout(() => setMinElapsed(true), introMs);
     return () => window.clearTimeout(timer);
-  }, [branded, id, inView]);
+  }, [introMs, id, inView]);
 
   // Fade, THEN unmount — dropping it the moment it was ready skipped the
   // fade entirely and the loader vanished in one frame.
@@ -92,10 +107,29 @@ export function BrowserVideoMock({
 
   return (
     <div
-      className={cn(styles.scene, className)}
+      className={cn(
+        styles.scene,
+        centered && styles.centered,
+        chrome === "minimal" && styles.minimal,
+        fluid && styles.fluid,
+        className,
+      )}
       style={{ "--bv-accent": accent } as React.CSSProperties}
     >
       <div className={styles.window}>
+        {chrome === "minimal" ? (
+          <div className={styles.bar} aria-hidden="true">
+            <span className={styles.lights}>
+              <span />
+              <span />
+              <span />
+            </span>
+            <span className={styles.address}>
+              {address ?? "Внутренняя система"}
+            </span>
+          </div>
+        ) : (
+        <>
         {/* ── Tab strip ── */}
         <div className={styles.tabs} aria-hidden="true">
           <span className={styles.lights}>
@@ -120,6 +154,8 @@ export function BrowserVideoMock({
             <span>{address ?? "Внутренняя система · защищённый доступ"}</span>
           </span>
         </div>
+        </>
+        )}
 
         {/* ── Viewport ── */}
         <div ref={viewRef} className={styles.viewport}>
@@ -147,10 +183,13 @@ export function BrowserVideoMock({
                   }
                 />
               )}
-              {loaderGone && (
+              {controls && loaderGone && (
                 <ExpandVideoButton onClick={() => setFullView(true)} />
               )}
-              {!loaderGone && (
+              {!loaderGone && brand && (
+                <BrandVideoLoader brand={brand} fading={loaderFading} />
+              )}
+              {!loaderGone && !brand && (
                 <div
                   className={cn(
                     styles.loader,

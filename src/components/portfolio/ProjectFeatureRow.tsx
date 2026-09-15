@@ -33,7 +33,7 @@ export function ProjectFeatureRow({
         )}
       >
         <div className="relative aspect-[16/11] overflow-hidden rounded-2xl transition-transform duration-700 ease-out group-hover:scale-[1.03]">
-          <ProjectMedia project={project} live />
+          <ProjectMedia project={project} live interactive={false} />
           {/* hover accent ring */}
           <div className="pointer-events-none absolute inset-0 rounded-2xl border border-m opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         </div>

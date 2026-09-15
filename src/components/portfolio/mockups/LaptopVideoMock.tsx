@@ -38,6 +38,12 @@ type Props = {
    *  switch (each project remounts the mockup). Uncontrolled if omitted. */
   view?: "desktop" | "mobile";
   onViewChange?: (view: "desktop" | "mobile") => void;
+  /** False where the mockup is only a picture inside a link (portfolio
+   *  list rows): no view toggle, no full-screen button. */
+  controls?: boolean;
+  /** Centre the devices in their box. By default (the home page column)
+   *  the group sits a little left so the laptop can grow into the gap. */
+  centered?: boolean;
 };
 
 const PLACEHOLDER_MOBILE_SCREENS: readonly MobileScreen[] = [
@@ -322,6 +328,32 @@ function BilmontLoader({ fading }: { fading: boolean }) {
   );
 }
 
+export type VideoBrand = "avangard" | "toolor" | "bilmont";
+
+/** Which project gets its own branded intro. Matched loosely: the home
+ *  slider calls it "Bilmont", the portfolio "Bilmont School". */
+export function videoBrand(title = "", address = ""): VideoBrand | null {
+  const key = `${title} ${address}`.toLowerCase();
+  if (key.includes("avangard")) return "avangard";
+  if (key.includes("toolor")) return "toolor";
+  if (key.includes("bilmont")) return "bilmont";
+  return null;
+}
+
+/** A project's branded intro over the video while it loads — also used by
+ *  the plain browser window. Fills the nearest positioned box. */
+export function BrandVideoLoader({
+  brand,
+  fading,
+}: {
+  brand: VideoBrand;
+  fading: boolean;
+}) {
+  if (brand === "avangard") return <AvangardLoader fading={fading} />;
+  if (brand === "toolor") return <ToolorLoader fading={fading} />;
+  return <BilmontLoader fading={fading} />;
+}
+
 export function LaptopVideoMock({
   url,
   address = "itdos.ru",
@@ -332,6 +364,8 @@ export function LaptopVideoMock({
   active = true,
   view: viewProp,
   onViewChange,
+  controls = true,
+  centered = false,
 }: Props) {
   const [innerView, setInnerView] = useState<"desktop" | "mobile">(
     viewProp ?? "desktop",
@@ -368,9 +402,7 @@ export function LaptopVideoMock({
   const lightboxScreens = allScreens.filter(
     (screen): screen is LightboxScreen => Boolean(screen.src),
   );
-  const usesAvangardLoader = address === "avangardstyle.kg";
-  const usesToolorLoader = projectTitle.toLowerCase() === "toolor";
-  const usesBilmontLoader = projectTitle.toLowerCase() === "bilmont";
+  const brand = videoBrand(projectTitle, address);
   const src =
     `https://www.youtube-nocookie.com/embed/${id}` +
     `?autoplay=1&mute=1&loop=1&playlist=${id}` +
@@ -622,9 +654,15 @@ export function LaptopVideoMock({
 
   return (
     <div
-      className={cn("relative h-full w-full", styles.scene, className)}
+      className={cn(
+        "relative h-full w-full",
+        styles.scene,
+        centered && styles.centered,
+        className,
+      )}
       style={{ "--scene-accent": accent } as React.CSSProperties}
     >
+      {controls && (
       <div className={styles.deviceToggle} aria-label="Формат просмотра">
         <button
           type="button"
@@ -651,6 +689,7 @@ export function LaptopVideoMock({
           <Smartphone size={15} strokeWidth={1.7} />
         </button>
       </div>
+      )}
 
       <div
         ref={photoStageRef}
@@ -674,12 +713,8 @@ export function LaptopVideoMock({
           )}
 
           {inView && view === "desktop" && id && !loaderHidden && (
-            usesAvangardLoader ? (
-              <AvangardLoader fading={loaderFading} />
-            ) : usesToolorLoader ? (
-              <ToolorLoader fading={loaderFading} />
-            ) : usesBilmontLoader ? (
-              <BilmontLoader fading={loaderFading} />
+            brand ? (
+              <BrandVideoLoader brand={brand} fading={loaderFading} />
             ) : (
               <ProjectVideoLoader
                 fading={loaderFading}
@@ -698,7 +733,7 @@ export function LaptopVideoMock({
 
           <div aria-hidden="true" className={styles.glass} />
 
-          {id && view === "desktop" && (
+          {controls && id && view === "desktop" && (
             <ExpandVideoButton onClick={() => setVideoFullView(true)} />
           )}
         </div>

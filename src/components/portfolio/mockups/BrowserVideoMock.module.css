@@ -39,6 +39,100 @@
   }
 }
 
+/* Fitted framing (portfolio): inside the box, centred, no overhang. */
+.centered {
+  justify-content: center;
+}
+
+.centered .window {
+  width: min(100cqw, (100cqh - var(--bv-chrome)) * 16 / 9);
+  margin-right: 0;
+}
+
+/* Width-driven: the box takes the window's height, not the other way round.
+   No size container, so nothing here may rely on the box's own height. */
+.fluid {
+  display: block;
+  container-type: normal;
+}
+
+.fluid .window {
+  width: 100%;
+  margin-right: 0;
+}
+
+/* ── Minimal chrome: one quiet bar, dots left, address centred ── */
+/* Doubled class: outranks the full chrome's height set on .scene in the
+   tablet media query further down. */
+.scene.minimal {
+  --bv-chrome: 2.7rem;
+}
+
+.minimal .window {
+  border-color: rgba(255, 255, 255, 0.09);
+  border-radius: clamp(0.75rem, 1.6cqi, 1.25rem);
+  background: #111114;
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 2.4fr) 1fr;
+  align-items: center;
+  height: var(--bv-chrome);
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: #151518;
+}
+
+/* Two dark dots and one in the project's colour, as on the other cards. */
+.bar .lights span,
+.bar .lights span:nth-child(2) {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.bar .lights span:nth-child(3) {
+  background: var(--bv-accent);
+}
+
+.address {
+  overflow: hidden;
+  height: 1.6rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  background: #0a0a0c;
+  color: #8b8b94;
+  font-size: 0.74rem;
+  line-height: 1.6rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+  .scene.minimal {
+    --bv-chrome: 2.2rem;
+  }
+
+  .bar {
+    padding: 0 0.7rem;
+  }
+
+  .bar .lights span,
+  .bar .lights span:nth-child(2),
+  .bar .lights span:nth-child(3) {
+    width: 0.45rem;
+    height: 0.45rem;
+  }
+
+  .address {
+    height: 1.3rem;
+    font-size: 0.64rem;
+    line-height: 1.3rem;
+  }
+}
+
 /* ── Tab strip ── */
 .tabs {
   display: flex;

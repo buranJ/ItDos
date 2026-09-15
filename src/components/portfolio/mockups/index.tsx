@@ -41,6 +41,10 @@ type MockupDispatchProps = {
   /** Controlled laptop/phones view for kind="laptop-video". */
   view?: "desktop" | "mobile";
   onViewChange?: (view: "desktop" | "mobile") => void;
+  /** False to hide the video mockups' controls (mockup inside a link). */
+  controls?: boolean;
+  /** Centre the video mockups in their box (portfolio framing). */
+  centered?: boolean;
   /** Crop for a browser-video recording (see BrowserVideoMock). */
   videoCrop?: { scale: number; top: number };
   /** Optional project-specific mobile screens for the laptop showcase. */
@@ -65,6 +69,8 @@ export function Mockup({
   active,
   view,
   onViewChange,
+  controls,
+  centered,
 }: MockupDispatchProps) {
   const base = cn("h-full w-full", className);
   switch (kind) {
@@ -115,6 +121,8 @@ export function Mockup({
           active={active}
           view={view}
           onViewChange={onViewChange}
+          controls={controls}
+          centered={centered}
           className={base}
         />
       );
@@ -127,6 +135,8 @@ export function Mockup({
           projectTitle={projectTitle}
           videoCrop={videoCrop}
           active={active}
+          controls={controls}
+          centered={centered}
           className={base}
         />
       );

@@ -782,6 +782,16 @@
   }
 }
 
+/* Centred framing (portfolio cards and case covers): undo the column shift. */
+.centered .deviceToggle,
+.centered .photoStage {
+  left: 50%;
+}
+
+.centered .mobileStage {
+  right: 0;
+}
+
 @media (max-width: 63.999rem) {
   /* Above whichever is higher — the laptop lid or the centre phone of the
      fan (its top: the stage centre, 59%, minus half its height) — with a

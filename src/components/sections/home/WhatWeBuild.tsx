@@ -8,6 +8,7 @@ import { ClipReveal } from "@/components/motion/ClipReveal";
 import { Mockup } from "@/components/portfolio/mockups";
 import type { MockupKind } from "@/types/portfolio";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { showcaseMedia } from "@/data/showcaseMedia";
 import { cn } from "@/lib/utils";
 
 type Step = {
@@ -53,7 +54,7 @@ const websiteProjects: ShowcaseProject[] = [
     id: "corporate",
     label: "Корпоративные сайты",
     title: "Avangard Style",
-    video: "o1USBxQkmvU",
+    video: showcaseMedia["avangard-style"].video,
     address: "avangardstyle.kg",
     site: "avangardstyle.kg",
     // Accents tint the tags, arrows and link on the dark canvas, so each is
@@ -62,47 +63,30 @@ const websiteProjects: ShowcaseProject[] = [
     // azure (its logo's #0090FC) against Toolor's deeper royal blue.
     accent: "#0090fc",
     ink: "#0a0a0a",
-    mobileScreens: [
-      { src: "/project/avangard-mob1.png", width: 430, height: 932 },
-      { src: "/project/avangard-mob2.png", width: 370, height: 772 },
-      { src: "/project/avangard-mob3.png", width: 370, height: 715 },
-    ],
+    mobileScreens: showcaseMedia["avangard-style"].mobileScreens,
   },
   {
     id: "store",
     label: "Интернет-магазины",
     title: "Toolor",
-    video: "nNYSL7SbYsM",
+    video: showcaseMedia.toolor.video,
     address: "toolor.store",
     site: "toolor.store",
     // Toolor's logo #0033a1, lifted — and dark enough to want white text.
     accent: "#3d63f5",
     ink: "#ffffff",
-    // Hero in the middle of the fan, the purchase path fanning out around it.
-    mobileScreens: [
-      { src: "/pr/3.jpg", width: 1319, height: 2371 },
-      { src: "/pr/5.jpg", width: 1319, height: 2336 },
-      { src: "/pr/4.jpg", width: 1316, height: 2155 },
-      { src: "/pr/2.jpg", width: 1269, height: 2560 },
-      { src: "/pr/1.jpg", width: 1272, height: 2560 },
-    ],
+    mobileScreens: showcaseMedia.toolor.mobileScreens,
   },
   {
     id: "landing",
     label: "Лендинги",
     title: "Bilmont",
-    video: "SO5efpX3Xw0",
+    video: showcaseMedia.bilmont.video,
     address: "bilmont.school",
     site: "bilmont.school",
     accent: "#9cba6e",
     ink: "#0a0a0a",
-    mobileScreens: [
-      { src: "/pr/8.jpg", width: 1305, height: 2560 },
-      { src: "/pr/6.jpg", width: 1316, height: 2553 },
-      { src: "/pr/10.jpg", width: 1316, height: 2560 },
-      { src: "/pr/9.jpg", width: 1290, height: 2560 },
-      { src: "/pr/7.jpg", width: 1280, height: 2560 },
-    ],
+    mobileScreens: showcaseMedia.bilmont.mobileScreens,
   },
 ];
 
@@ -114,11 +98,8 @@ const systemProjects: ShowcaseProject[] = [
     id: "vodokanal",
     label: "AIS",
     title: "Бишкек суу Водоканал",
-    video: "z5q2Siv12X0",
-    // The recording is ~16:10 and includes the recorder's own Chrome tab
-    // and address bar: scaled 1.21× and lifted 19.6%, the window shows only
-    // the app — no pillarbox bars, no browser-inside-a-browser.
-    videoCrop: { scale: 1.21, top: 19.6 },
+    video: showcaseMedia.bishkekvodokanal.video,
+    videoCrop: showcaseMedia.bishkekvodokanal.videoCrop,
     accent: "#2bd4c4",
     ink: "#0a0a0a",
   },

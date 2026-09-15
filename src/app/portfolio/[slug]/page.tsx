@@ -10,6 +10,8 @@ import { StaggerGroup } from "@/components/motion/StaggerGroup";
 import { ClipReveal } from "@/components/motion/ClipReveal";
 import { Parallax } from "@/components/motion/Parallax";
 import { ProjectMedia } from "@/components/portfolio/ProjectMedia";
+import { ShowcaseScreens } from "@/components/portfolio/ShowcaseScreens";
+import { showcaseMedia } from "@/data/showcaseMedia";
 import { ProjectGallery } from "@/components/portfolio/ProjectGallery";
 import { getProjects, getProjectBySlug } from "@/server/content";
 
@@ -38,6 +40,10 @@ export default async function CasePage({ params }: Props) {
   const nextProject = project.nextProject
     ? await getProjectBySlug(project.nextProject)
     : undefined;
+
+  // Live projects: the cover already plays the recording, so the gallery is
+  // their real phone screens (none for a desktop-only system).
+  const media = showcaseMedia[project.slug];
 
   const metaItems = [
     { label: "Клиент", value: project.client ?? project.title },
@@ -179,13 +185,28 @@ export default async function CasePage({ params }: Props) {
       </Section>
 
       {/* Gallery */}
-      <Section spacing="sm">
-        <Container>
-          <ProjectGallery project={project} />
-        </Container>
-      </Section>
+      {media ? (
+        media.mobileScreens?.length ? (
+          <Section spacing="sm">
+            <Container>
+              <ShowcaseScreens
+                screens={media.mobileScreens}
+                title={project.title}
+                accent={project.accent}
+              />
+            </Container>
+          </Section>
+        ) : null
+      ) : (
+        <Section spacing="sm">
+          <Container>
+            <ProjectGallery project={project} />
+          </Container>
+        </Section>
+      )}
 
-      {/* Results — dark peak */}
+      {/* Results — dark peak (only when there are facts to show) */}
+      {project.results.length > 0 && (
       <Section className="relative overflow-hidden border-y border-line">
         <div
           aria-hidden="true"
@@ -208,6 +229,7 @@ export default async function CasePage({ params }: Props) {
           </StaggerGroup>
         </Container>
       </Section>
+      )}
 
       {/* Goals / Challenges / Solutions */}
       <Section className="theme-light border-t border-line">
@@ -280,7 +302,7 @@ export default async function CasePage({ params }: Props) {
                 </span>
               </div>
               <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border border-line bg-panel transition-transform duration-700 ease-out group-hover:scale-[1.03]">
-                <ProjectMedia project={nextProject} />
+                <ProjectMedia project={nextProject} interactive={false} />
               </div>
             </Link>
           </Container>
