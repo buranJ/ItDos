@@ -9,7 +9,6 @@ import { getProjects } from "@/server/content";
 import { showcaseMedia } from "@/data/showcaseMedia";
 import { LiveShowcase } from "@/components/portfolio/live/LiveShowcase";
 import { VariantSwitcher } from "@/components/portfolio/live/VariantSwitcher";
-import { LIVE_VARIANTS } from "@/components/portfolio/live/variants";
 import type { PortfolioProject } from "@/types/portfolio";
 
 /** «1 кейс · 3 кейса · 7 кейсов». */
@@ -28,18 +27,11 @@ export const metadata: Metadata = {
     "Кейсы ITDOS: сайты, веб-приложения, CRM, маркетплейсы, AI-интеграции — с реальными результатами.",
 };
 
-export default async function PortfolioPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+// Static on purpose: no `searchParams` here (the layout trial reads `?v=`
+// in the browser) — a dynamic page renders on Netlify in a function without
+// the database.
+export default async function PortfolioPage() {
   const portfolioProjects = await getProjects();
-  // Layout of the «Живые проекты» section while the options are compared.
-  const requested = Number((await searchParams).v);
-  const variant =
-    Number.isInteger(requested) && requested >= 1 && requested <= LIVE_VARIANTS.length
-      ? requested
-      : 1;
   // Projects with a live demo (a screen recording, the same one as on the
   // home page) lead in their own section; the rest follow below until they
   // get their own recordings and move up.
@@ -75,8 +67,8 @@ export default async function PortfolioPage({
 
       {live.length > 0 && (
         <>
-          <LiveShowcase items={live} variant={variant} />
-          <VariantSwitcher current={variant} />
+          <LiveShowcase items={live} />
+          <VariantSwitcher />
         </>
       )}
 

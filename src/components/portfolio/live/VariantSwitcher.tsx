@@ -2,10 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
 import { useLenis } from "@/components/layout/LenisProvider";
 import { cn } from "@/lib/utils";
-import { LIVE_VARIANTS } from "./variants";
+import { LIVE_VARIANTS, setLiveVariant, useLiveVariant } from "./variants";
 
 const noop = () => () => {};
 
@@ -13,8 +12,8 @@ const noop = () => () => {};
  * Temporary floating picker for comparing the layouts. Switching keeps the
  * page and glides back to the top of the section. Remove once one is chosen.
  */
-export function VariantSwitcher({ current }: { current: number }) {
-  const router = useRouter();
+export function VariantSwitcher() {
+  const current = useLiveVariant();
   const lenis = useLenis();
   // Portalled: the page template animates its content with a transform,
   // which would pin a `fixed` child to the page instead of the screen.
@@ -25,7 +24,7 @@ export function VariantSwitcher({ current }: { current: number }) {
   );
 
   const go = (variant: number) => {
-    router.replace(`/portfolio?v=${variant}`, { scroll: false });
+    setLiveVariant(variant);
     const section = document.getElementById("live");
     if (!section) return;
     if (lenis) lenis.scrollTo(section, { offset: -40 });

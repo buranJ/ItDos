@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/Container";
@@ -16,18 +18,15 @@ import {
   type LiveItem,
 } from "./parts";
 import { LiveTabs } from "./LiveTabs";
+import { useLiveVariant } from "./variants";
 
 /**
  * «Живые проекты» — launched work shown by its real screen recording, each
  * in a plain browser window (no laptop), big: roughly half the screen.
+ * Client-side only so the layout can follow `?v=` on a static page.
  */
-export function LiveShowcase({
-  items,
-  variant,
-}: {
-  items: LiveItem[];
-  variant: number;
-}) {
+export function LiveShowcase({ items }: { items: LiveItem[] }) {
+  const variant = useLiveVariant();
   return (
     <Section id="live" className="scroll-mt-24 border-t border-line">
       <Container>
