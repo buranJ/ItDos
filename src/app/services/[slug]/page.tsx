@@ -9,6 +9,7 @@ import { FadeIn } from "@/components/motion/FadeIn";
 import { StaggerGroup } from "@/components/motion/StaggerGroup";
 import { CtaBanner } from "@/components/sections/shared/CtaBanner";
 import { getServices, getServiceBySlug } from "@/server/content";
+import { whatsappLink } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -124,14 +125,18 @@ export default async function ServicePage({ params }: Props) {
                 </ul>
               </div>
 
-              <Link
-                href="/contact"
+              <a
+                href={whatsappLink(
+                  `Здравствуйте! Интересует услуга «${service.title}».`,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
                 data-cursor="button"
                 className="inline-flex items-center gap-2 bg-accent text-accent-ink px-6 py-3 rounded-full text-sm font-medium hover:bg-accent-bright transition-colors w-fit"
               >
                 Обсудить проект
                 <ArrowRight size={14} />
-              </Link>
+              </a>
             </div>
           </div>
         </Container>

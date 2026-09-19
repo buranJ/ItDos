@@ -38,10 +38,13 @@ export function ClientMarquee() {
   // copy is what makes the loop seamless.
   const row = [...clients, ...clients];
 
+  // The mark passing the middle of the screen lights up — on every device,
+  // not just touch ones: on a laptop the strip reads as alive without the
+  // visitor having to chase a moving logo with the pointer. Hovering still
+  // wins (see `active` below). Runs only while the strip is on screen.
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let last = -1;
@@ -67,8 +70,16 @@ export function ClientMarquee() {
       rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    const io = new IntersectionObserver(([entry]) => {
+      cancelAnimationFrame(rafRef.current);
+      if (entry.isIntersecting) rafRef.current = requestAnimationFrame(tick);
+    });
+    io.observe(track);
+
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   return (

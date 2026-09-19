@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { Navigation } from "./Navigation";
 import { DesktopNav } from "./DesktopNav";
 import { cn } from "@/lib/utils";
+import { whatsappLink, defaultInquiry } from "@/lib/site";
 
 export const navLinks = [
   { label: "Услуги", href: "/services" },
@@ -183,8 +184,10 @@ export function Header() {
         <DesktopNav links={navLinks} onLight={onLight} />
 
         <div className="flex shrink-0 items-center gap-2">
-          <Link
-            href="/contact"
+          <a
+            href={whatsappLink(defaultInquiry)}
+            target="_blank"
+            rel="noopener noreferrer"
             data-cursor="button"
             className={cn(
               "group hidden items-center gap-2 rounded-full bg-accent py-2.5 pl-5 pr-2.5 text-sm font-medium text-accent-ink transition-all duration-300 hover:bg-accent-bright lg:inline-flex",
@@ -197,7 +200,7 @@ export function Header() {
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 transition-transform duration-300 group-hover:translate-x-0.5">
               <ArrowRight size={13} />
             </span>
-          </Link>
+          </a>
 
           <Navigation onLight={onLight} />
         </div>

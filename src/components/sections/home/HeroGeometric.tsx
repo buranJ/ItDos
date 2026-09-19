@@ -10,6 +10,7 @@ import { buttonClass } from "@/components/ui/Button";
 import { lerp } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/motion";
 import { ChatMock } from "@/components/portfolio/mockups/ChatMock";
+import { whatsappLink, defaultInquiry } from "@/lib/site";
 import {
   squares,
   mobileSquares,
@@ -433,13 +434,15 @@ export function HeroGeometric() {
                   visual block so the eye reaches the AI card first. */}
               <div className="mt-10 hidden gap-3 lg:flex">
                 <MagneticButton>
-                  <Link
-                    href="/contact"
+                  <a
+                    href={whatsappLink(defaultInquiry)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     data-cursor="button"
                     className={buttonClass("dark", "md", "hg-cta")}
                   >
                     Обсудить проект <ArrowRight size={15} />
-                  </Link>
+                  </a>
                 </MagneticButton>
                 <MagneticButton>
                   <Link
@@ -542,8 +545,10 @@ export function HeroGeometric() {
           {/* CTAs on small screens — after the visual, side by side */}
           <Container className="pt-8 lg:hidden">
             <div className="flex flex-row gap-2.5">
-              <Link
-                href="/contact"
+              <a
+                href={whatsappLink(defaultInquiry)}
+                target="_blank"
+                rel="noopener noreferrer"
                 data-cursor="button"
                 className={buttonClass(
                   "dark",
@@ -552,7 +557,7 @@ export function HeroGeometric() {
                 )}
               >
                 Обсудить проект <ArrowRight size={14} />
-              </Link>
+              </a>
               <Link
                 href="/portfolio"
                 data-cursor="link"

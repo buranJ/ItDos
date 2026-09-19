@@ -200,8 +200,10 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
 
         {/* The primary action carries its own weight instead of being one more
             line in the list. */}
-        <Link
-          href="/contact"
+        <a
+          href={whatsappLink(defaultInquiry)}
+          target="_blank"
+          rel="noopener noreferrer"
           className="nav-item mt-8 flex items-center justify-between gap-3 rounded-2xl bg-accent px-5 py-4 text-accent-ink shadow-[0_10px_30px_-10px_rgba(110,86,255,0.6)] transition-colors hover:bg-accent-bright"
         >
           <span>
@@ -211,7 +213,7 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20">
             <ArrowUpRight size={17} />
           </span>
-        </Link>
+        </a>
 
         <div className="nav-item mt-3 grid grid-cols-2 gap-2.5">
           <a

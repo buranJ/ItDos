@@ -8,7 +8,8 @@ import { CtaBanner } from "@/components/sections/shared/CtaBanner";
 import { getProjects } from "@/server/content";
 import { showcaseMedia } from "@/data/showcaseMedia";
 import { LiveShowcase } from "@/components/portfolio/live/LiveShowcase";
-import { VariantSwitcher } from "@/components/portfolio/live/VariantSwitcher";
+import { VariantSwitcher } from "@/components/dev/VariantSwitcher";
+import { LIVE_VARIANTS } from "@/components/portfolio/live/variants";
 import type { PortfolioProject } from "@/types/portfolio";
 
 /** «1 кейс · 3 кейса · 7 кейсов». */
@@ -68,7 +69,7 @@ export default async function PortfolioPage() {
       {live.length > 0 && (
         <>
           <LiveShowcase items={live} />
-          <VariantSwitcher />
+          <VariantSwitcher param="v" labels={LIVE_VARIANTS} anchorId="live" />
         </>
       )}
 

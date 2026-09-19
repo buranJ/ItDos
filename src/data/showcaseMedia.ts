@@ -46,12 +46,14 @@ export const showcaseMedia: Record<string, ShowcaseMedia> = {
     // Window capture on black: margins around, browser UI on the top 16%.
     // Any tighter and the logo in the site's header gets clipped.
     videoCrop: { scale: 1.19, top: 18.9 },
-    // Hero in the middle, the purchase path fanning out around it.
+    // The middle screen sets the phone's shape (see LaptopVideoMock), so a
+    // full-height capture goes there — 4.jpg is cropped short (1316×2155)
+    // and as the centre it drew a stubby phone.
     mobileScreens: [
       { src: "/pr/3.jpg", width: 1319, height: 2371 },
-      { src: "/pr/5.jpg", width: 1319, height: 2336 },
       { src: "/pr/4.jpg", width: 1316, height: 2155 },
       { src: "/pr/2.jpg", width: 1269, height: 2560 },
+      { src: "/pr/5.jpg", width: 1319, height: 2336 },
       { src: "/pr/1.jpg", width: 1272, height: 2560 },
     ],
   },

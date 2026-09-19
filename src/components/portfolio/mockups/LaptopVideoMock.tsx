@@ -399,6 +399,15 @@ export function LaptopVideoMock({
   const fanStart = Math.max(0, Math.floor((allScreens.length - FAN_SIZE) / 2));
   const screens = allScreens.slice(fanStart, fanStart + FAN_SIZE);
   const screenCount = screens.length;
+  // One phone shape per project, taken from the screen in the middle of the
+  // fan: the captures differ in proportion even within a project (Toolor's
+  // run from 1269×2560 to 1316×2155), and three different phone shapes side
+  // by side read as a glitch. The middle one is shown whole; the two behind
+  // it, already half-hidden and dimmed, are cropped to the same shape.
+  const fanCentre = screens[Math.floor((screenCount - 1) / 2)];
+  const phoneAspect = fanCentre
+    ? `${fanCentre.width + 16} / ${fanCentre.height + 40}`
+    : undefined;
   const lightboxScreens = allScreens.filter(
     (screen): screen is LightboxScreen => Boolean(screen.src),
   );
@@ -753,7 +762,7 @@ export function LaptopVideoMock({
         className={styles.mobileStage}
         aria-hidden={view !== "mobile"}
       >
-        {screens.map(({ src, width, height }, index) => (
+        {screens.map(({ src }, index) => (
           <div
             key={`${src ?? "placeholder"}-${index}`}
             ref={(element) => {
@@ -766,7 +775,7 @@ export function LaptopVideoMock({
             style={
               {
                 ...fanPhoneStyle(index, screenCount),
-                "--phone-aspect": `${width + 16} / ${height + 40}`,
+                "--phone-aspect": phoneAspect,
               } as React.CSSProperties
             }
           >

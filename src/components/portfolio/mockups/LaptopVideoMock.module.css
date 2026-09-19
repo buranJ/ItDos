@@ -503,7 +503,14 @@
      widths across, so a height-only cap let the group grow wider than the
      column on narrow screens and the left phone slid off the viewport.
      `.scene` is a size container, so 96cqw keeps the whole fan inside it. */
-  height: min(88cqh, 84cqw, 30rem);
+  --phone-h: min(88cqh, 84cqw, 30rem);
+  /* Every project's phone is the same WIDTH, its height following its own
+     screenshot. Sizing by height instead made a relatively wide capture
+     (Toolor's are 1319×2371, against Avangard's 430×932) draw a phone a
+     fifth wider than the next project's — and cropping those captures to
+     one shape cut the site's own logo out of the header. */
+  width: calc(var(--phone-h) * 0.461);
+  height: auto;
   aspect-ratio: var(--phone-aspect, 393 / 852);
   transform-origin: center;
   border: clamp(3px, 0.7cqh, 7px) solid #262629;
@@ -600,10 +607,15 @@
   white-space: nowrap;
 }
 
+/* The frame is a real phone's shape, while the captures vary in width. So
+   the screenshot is laid in at full width from the top and whatever runs
+   past the bottom is clipped — cropping the sides instead cut the site's
+   own logo out of the header. `min-height` covers a capture narrower than
+   the frame. The whole screenshot is one tap away in the viewer. */
 .mobileScreenImage {
   z-index: 2;
   background-color: #fff;
-  object-fit: contain;
+  object-fit: cover;
   object-position: top;
 }
 
@@ -778,7 +790,7 @@
   }
 
   .mobilePhone {
-    height: min(88cqh, 100cqw, 38rem);
+    --phone-h: min(88cqh, 100cqw, 38rem);
   }
 }
 
