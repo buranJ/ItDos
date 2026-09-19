@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/components/layout/LenisProvider";
+import { ScrollReset } from "@/components/layout/ScrollReset";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationLd } from "@/lib/seo";
@@ -89,6 +90,7 @@ export default function RootLayout({
       <body className="antialiased">
         <JsonLd data={organizationLd} />
         <LenisProvider>
+          <ScrollReset />
           <SiteChrome>{children}</SiteChrome>
         </LenisProvider>
       </body>

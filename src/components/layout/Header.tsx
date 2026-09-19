@@ -115,7 +115,11 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 px-3 transition-all duration-500 sm:px-5",
+        // Transparent to clicks outside the island: the bar spans the full
+        // width while only the pill is visible, so it used to swallow clicks
+        // on whatever sat beside it (the «Все услуги» link, once the page had
+        // scrolled a little). The island itself takes its clicks back.
+        "pointer-events-none fixed inset-x-0 top-0 z-50 px-3 transition-all duration-500 sm:px-5",
         scrolled ? "pt-2 sm:pt-2.5" : "pt-3 sm:pt-5",
       )}
     >
@@ -125,7 +129,7 @@ export function Header() {
           // `lg:pl-12` lines the logo up with the page's content edge
           // (Container is max-w-[90rem] with lg:px-12), so the island reads as
           // part of the grid rather than floating loose above it.
-          "mx-auto flex items-center justify-between gap-4 rounded-full border py-2 pl-4 pr-2 sm:pl-5 lg:pl-12",
+          "pointer-events-auto mx-auto flex items-center justify-between gap-4 rounded-full border py-2 pl-4 pr-2 sm:pl-5 lg:pl-12",
           settled && "transition-all duration-500",
           // Contracting on scroll gives a physical sense of the page moving
           // past a fixed object, without changing its height.

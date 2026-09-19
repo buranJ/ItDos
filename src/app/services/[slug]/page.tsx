@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, Clock, ArrowRight } from "lucide-react";
+import { ArrowLeft, CircleCheck, Clock, ArrowRight } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
@@ -10,6 +10,7 @@ import { StaggerGroup } from "@/components/motion/StaggerGroup";
 import { CtaBanner } from "@/components/sections/shared/CtaBanner";
 import { getServices, getServiceBySlug } from "@/server/content";
 import { whatsappLink } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,6 +33,7 @@ export default async function ServicePage({ params }: Props) {
   const { slug } = await params;
   const service = await getServiceBySlug(slug);
   if (!service) notFound();
+  const longTitle = service.title.length > 20;
 
   return (
     <>
@@ -51,13 +53,21 @@ export default async function ServicePage({ params }: Props) {
       {/* Hero */}
       <Section className="bg-bg">
         <Container>
-          <div className="max-w-3xl">
+          <div className={cn(longTitle ? "max-w-5xl" : "max-w-3xl")}>
             <p className="text-xs font-semibold text-fg-muted uppercase tracking-widest mb-6">
               Услуга
             </p>
+            {/* A long name ("Интернет-магазины и маркетплейсы") ran to three
+                lines at the full display size; it gets a smaller step and a
+                wider box so every title lands in two lines at most. */}
             <TextReveal
               as="h1"
-              className="text-[clamp(2.5rem,6vw,5rem)] font-semibold leading-tight tracking-tight text-fg"
+              className={cn(
+                "font-semibold leading-tight tracking-tight text-fg",
+                longTitle
+                  ? "text-[clamp(2rem,4vw,3.5rem)]"
+                  : "text-[clamp(2.5rem,6vw,5rem)]",
+              )}
             >
               {service.title}
             </TextReveal>
@@ -87,7 +97,7 @@ export default async function ServicePage({ params }: Props) {
               <StaggerGroup className="flex flex-col gap-3">
                 {service.features.map((f) => (
                   <div key={f} className="flex items-start gap-3">
-                    <CheckCircle size={16} className="text-fg shrink-0 mt-0.5" />
+                    <CircleCheck size={16} className="text-fg shrink-0 mt-0.5" />
                     <span className="text-sm text-fg-secondary">{f}</span>
                   </div>
                 ))}

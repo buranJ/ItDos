@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Monitor, Layout, Database, Sparkles, Bot, Zap, MessageSquare, Settings2, ShoppingBag, Link2, Headphones, TrendingUp, Package } from "lucide-react";
+import { ArrowUpRight, Monitor, Layout, Database, Sparkles, Bot, Zap, MessageSquare, Settings2, ShoppingBag, Link2, Headphones, TrendingUp, Package, Smartphone,
+} from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 const iconMap: Record<string, LucideIcon> = {
   Monitor, Layout, Database, Sparkles, Bot, Zap,
   MessageSquare, Settings2, ShoppingBag, Link2,
-  Headphones, TrendingUp, Package,
+  Headphones, TrendingUp, Package, Smartphone,
 };
 
 const categoryLabels = {

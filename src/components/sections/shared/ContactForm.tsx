@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight, CircleCheck } from "lucide-react";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { site, whatsappLink, telegramLink, defaultInquiry } from "@/lib/site";
@@ -64,7 +64,7 @@ export function ContactForm() {
         aria-live="polite"
         className="flex flex-col items-center justify-center py-16 text-center gap-4"
       >
-        <CheckCircle size={40} className="text-fg" />
+        <CircleCheck size={40} className="text-fg" />
         <h3 className="text-xl font-semibold text-fg">Заявка отправлена</h3>
         <p className="text-fg-secondary max-w-xs">
           Мы получили вашу заявку и скоро свяжемся с вами.

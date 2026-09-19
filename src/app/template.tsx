@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
-import { useLenis } from "@/components/layout/LenisProvider";
 import { useReducedMotion } from "@/lib/motion";
 
 // Tracks whether the app has mounted once, so the very first load doesn't
@@ -14,7 +13,6 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const [isInitial] = useState(() => !appMounted);
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const lenis = useLenis();
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -22,10 +20,6 @@ export default function Template({ children }: { children: React.ReactNode }) {
     const content = contentRef.current;
     const initial = isInitial;
     appMounted = true;
-
-    // Reset scroll to top for the new route.
-    if (lenis) lenis.scrollTo(0, { immediate: true });
-    else window.scrollTo(0, 0);
 
     if (reduced || !overlay || !content) {
       ScrollTrigger.refresh();

@@ -11,6 +11,7 @@ import {
   Zap,
   MessageSquare,
   ShoppingBag,
+  Smartphone,
 } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
@@ -28,6 +29,7 @@ const iconMap: Record<string, LucideIcon> = {
   Zap,
   MessageSquare,
   ShoppingBag,
+  Smartphone,
 };
 
 const featuredSlugs = [

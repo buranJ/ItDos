@@ -101,7 +101,12 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
       aria-hidden={!open}
       data-lenis-prevent
       className={cn(
-        "fixed inset-0 z-70 overflow-y-auto transition-opacity duration-500 lg:hidden",
+        // `overflow-y-auto` alone leaves the X axis scrollable (a non-visible
+        // value on one axis computes the other to auto), and the ITDOS
+        // watermark hangs 12px past the right edge — so the open menu could
+        // be dragged sideways on a phone, showing a strip of the page.
+        // `overscroll-contain` keeps the rubber-band inside the menu too.
+        "fixed inset-0 z-70 overflow-y-auto overflow-x-hidden overscroll-contain bg-[#faf9f6] transition-opacity duration-500 lg:hidden",
         open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
       )}
     >
@@ -109,10 +114,14 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
           same #faf9f6 family as the hero), two soft accent blooms, a faint
           dot grid that echoes the hero's, and an oversized wordmark as a
           watermark. */}
-      <div aria-hidden="true" className="absolute inset-0 bg-[#faf9f6]" />
+      {/* Decoration is pinned to the screen, not to the scroll box: as
+          `absolute inset-0` these layers were only as tall as the viewport,
+          so scrolling the menu slid them away and the page showed through
+          at the bottom. The base colour now sits on the scroll container
+          itself, which paints the whole scrollable area. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0"
+        className="fixed inset-0"
         style={{
           background:
             "radial-gradient(115% 75% at 100% 0%, rgba(110,86,255,0.16), transparent 62%), radial-gradient(85% 55% at 0% 100%, rgba(110,86,255,0.09), transparent 64%)",
@@ -120,7 +129,7 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 opacity-[0.045]"
+        className="fixed inset-0 opacity-[0.045]"
         style={{
           backgroundImage: "radial-gradient(circle, #0a0a0a 1px, transparent 1px)",
           backgroundSize: "30px 30px",
@@ -128,7 +137,9 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
       />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-4 -right-3 select-none font-display text-[26vw] font-semibold leading-none tracking-tighter text-[#0a0a0a]/4"
+        // Flush with the edges, not past them: hanging over the right side
+        // gave the overlay 12px of scrollable overflow.
+        className="pointer-events-none fixed bottom-0 right-0 select-none font-display text-[26vw] font-semibold leading-none tracking-tighter text-[#0a0a0a]/4"
       >
         ITDOS
       </span>
