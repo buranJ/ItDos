@@ -3,10 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, CircleCheck } from "lucide-react";
+import { useDialCode, phonePlaceholder } from "@/hooks/useDialCode";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { site, whatsappLink, telegramLink, defaultInquiry } from "@/lib/site";
-import { validateLead, type LeadErrors } from "@/lib/validation";
+import {
+  isValidContact,
+  isValidName,
+  sanitizeEmail,
+  sanitizeName,
+  sanitizePhone,
+  validateLead,
+  type LeadErrors,
+} from "@/lib/validation";
 import { trackLead } from "@/lib/analytics";
 import { Button } from "@/components/ui/Button";
 
@@ -17,21 +26,72 @@ const inputClass =
 const invalidClass = "border-red-500/70 focus:border-red-500";
 
 export function ContactForm() {
+  const dial = useDialCode();
   const [form, setForm] = useState({
     name: "",
     contact: "",
+    message: "",
     company: "", // honeypot — hidden from humans
   });
+  // Phone or email — the field swaps type, keyboard and placeholder, so a
+  // number is typed on a numeric keypad instead of a full text keyboard.
+  const [mode, setMode] = useState<"phone" | "email">("phone");
   const [status, setStatus] = useState<FormState>("idle");
   const [errors, setErrors] = useState<LeadErrors>({});
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    // Filter as they type: digits never reach the name field, letters never
+    // reach the phone. The error message is then a last resort, not the
+    // first thing a visitor sees.
+    const clean =
+      name === "name"
+        ? sanitizeName(value)
+        : name === "contact"
+          ? mode === "phone"
+            ? sanitizePhone(value)
+            : sanitizeEmail(value)
+          : value;
+    setForm((prev) => ({ ...prev, [name]: clean }));
     // Clear a field's error as soon as the visitor starts correcting it.
     setErrors((prev) => (prev[name as keyof LeadErrors] ? { ...prev, [name]: undefined } : prev));
+  };
+
+  /** Checked when a field loses focus, so nothing is flagged mid-typing. */
+  const checkOnBlur = (field: "name" | "contact") => () => {
+    const value = form[field];
+    if (!value) return;
+    const ok = field === "name" ? isValidName(value) : isValidContact(value);
+    if (ok) return;
+    setErrors((prev) => ({
+      ...prev,
+      [field]:
+        field === "name"
+          ? "Имя от двух букв"
+          : mode === "phone"
+            ? "Номер от 9 цифр, например +996 700 000 000"
+            : "Адрес вида name@example.com",
+    }));
+  };
+
+  const switchMode = (next: "phone" | "email") => {
+    setMode(next);
+    setErrors((prev) => ({ ...prev, contact: undefined }));
+    // Keep what was typed only if it still fits the new field.
+    setForm((prev) => {
+      const fits = next === "email" ? prev.contact.includes("@") : !prev.contact.includes("@");
+      if (fits) return prev;
+      // Switching to the phone field hands over the country code already.
+      return { ...prev, contact: next === "phone" ? `${dial} ` : "" };
+    });
+  };
+
+  /** The dialling code is waiting in the field the moment it is focused. */
+  const prefillDial = () => {
+    if (mode !== "phone" || form.contact) return;
+    setForm((prev) => ({ ...prev, contact: `${dial} ` }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,6 +157,7 @@ export function ContactForm() {
             name="name"
             value={form.name}
             onChange={handleChange}
+            onBlur={checkOnBlur("name")}
             placeholder="Иван Иванов"
             required
             autoComplete="name"
@@ -106,20 +167,47 @@ export function ContactForm() {
           />
         </Field>
         <Field
-          label="Телефон или email"
+          label={mode === "phone" ? "Телефон" : "Email"}
           required
           error={errors.contact}
           htmlFor="lead-contact"
+          action={
+            <div
+              role="group"
+              aria-label="Способ связи"
+              className="flex items-center gap-0.5 rounded-full border border-line p-0.5"
+            >
+              {(["phone", "email"] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => switchMode(value)}
+                  aria-pressed={mode === value}
+                  className={cn(
+                    "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
+                    mode === value
+                      ? "bg-accent text-accent-ink"
+                      : "text-fg-muted hover:text-fg",
+                  )}
+                >
+                  {value === "phone" ? "Телефон" : "Email"}
+                </button>
+              ))}
+            </div>
+          }
         >
           <input
             id="lead-contact"
             name="contact"
             value={form.contact}
             onChange={handleChange}
-            placeholder="+996 700 000 000 или name@example.com"
+            onFocus={prefillDial}
+            onBlur={checkOnBlur("contact")}
+            placeholder={mode === "phone" ? phonePlaceholder(dial) : "name@example.com"}
             required
-            type="text"
-            inputMode="text"
+            type={mode === "phone" ? "tel" : "email"}
+            inputMode={mode === "phone" ? "tel" : "email"}
+            autoComplete={mode === "phone" ? "tel" : "email"}
             autoCapitalize="none"
             spellCheck={false}
             aria-invalid={!!errors.contact}
@@ -128,6 +216,19 @@ export function ContactForm() {
           />
         </Field>
       </div>
+
+      <Field label="Расскажите о задаче" htmlFor="lead-message">
+        <textarea
+          id="lead-message"
+          name="message"
+          value={form.message}
+          onChange={handleChange}
+          rows={4}
+          maxLength={2000}
+          placeholder="Что нужно сделать, в какие сроки, есть ли примеры — пары предложений достаточно"
+          className={cn(inputClass, "resize-y min-h-28")}
+        />
+      </Field>
 
       {status === "error" && (
         <p className="text-sm text-red-400">
@@ -199,20 +300,26 @@ function Field({
   required,
   error,
   htmlFor,
+  action,
   children,
 }: {
   label: string;
   required?: boolean;
   error?: string;
   htmlFor?: string;
+  /** Control shown on the label's line — the phone/email switch. */
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-fg">
-        {label}
-        {required && <span className="text-fg-muted ml-0.5">*</span>}
-      </label>
+      <div className="flex min-h-7 items-center justify-between gap-3">
+        <label htmlFor={htmlFor} className="text-sm font-medium text-fg">
+          {label}
+          {required && <span className="ml-0.5 text-fg-muted">*</span>}
+        </label>
+        {action}
+      </div>
       {children}
       {error && (
         <span id={htmlFor ? `${htmlFor}-error` : undefined} className="text-xs text-red-400">

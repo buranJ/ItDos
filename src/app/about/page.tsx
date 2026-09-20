@@ -48,9 +48,9 @@ export default function AboutPage() {
           </p>
           <TextReveal
             as="h1"
-            className="text-[clamp(2.5rem,7vw,6rem)] font-semibold leading-tight tracking-tight text-fg max-w-4xl"
+            className="text-[clamp(1.75rem,3.6vw,3.2rem)] font-semibold leading-tight tracking-tight text-fg max-w-5xl"
           >
-            {"Мы строим цифровые\nпродукты, которые\nработают"}
+            {"Создаём систему вокруг вашего бизнеса,\nа не бизнес вокруг системы."}
           </TextReveal>
         </Container>
       </Section>
@@ -61,18 +61,21 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <FadeIn>
               <p className="text-xl text-fg-secondary leading-relaxed">
-                ITDOS — технологическая компания из Бишкека. С 2019 года мы помогаем бизнесу решать реальные задачи с помощью современных технологий: от корпоративных сайтов до AI-агентов и автоматизации сложных бизнес-процессов.
+                ITDOS — технологическая компания из Бишкека. С 2019 года мы разрабатываем цифровые продукты для бизнеса: сайты, мобильные приложения, CRM, внутренние системы, автоматизацию и AI-решения.
               </p>
               <p className="mt-6 text-xl text-fg-secondary leading-relaxed">
-                Мы не просто подрядчик — мы технологический партнёр, который думает вместе с вами о росте и эффективности бизнеса.
+                Не начинаем с готового шаблона. Сначала изучаем задачу и процессы компании, потом проектируем решение под них.
+              </p>
+              <p className="mt-6 text-xl text-fg-secondary leading-relaxed">
+                Каждый наш продукт строится вокруг бизнеса, а не наоборот.
               </p>
             </FadeIn>
             <div className="grid grid-cols-2 gap-6">
               {[
-                { value: "5+", label: "Лет на рынке" },
-                { value: "50+", label: "Проектов" },
+                { value: "7", label: "Лет на рынке" },
+                { value: "80+", label: "Проектов" },
                 { value: "100%", label: "Довольных клиентов" },
-                { value: "6", label: "В команде" },
+                { value: "6", label: "Специалистов в команде" },
               ].map((stat) => (
                 <FadeIn key={stat.label}>
                   <div className="p-6 rounded-xl bg-surface border border-line">

@@ -188,8 +188,9 @@ export function AssistantEditorialMock({
             )}
           >
             <span>{index < activeStep ? <Check size={14} /> : <Icon size={14} />}</span>
+            {/* Только название этапа: порядок читается по самой ленте,
+                а номер занимал вторую строку и ломал выравнивание. */}
             <p>
-              <small>0{index + 1}</small>
               <strong>{label}</strong>
             </p>
           </button>

@@ -41,10 +41,13 @@ export default async function ProcessPage() {
           <div className="flex flex-col gap-0">
             {processPhases.map((phase, index) => (
               <FadeIn key={phase.number} delay={index * 0.08}>
-                <div className="grid grid-cols-[4rem_1fr] lg:grid-cols-[4rem_1fr_1fr_auto] gap-8 py-10 border-b border-line">
-                  <span className="text-2xl font-semibold text-fg-faint font-mono pt-1">
-                    {phase.number}
-                  </span>
+                {/* Точка вместо номера — тот же приём, что в таймлайне на
+                    главной и в шагах на странице контактов. */}
+                <div className="grid grid-cols-[1.5rem_1fr] gap-x-6 gap-y-8 border-b border-line py-10 lg:grid-cols-[1.5rem_1fr_1fr_auto] lg:gap-8">
+                  <span
+                    aria-hidden="true"
+                    className="mt-2.5 h-3 w-3 rounded-full border-2 border-accent"
+                  />
 
                   <div>
                     <h2 className="text-xl font-semibold text-fg mb-3">

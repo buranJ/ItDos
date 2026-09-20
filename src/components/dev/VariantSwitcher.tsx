@@ -18,11 +18,14 @@ export function VariantSwitcher({
   labels,
   anchorId,
   caption = "Вариант",
+  align = "center",
 }: {
   param: string;
   labels: readonly string[];
   anchorId: string;
   caption?: string;
+  /** "left" keeps two switchers on one page from overlapping. */
+  align?: "center" | "left";
 }) {
   const current = useUrlVariant(param, labels.length);
   const lenis = useLenis();
@@ -44,7 +47,12 @@ export function VariantSwitcher({
 
   if (!mounted) return null;
   return createPortal(
-    <div className="pointer-events-none fixed inset-x-0 bottom-24 z-[60] flex justify-center px-4 sm:bottom-6">
+    <div
+      className={cn(
+        "pointer-events-none fixed inset-x-0 bottom-24 z-[60] flex px-4 sm:bottom-6",
+        align === "left" ? "justify-start" : "justify-center",
+      )}
+    >
       <div
         role="group"
         aria-label={`${caption}: варианты`}

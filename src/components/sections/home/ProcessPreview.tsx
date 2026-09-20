@@ -5,6 +5,7 @@ import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
 import { StaggerGroup } from "@/components/motion/StaggerGroup";
 import { getProcessPhases } from "@/server/content";
+import { ProcessNode } from "./ProcessNode";
 
 export async function ProcessPreview() {
   const processPhases = await getProcessPhases();
@@ -48,11 +49,12 @@ export async function ProcessPreview() {
               className="group relative grid grid-cols-[auto_1fr] gap-6 pb-10 last:pb-0"
             >
               {/* node */}
-              <div className="relative z-10 mt-1.5 h-4 w-4 rounded-full border-2 border-accent bg-bg transition-colors duration-300 group-hover:bg-accent" />
+              <ProcessNode />
 
               <div>
+                {/* Без «01 02 03»: последовательность уже читается по линии
+                    с точками слева. */}
                 <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                  <span className="font-mono text-xs text-accent-text">{phase.number}</span>
                   <h3 className="font-display text-xl font-semibold tracking-tight text-fg sm:text-2xl">
                     {phase.title}
                   </h3>

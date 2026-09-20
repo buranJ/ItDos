@@ -125,7 +125,7 @@
 .steps button p {
   display: flex;
   min-width: 0;
-  flex-direction: column;
+  align-items: center;
 }
 
 .steps button small {

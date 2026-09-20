@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { X, Menu, ArrowUpRight, Phone, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { gsap } from "@/lib/gsap";
 import { useLenis } from "./LenisProvider";
+import logoDark from "../../../public/logo.png";
 import {
   site,
   emailLink,
@@ -18,12 +20,12 @@ import {
 } from "@/lib/site";
 
 const navLinks = [
+  { label: "Главная", href: "/" },
   { label: "Услуги", href: "/services" },
   { label: "Портфолио", href: "/portfolio" },
   { label: "О нас", href: "/about" },
-  { label: "Процесс", href: "/process" },
   { label: "Блог", href: "/blog" },
-  { label: "Контакт", href: "/contact" },
+  { label: "Контакты", href: "/contact" },
 ];
 
 export function Navigation({ onLight = false }: { onLight?: boolean }) {
@@ -144,6 +146,22 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
         ITDOS
       </span>
 
+      {/* Знак компании в верхнем углу — как в шапке; ведёт на главную. */}
+      <Link
+        href="/"
+        aria-label="ITDOS — на главную"
+        className="nav-item absolute left-5 top-6 z-10 inline-block transition-opacity duration-200 hover:opacity-70 sm:left-8"
+      >
+        <Image
+          src={logoDark}
+          alt="ITDOS"
+          width={110}
+          height={36}
+          priority={false}
+          className="h-8 w-auto"
+        />
+      </Link>
+
       {/* Close button lives inside the overlay.
           The trigger in the header cannot serve as the close control here: the
           header is a z-50 stacking context and this layer is portalled to
@@ -163,7 +181,7 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
 
       <div className="relative flex min-h-full flex-col px-5 pb-8 pt-24 sm:px-8 sm:pt-28">
         <nav className="flex flex-col">
-          {navLinks.map((link, i) => {
+          {navLinks.map((link) => {
             const active = pathname === link.href;
             return (
               <Link
@@ -178,15 +196,7 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
                 <span className="flex items-baseline gap-4">
                   <span
                     className={cn(
-                      "font-mono text-[11px] tabular-nums",
-                      active ? "text-accent" : "text-[#0a0a0a]/30",
-                    )}
-                  >
-                    0{i + 1}
-                  </span>
-                  <span
-                    className={cn(
-                      "font-display text-[clamp(1.9rem,8.5vw,3rem)] font-semibold leading-none tracking-tight transition-colors",
+                      "font-display text-[clamp(1.75rem,7.5vw,2.6rem)] font-semibold leading-none tracking-tight transition-colors",
                       active
                         ? "text-[#0a0a0a]"
                         : "text-[#0a0a0a]/55 group-hover:text-[#0a0a0a]",
@@ -247,20 +257,40 @@ export function Navigation({ onLight = false }: { onLight?: boolean }) {
           </a>
         </div>
 
-        <div className="nav-item mt-auto flex flex-col gap-2.5 pt-10 text-sm">
+        {/* Контакты — не строчка мелким шрифтом внизу, а две крупные
+            карточки: по ним удобно попасть пальцем. */}
+        <div className="nav-item mt-auto grid gap-2.5 pt-10">
           <a
             href={phoneLink}
-            className="flex items-center gap-2.5 text-[#0a0a0a]/65 transition-colors hover:text-[#0a0a0a]"
+            className="flex items-center gap-3.5 rounded-2xl border border-black/8 bg-white p-4 shadow-sm transition-colors hover:border-black/20"
           >
-            <Phone size={14} className="text-accent" />
-            {site.phoneDisplay}
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
+              <Phone size={17} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[11px] uppercase tracking-[0.18em] text-[#0a0a0a]/40">
+                Позвонить
+              </span>
+              <span className="mt-0.5 block truncate text-[15px] font-semibold text-[#0a0a0a]">
+                {site.phoneDisplay}
+              </span>
+            </span>
           </a>
           <a
             href={emailLink}
-            className="flex items-center gap-2.5 text-[#0a0a0a]/65 transition-colors hover:text-[#0a0a0a]"
+            className="flex items-center gap-3.5 rounded-2xl border border-black/8 bg-white p-4 shadow-sm transition-colors hover:border-black/20"
           >
-            <Mail size={14} className="text-accent" />
-            {site.email}
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
+              <Mail size={17} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[11px] uppercase tracking-[0.18em] text-[#0a0a0a]/40">
+                Написать
+              </span>
+              <span className="mt-0.5 block truncate text-[15px] font-semibold text-[#0a0a0a]">
+                {site.email}
+              </span>
+            </span>
           </a>
         </div>
       </div>

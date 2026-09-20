@@ -12,8 +12,8 @@ export const navLinks = [
   { label: "Услуги", href: "/services" },
   { label: "Портфолио", href: "/portfolio" },
   { label: "О нас", href: "/about" },
-  { label: "Процесс", href: "/process" },
   { label: "Блог", href: "/blog" },
+  { label: "Контакты", href: "/contact" },
 ];
 
 /** Relative luminance of an `rgb()` / `rgba()` computed colour. */

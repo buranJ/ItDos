@@ -9,8 +9,25 @@ export function isValidPhone(raw: string | undefined): boolean {
   return digits.length >= 9 && digits.length <= 15;
 }
 
+/** Letters, spaces, hyphens and apostrophes — any alphabet. */
 export function isValidName(raw: string | undefined): boolean {
-  return (raw ?? "").trim().length >= 2;
+  const value = (raw ?? "").trim();
+  return value.length >= 2 && /^\p{L}[\p{L}\s'’-]*$/u.test(value);
+}
+
+/* ── Input filters: keep impossible characters out while typing, so the
+   error message is the last resort rather than the first thing seen. ── */
+
+export function sanitizeName(raw: string): string {
+  return raw.replace(/[^\p{L}\s'’-]/gu, "").slice(0, 60);
+}
+
+export function sanitizePhone(raw: string): string {
+  return raw.replace(/[^\d+\s()-]/g, "").slice(0, 20);
+}
+
+export function sanitizeEmail(raw: string): string {
+  return raw.replace(/\s/g, "").slice(0, 100);
 }
 
 export function isValidEmail(raw: string | undefined): boolean {
@@ -31,7 +48,7 @@ export function validateLead(input: {
   contact?: string;
 }): LeadErrors {
   const errors: LeadErrors = {};
-  if (!isValidName(input.name)) errors.name = "Укажите имя";
+  if (!isValidName(input.name)) errors.name = "Укажите имя буквами";
   if (!isValidContact(input.contact)) {
     errors.contact = "Укажите корректный телефон или email";
   }

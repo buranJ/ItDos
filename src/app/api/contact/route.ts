@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ success: false, message: "Некорректный запрос" }, { status: 400 });
     }
 
-    const { name, contact, company } = data as Record<string, string>;
+    const { name, contact, company, message } = data as Record<string, string>;
 
     // Honeypot: real users never fill `company`. Silently accept & drop bots.
     if (company?.trim()) {
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         phone: contactIsEmail ? "" : normalizedContact,
         email: contactIsEmail ? normalizedContact : null,
         service: null,
-        message: null,
+        message: message?.trim() ? message.trim().slice(0, 2000) : null,
       });
       stored = true;
     } catch (err) {
@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
       "",
       `👤 Имя: ${name}`,
       `${contactIsEmail ? "✉️ Email" : "📞 Телефон"}: ${normalizedContact}`,
+      message?.trim() ? `\n📝 Задача: ${message.trim().slice(0, 2000)}` : "",
     ]
       .filter(Boolean)
       .join("\n");
