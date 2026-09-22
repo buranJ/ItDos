@@ -99,6 +99,7 @@ function toProject(r: ProjectRow): PortfolioProject {
     services: r.services,
     role: r.role ?? undefined,
     liveUrl: r.liveUrl ?? undefined,
+    objective: r.objective || undefined,
     overview: r.overview,
     goals: r.goals,
     challenges: r.challenges,

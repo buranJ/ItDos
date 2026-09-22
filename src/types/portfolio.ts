@@ -29,6 +29,8 @@ export type PortfolioProject = {
   liveUrl?: string;
 
   /* ── Case-study content ── */
+  /** Задача проекта в одном-двух предложениях. */
+  objective?: string;
   overview: string;
   goals: string[];
   challenges: string[];

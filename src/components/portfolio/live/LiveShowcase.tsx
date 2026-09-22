@@ -73,6 +73,8 @@ function StackLayout({ items }: { items: LiveItem[] }) {
         const { project } = item;
         const accent = accentOf(project);
         return (
+          // Стопка: карточка прилипает под шапкой, следующая наезжает
+          // сверху со смещением, чтобы был виден край предыдущей.
           <div
             key={project.slug}
             className="mb-8 last:mb-0 lg:sticky lg:mb-[16vh]"

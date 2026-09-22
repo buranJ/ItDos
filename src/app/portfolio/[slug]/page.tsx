@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { TextReveal } from "@/components/motion/TextReveal";
@@ -10,10 +10,12 @@ import { StaggerGroup } from "@/components/motion/StaggerGroup";
 import { ClipReveal } from "@/components/motion/ClipReveal";
 import { Parallax } from "@/components/motion/Parallax";
 import { ProjectMedia } from "@/components/portfolio/ProjectMedia";
+import { LiveWindow } from "@/components/portfolio/live/parts";
 import { ShowcaseScreens } from "@/components/portfolio/ShowcaseScreens";
 import { showcaseMedia } from "@/data/showcaseMedia";
 import { ProjectGallery } from "@/components/portfolio/ProjectGallery";
 import { getProjects, getProjectBySlug } from "@/server/content";
+import { CtaBanner } from "@/components/sections/shared/CtaBanner";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -37,9 +39,6 @@ export default async function CasePage({ params }: Props) {
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
-  const nextProject = project.nextProject
-    ? await getProjectBySlug(project.nextProject)
-    : undefined;
 
   // Live projects: the cover already plays the recording, so the gallery is
   // their real phone screens (none for a desktop-only system).
@@ -69,17 +68,6 @@ export default async function CasePage({ params }: Props) {
       {/* Hero */}
       <Section spacing="md">
         <Container>
-          <div className="flex flex-wrap items-center gap-2">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-line px-3 py-1 text-xs text-fg-secondary"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
           <TextReveal
             as="h1"
             className="mt-7 max-w-4xl font-display text-[clamp(2.6rem,8vw,6rem)] font-semibold leading-[0.98] tracking-tight text-fg"
@@ -124,14 +112,22 @@ export default async function CasePage({ params }: Props) {
       </Section>
 
       {/* Cover */}
-      <Container>
-        <ClipReveal className="rounded-2xl border border-line bg-panel">
-          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl sm:aspect-[16/8]">
-            <Parallax speed={0.12} className="absolute inset-0 scale-110">
-              <ProjectMedia project={project} priority live />
-            </Parallax>
-          </div>
-        </ClipReveal>
+      <Container className="pb-16 sm:pb-20 lg:pb-24">
+        {media ? (
+          // Запись на всю ширину: контейнер с параллаксом и зумом срезал
+          // окно по краям, а сама запись — главное на странице кейса.
+          <ClipReveal className="mx-auto w-[96%] rounded-2xl sm:w-[94%]">
+            <LiveWindow item={{ project, media }} interactive />
+          </ClipReveal>
+        ) : (
+          <ClipReveal className="rounded-2xl border border-line bg-panel">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl sm:aspect-[16/8]">
+              <Parallax speed={0.12} className="absolute inset-0 scale-110">
+                <ProjectMedia project={project} priority live />
+              </Parallax>
+            </div>
+          </ClipReveal>
+        )}
       </Container>
 
       {/* Overview */}
@@ -142,9 +138,16 @@ export default async function CasePage({ params }: Props) {
               <p className="mb-5 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
                 О проекте
               </p>
-              <p className="text-xl leading-relaxed text-fg sm:text-2xl">
-                {project.overview}
-              </p>
+              <div className="flex flex-col gap-5">
+                {project.overview.split("\n\n").map((paragraph) => (
+                  <p
+                    key={paragraph.slice(0, 40)}
+                    className="text-lg leading-relaxed text-fg-secondary sm:text-xl"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
             </div>
             <div className="flex flex-col gap-8">
               <div>
@@ -214,7 +217,7 @@ export default async function CasePage({ params }: Props) {
         />
         <Container className="relative">
           <p className="mb-12 font-mono text-xs uppercase tracking-[0.3em] text-m">
-            Результаты
+            Ключевые возможности
           </p>
           <StaggerGroup className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3">
             {project.results.map((result) => (
@@ -234,11 +237,16 @@ export default async function CasePage({ params }: Props) {
       {/* Goals / Challenges / Solutions */}
       <Section className="theme-light border-t border-line">
         <Container>
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
-            <GroupColumn title="Цели" items={project.goals} marker="→" muted />
-            <GroupColumn title="Вызовы" items={project.challenges} marker="—" muted />
+          {/* На телефоне три блока едут слайдером — иначе это одна очень
+              длинная колонка текста. На планшете и шире — обычная сетка. */}
+          <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-1 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-12 sm:overflow-visible sm:px-0">
+            <GroupColumn title="Цели" items={project.goals} marker="→" />
+            <GroupColumn title="Вызовы" items={project.challenges} marker="—" />
             <GroupColumn title="Решения" items={project.solutions} marker="✓" accent />
           </div>
+          <p className="mt-5 text-sm text-fg-muted sm:hidden">
+            Листайте вбок, чтобы увидеть вызовы и решения.
+          </p>
         </Container>
       </Section>
 
@@ -248,66 +256,40 @@ export default async function CasePage({ params }: Props) {
           <p className="mb-12 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
             Процесс
           </p>
-          <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Лента с точками вместо карточек с номерами: этапы читаются
+              как последовательность, а не как четыре одинаковых блока. */}
+          {/* На узком экране — вертикальная линия с точками, на широком —
+              горизонтальная лента: точка без линии читалась как случайный
+              кружок. */}
+          <StaggerGroup className="relative grid grid-cols-1 gap-8 border-l border-line pl-7 sm:grid-cols-2 sm:gap-10 lg:grid-cols-4 lg:gap-8 lg:border-l-0 lg:pl-0">
+            <span
+              aria-hidden="true"
+              className="absolute left-0 right-0 top-[7px] hidden h-px bg-line lg:block"
+            />
             {project.process.map((step) => (
-              <div
-                key={step.phase}
-                className="rounded-xl border border-line bg-surface/30 p-6"
-              >
-                <p className="font-display text-3xl font-semibold text-m">
-                  {step.phase}
-                </p>
-                <h3 className="mt-4 font-semibold text-fg">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-fg-muted">
+              <div key={step.phase} className="relative">
+                <span
+                  aria-hidden="true"
+                  className="absolute -left-[2.06rem] top-1 z-10 block h-3.5 w-3.5 rounded-full border-2 border-accent bg-bg lg:relative lg:left-0 lg:top-0"
+                />
+                <h3 className="font-display text-lg font-semibold tracking-tight text-fg lg:mt-5">
+                  {step.title}
+                </h3>
+                <p className="mt-2.5 text-base leading-relaxed text-fg-secondary">
                   {step.description}
                 </p>
-                <span className="mt-4 inline-block font-mono text-xs text-fg-faint">
-                  {step.duration}
-                </span>
+                {step.duration && (
+                  <span className="mt-3 inline-block font-mono text-xs text-fg-faint">
+                    {step.duration}
+                  </span>
+                )}
               </div>
             ))}
           </StaggerGroup>
         </Container>
       </Section>
 
-      {/* Next project */}
-      {nextProject && (
-        <Section
-          className="relative border-t border-line"
-          style={{ "--m-accent": nextProject.accent } as React.CSSProperties}
-        >
-          <Container>
-            <p className="mb-8 font-mono text-xs uppercase tracking-[0.3em] text-fg-muted">
-              Следующий проект
-            </p>
-            <Link
-              href={`/portfolio/${nextProject.slug}`}
-              data-cursor="card"
-              data-cursor-label="КЕЙС"
-              className="group grid items-center gap-8 lg:grid-cols-[1fr_1.1fr] lg:gap-16"
-            >
-              <div>
-                <h2 className="font-display text-[clamp(2.4rem,6vw,5rem)] font-semibold leading-[1.0] tracking-tight text-fg transition-colors duration-300 group-hover:text-m">
-                  {nextProject.title}
-                </h2>
-                <p className="mt-4 max-w-md text-lg text-fg-secondary">
-                  {nextProject.tagline}
-                </p>
-                <span className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-fg">
-                  Смотреть кейс
-                  <ArrowRight
-                    size={18}
-                    className="text-m transition-transform duration-300 group-hover:translate-x-2"
-                  />
-                </span>
-              </div>
-              <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border border-line bg-panel transition-transform duration-700 ease-out group-hover:scale-[1.03]">
-                <ProjectMedia project={nextProject} interactive={false} />
-              </div>
-            </Link>
-          </Container>
-        </Section>
-      )}
+      <CtaBanner />
     </div>
   );
 }
@@ -322,16 +304,18 @@ function GroupColumn({
   items: string[];
   marker: string;
   accent?: boolean;
-  muted?: boolean;
 }) {
   return (
-    <div>
-      <h2 className="mb-6 font-display text-xl font-semibold tracking-tight text-fg">
+    <div className="w-[85%] shrink-0 snap-start rounded-2xl border border-line bg-panel p-6 sm:w-auto sm:shrink sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0">
+      <h2 className="mb-6 font-display text-2xl font-semibold tracking-tight text-fg">
         {title}
       </h2>
-      <ul className="flex flex-col gap-4">
+      <ul className="flex flex-col gap-5">
         {items.map((item) => (
-          <li key={item} className="flex gap-3 text-sm leading-relaxed text-fg-secondary">
+          <li
+            key={item}
+            className="flex gap-3 text-base leading-relaxed text-fg-secondary sm:text-[1.0625rem]"
+          >
             <span className={accent ? "text-m" : "text-fg-faint"}>{marker}</span>
             <span>{item}</span>
           </li>

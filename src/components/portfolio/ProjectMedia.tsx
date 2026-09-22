@@ -54,23 +54,20 @@ export function ProjectMedia({
             } 18%, transparent), transparent 60%)`,
           }}
         />
-        {/* The laptop artwork carries wide transparent margins, so its box
-            is narrower than the frame; the browser window fills it. */}
+        {/* Одно окно браузера во всю ширину — без ноутбука: он съедал
+            место и делал запись мельче. Телефоны живут отдельным блоком. */}
         <div
-          className={cn(
-            "relative",
-            media.kind === "laptop-video" ? "h-full w-[76%]" : "h-[86%] w-[88%]",
-          )}
+          className="relative h-[92%] w-[94%] sm:h-[94%] sm:w-[92%]"
           style={{ "--m-accent": accent } as React.CSSProperties}
         >
           <Mockup
-            kind={media.kind}
+            kind="browser-video"
             accent={accent}
             url={media.video}
             address={media.address}
             projectTitle={title}
-            mobileScreens={media.mobileScreens}
             videoCrop={media.videoCrop}
+            chrome="minimal"
             controls={interactive}
             centered
           />

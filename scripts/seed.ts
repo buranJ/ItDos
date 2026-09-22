@@ -88,6 +88,7 @@ async function main() {
       services: p.services ?? [],
       role: p.role ?? null,
       liveUrl: p.liveUrl ?? null,
+      objective: p.objective ?? "",
       overview: p.overview,
       goals: p.goals,
       challenges: p.challenges,

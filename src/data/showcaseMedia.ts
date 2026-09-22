@@ -44,8 +44,9 @@ export const showcaseMedia: Record<string, ShowcaseMedia> = {
     video: "nNYSL7SbYsM",
     address: "toolor.store",
     // Window capture on black: margins around, browser UI on the top 16%.
-    // Any tighter and the logo in the site's header gets clipped.
-    videoCrop: { scale: 1.19, top: 18.9 },
+    // 1.16 is the smallest scale that still hides the recorder's own chrome
+    // and the black margins — anything larger starts cutting the site itself.
+    videoCrop: { scale: 1.16, top: 18.4 },
     // The middle screen sets the phone's shape (see LaptopVideoMock), so a
     // full-height capture goes there — 4.jpg is cropped short (1316×2155)
     // and as the centre it drew a stubby phone.
@@ -61,7 +62,7 @@ export const showcaseMedia: Record<string, ShowcaseMedia> = {
     kind: "laptop-video",
     video: "SO5efpX3Xw0",
     address: "bilmont.school",
-    videoCrop: { scale: 1.23, top: 19.5 },
+    videoCrop: { scale: 1.16, top: 18.4 },
     mobileScreens: [
       { src: "/pr/8.jpg", width: 1305, height: 2560 },
       { src: "/pr/6.jpg", width: 1316, height: 2553 },

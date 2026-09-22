@@ -107,6 +107,8 @@ export const projects = sqliteTable(
     role: text("role"),
     liveUrl: text("live_url"),
 
+    /** Задача проекта одним абзацем — открывает кейс. */
+    objective: text("objective").notNull().default(""),
     overview: text("overview").notNull().default(""),
     goals: text("goals", { mode: "json" }).$type<string[]>().notNull().default([]),
     challenges: text("challenges", { mode: "json" }).$type<string[]>().notNull().default([]),

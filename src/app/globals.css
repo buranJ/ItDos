@@ -330,6 +330,16 @@ html.lenis body {
 /* Per-mockup accent tints (driven by the inline --m-accent var).
    text-m / bg-m / fill-m / stroke-m come from `--color-m` in @theme. The
    soft fills are utilities so they take variants too (`hover:bg-m-soft`). */
+/* Горизонтальные слайдеры на телефоне: полоса прокрутки только мешает,
+   жест и снап остаются. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @utility bg-m-soft {
   background: color-mix(in oklab, var(--m-accent, var(--color-accent)) 16%, transparent);
 }

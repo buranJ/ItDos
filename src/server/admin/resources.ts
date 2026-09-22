@@ -147,6 +147,7 @@ export const resources: ResourceDef[] = [
       },
       { name: "accent", label: "Акцентный цвет", type: "text", help: "HEX, например #6e56ff" },
       { name: "tags", label: "Теги", type: "stringList" },
+      { name: "objective", label: "Задача", type: "textarea" },
       { name: "overview", label: "О проекте", type: "textarea" },
       { name: "goals", label: "Цели", type: "stringList" },
       { name: "challenges", label: "Сложности", type: "stringList" },

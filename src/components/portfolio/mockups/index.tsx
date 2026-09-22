@@ -47,6 +47,8 @@ type MockupDispatchProps = {
   centered?: boolean;
   /** Crop for a browser-video recording (see BrowserVideoMock). */
   videoCrop?: { scale: number; top: number };
+  /** Passed through to the browser window: "minimal" is one quiet bar. */
+  chrome?: "full" | "minimal";
   /** Optional project-specific mobile screens for the laptop showcase. */
   mobileScreens?: readonly {
     src?: string;
@@ -66,6 +68,7 @@ export function Mockup({
   projectTitle,
   mobileScreens,
   videoCrop,
+  chrome,
   active,
   view,
   onViewChange,
@@ -134,6 +137,7 @@ export function Mockup({
           address={address}
           projectTitle={projectTitle}
           videoCrop={videoCrop}
+          chrome={chrome}
           active={active}
           controls={controls}
           centered={centered}
