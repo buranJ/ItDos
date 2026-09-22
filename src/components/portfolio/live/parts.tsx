@@ -5,15 +5,12 @@ import type { PortfolioProject, ProjectResult } from "@/types/portfolio";
 import type { ShowcaseMedia } from "@/data/showcaseMedia";
 import { cn } from "@/lib/utils";
 
-/* Building blocks shared by every layout of the «Живые проекты» section.
-   No hooks here, so both the server layouts and the client one use them. */
+/* Building blocks of the «Живые проекты» section. */
 
 export type LiveItem = { project: PortfolioProject; media: ShowcaseMedia };
 
 export const accentOf = (project: PortfolioProject) =>
   project.accent ?? "#6e56ff";
-
-export const pad = (n: number) => String(n).padStart(2, "0");
 
 /** White on dark accents, ink on light ones (Bilmont's olive, the teal). */
 function inkOn(hex: string) {
@@ -57,57 +54,6 @@ export function LiveWindow({
   );
 }
 
-/** The dark card the window sits on, lit from above in the project colour. */
-export function Stage({
-  accent,
-  className,
-  children,
-}: {
-  accent: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-2xl border border-line bg-panel",
-        className,
-      )}
-    >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: `radial-gradient(90% 75% at 50% -5%, color-mix(in oklab, ${accent} 24%, transparent), transparent 72%)`,
-        }}
-      />
-      <div className="relative">{children}</div>
-    </div>
-  );
-}
-
-/** «01 ——— Корпоративный сайт · 2024». */
-export function Meta({
-  index,
-  project,
-  className,
-}: {
-  index: number;
-  project: PortfolioProject;
-  className?: string;
-}) {
-  return (
-    <div className={cn("flex items-center gap-4", className)}>
-      <span className="font-mono text-sm text-m">{pad(index + 1)}</span>
-      <span className="h-px flex-1 bg-line" />
-      <span className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-fg-muted">
-        {project.tags[0] ? `${project.tags[0]} · ` : ""}
-        {project.year}
-      </span>
-    </div>
-  );
-}
-
 /** The three facts from the case, value over label. */
 export function Facts({
   results,
@@ -132,21 +78,6 @@ export function Facts({
   );
 }
 
-export function Tags({ tags, className }: { tags: string[]; className?: string }) {
-  return (
-    <div className={cn("flex flex-wrap gap-2", className)}>
-      {tags.map((tag) => (
-        <span
-          key={tag}
-          className="rounded-full border border-line px-3 py-1 text-xs text-fg-secondary"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 /** «Смотреть кейс» in the project colour, and the live site if it's public. */
 export function CaseLinks({
   project,
@@ -163,16 +94,12 @@ export function CaseLinks({
       <Link
         href={`/portfolio/${project.slug}`}
         className={cn(
-          "group/cta inline-flex items-center gap-2 rounded-full font-medium transition-transform duration-300 hover:-translate-y-0.5",
+          "inline-flex items-center justify-center rounded-full font-medium transition-transform duration-300 hover:-translate-y-0.5",
           compact ? "h-10 px-5 text-sm" : "h-12 px-6 text-sm",
         )}
         style={{ background: accent, color: inkOn(accent) }}
       >
         Смотреть кейс
-        <ArrowUpRight
-          size={16}
-          className="transition-transform duration-300 group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5"
-        />
       </Link>
       {project.liveUrl && (
         <a
@@ -184,7 +111,7 @@ export function CaseLinks({
             compact ? "h-10 px-4" : "h-12 px-5",
           )}
         >
-          {new URL(project.liveUrl).host}
+          Открыть сайт
           <ArrowUpRight size={14} />
         </a>
       )}

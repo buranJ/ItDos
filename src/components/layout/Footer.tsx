@@ -59,9 +59,9 @@ export function Footer() {
               <Image
                 src={logo}
                 alt="ITDOS"
-                width={110}
-                height={36}
-                className="h-9 w-auto"
+                width={165}
+                height={54}
+                className="h-[3.375rem] w-auto"
               />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-fg-secondary">

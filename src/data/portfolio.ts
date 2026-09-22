@@ -10,7 +10,8 @@ export const portfolioProjects: PortfolioProject[] = [
   {
     slug: "avangard-style",
     title: "Avangard Style",
-    tagline: "Корпоративный сайт застройщика с каталогом жилых комплексов премиум-класса",
+    tagline:
+      "Сайт застройщика с каталогом жилых комплексов, интерактивными планировками, 3D-турами и онлайн-трансляциями строительства.",
     category: "website",
     tags: [
       "Корпоративный сайт",
@@ -21,7 +22,7 @@ export const portfolioProjects: PortfolioProject[] = [
     year: "2024",
     accent: "#0090fc",
     mockup: "laptop-video",
-    highlight: "7 строящихся комплексов в одном каталоге",
+    highlight: "8 объектов в одном каталоге",
     featured: true,
     client: "Avangard Style",
     services: ["UX/UI дизайн", "Разработка", "Каталог объектов", "Адаптивная вёрстка"],
@@ -35,7 +36,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Собирать заявки в отдел продаж прямо со страниц объектов",
     ],
     challenges: [
-      "Семь очень разных объектов — от 25-этажного комплекса в центре до коттеджей на Иссык-Куле — должны жить в одной системе",
+      "Восемь очень разных объектов — от 25-этажного комплекса в центре до коттеджей на Иссык-Куле — должны жить в одной системе",
       "Много тяжёлого контента: планы этажей и паркинга по блокам, генпланы, галереи рендеров, видео",
       "Квартира — покупка на годы, поэтому каждая страница должна вызывать доверие",
       "Большая часть трафика идёт с телефонов, где планировки и генплан должны оставаться читаемыми",
@@ -51,17 +52,17 @@ export const portfolioProjects: PortfolioProject[] = [
     stack: ["React", "Vite", "Адаптивная вёрстка", "Google Analytics", "Nginx"],
     results: [
       {
-        label: "Жилых комплексов",
-        value: "7",
-        description: "в едином каталоге, у каждого — своя страница",
+        label: "объектов онлайн",
+        value: "8",
+        description: "жилые комплексы и курортные проекты в едином каталоге",
       },
       {
-        label: "Разделов на странице ЖК",
-        value: "11",
-        description: "от планировок и генплана до трансляции стройки",
+        label: "интерактивные туры",
+        value: "3D",
+        description: "планировки и общий вид комплекса можно рассмотреть со всех сторон",
       },
       {
-        label: "Прямой эфир",
+        label: "трансляции строительства",
         value: "24/7",
         description: "видео со строительных площадок в реальном времени",
       },
@@ -98,7 +99,8 @@ export const portfolioProjects: PortfolioProject[] = [
   {
     slug: "toolor",
     title: "Toolor",
-    tagline: "Интернет-магазин кыргызстанского бренда одежды для современных кочевников",
+    tagline:
+      "Интернет-магазин бренда одежды с каталогом, карточками товаров, избранным, корзиной, оплатой через Finik и собственной админ-панелью.",
     category: "website",
     tags: ["E-commerce", "Одежда", "3 языка", "Каталог"],
     year: "2026",
@@ -140,19 +142,19 @@ export const portfolioProjects: PortfolioProject[] = [
     stack: ["Next.js", "React", "TypeScript", "i18n", "Cloudflare"],
     results: [
       {
-        label: "Языка",
+        label: "языка",
         value: "3",
         description: "русский, английский и кыргызский — с отдельными адресами",
       },
       {
-        label: "Товаров в каталоге",
-        value: "60+",
-        description: "с фильтрами, сортировкой и поиском",
+        label: "онлайн-оплата",
+        value: "FINIK",
+        description: "приём платежей прямо на сайте",
       },
       {
-        label: "Приложения",
-        value: "2",
-        description: "iOS и Android — переход в App Store и Google Play прямо с сайта",
+        label: "управление товарами и каталогом",
+        value: "ADMIN",
+        description: "товары, цены и наличие обновляет команда бренда",
       },
     ],
     process: [
@@ -187,9 +189,10 @@ export const portfolioProjects: PortfolioProject[] = [
   {
     slug: "bilmont",
     title: "Bilmont School",
-    tagline: "Сайт первой AI-нативной трёхъязычной частной школы в Центральной Азии",
+    tagline:
+      "Трёхъязычный сайт частной школы, который знакомит родителей с программой, показывает подход к обучению и приводит к заявке на поступление.",
     category: "website",
-    tags: ["Лендинг", "Образование", "3 языка", "Приём заявок"],
+    tags: ["Сайт частной школы", "Образование", "3 языка", "Приём заявок"],
     year: "2026",
     accent: "#9cba6e",
     mockup: "laptop-video",
@@ -224,19 +227,19 @@ export const portfolioProjects: PortfolioProject[] = [
     stack: ["React", "Vite", "i18n", "Netlify"],
     results: [
       {
-        label: "Языка",
+        label: "языка",
         value: "3",
         description: "кыргызский, русский и английский — как в самой школе",
       },
       {
-        label: "Ступеней STEM",
-        value: "5",
-        description: "дорожная карта программы с 1 по 11 класс",
+        label: "адаптивный интерфейс",
+        value: "MOBILE",
+        description: "родители открывают сайт с телефона",
       },
       {
-        label: "Уровня условий",
-        value: "3",
-        description: "для семей-основателей — скидки от 10 до 30%",
+        label: "онлайн-заявки",
+        value: "LEADS",
+        description: "форма поступления с уведомлением школе",
       },
     ],
     process: [
@@ -270,11 +273,11 @@ export const portfolioProjects: PortfolioProject[] = [
 
   {
     slug: "bishkekvodokanal",
-    title: "Бишкекводоканал",
+    title: "Бишкек Суу Водоканал",
     tagline: "Автоматизированная информационная система для выдачи технических условий на подключение к сетям",
     category: "crm",
-    tags: ["АИС", "Госсектор", "Геопортал", "Отчётность"],
-    year: "2026",
+    tags: ["Государственная АИС", "Госсектор", "Геопортал", "Отчётность"],
+    year: "2025",
     accent: "#2bd4c4",
     mockup: "browser-video",
     highlight: "Геопортал, ТУ, счета и отчёты в одной системе",
@@ -313,19 +316,19 @@ export const portfolioProjects: PortfolioProject[] = [
     stack: ["React", "Vite", "Ant Design", "API Яндекс Карт", "Экспорт в Excel"],
     results: [
       {
-        label: "Модулей",
-        value: "10",
+        label: "рабочих модулей",
+        value: "10+",
         description: "от геопортала до архива — в одной системе",
       },
       {
-        label: "Языка интерфейса",
-        value: "3",
-        description: "кыргызский, русский и английский",
+        label: "бухгалтерия и счета",
+        value: "FINANCE",
+        description: "счета на оплату, остатки и выписки",
       },
       {
-        label: "Отчёт в Excel",
-        value: "1 клик",
-        description: "за год, квартал или произвольный период",
+        label: "автоматическая отчётность",
+        value: "REPORTS",
+        description: "отчёты за период с выгрузкой в Excel",
       },
     ],
     process: [
