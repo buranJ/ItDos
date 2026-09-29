@@ -21,18 +21,26 @@ const CENTRE_BAND = "-42% 0px -42% 0px";
  */
 export function LiveCards({ items }: { items: LiveItem[] }) {
   const refs = useRef<(HTMLElement | null)[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  // -1: в центре нет ни одной карточки. Иначе карточка, ушедшая наверх
+  // страницы, оставалась бы активной, и при возврате к ней видео и заставка
+  // не перезапускались.
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   useEffect(() => {
     const cards = refs.current.filter((el): el is HTMLElement => Boolean(el));
     if (cards.length === 0) return;
 
+    // В стопке центр перекрывают сразу несколько карточек: видна верхняя,
+    // то есть с наибольшим индексом.
+    const inBand = new Set<number>();
     const io = new IntersectionObserver(
       (entries) => {
-        const hit = entries.find((entry) => entry.isIntersecting);
-        if (!hit) return;
-        const index = cards.indexOf(hit.target as HTMLElement);
-        if (index >= 0) setActiveIndex(index);
+        for (const entry of entries) {
+          const index = cards.indexOf(entry.target as HTMLElement);
+          if (entry.isIntersecting) inBand.add(index);
+          else inBand.delete(index);
+        }
+        setActiveIndex(inBand.size > 0 ? Math.max(...inBand) : -1);
       },
       { rootMargin: CENTRE_BAND },
     );
@@ -58,7 +66,7 @@ export function LiveCards({ items }: { items: LiveItem[] }) {
               ref={(el) => {
                 refs.current[i] = el;
               }}
-              className="relative overflow-hidden rounded-[2rem] border border-line bg-panel shadow-[0_-24px_60px_-24px_rgba(0,0,0,0.85)]"
+              className="relative overflow-hidden rounded-4xl border border-line bg-panel shadow-[0_-24px_60px_-24px_rgba(0,0,0,0.85)]"
               style={{ "--m-accent": accent } as React.CSSProperties}
             >
               <div

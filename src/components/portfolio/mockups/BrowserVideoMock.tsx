@@ -79,6 +79,22 @@ export function BrowserVideoMock({
   const [minElapsed, setMinElapsed] = useState(false);
   const [loaderGone, setLoaderGone] = useState(false);
   const [fullView, setFullView] = useState(false);
+  // Карточка ушла из центра: плеер выгружен, а заставка при возврате должна
+  // проиграться заново, поэтому её состояние сбрасывается.
+  // Ключ заставки меняется при каждом возвращении, и её анимация стартует
+  // с начала, а не с последнего кадра.
+  const [wasInView, setWasInView] = useState(inView);
+  const [round, setRound] = useState(0);
+  if (wasInView !== inView) {
+    setWasInView(inView);
+    if (inView) {
+      setRound(round + 1);
+    } else {
+      setLoaded(false);
+      setMinElapsed(false);
+      setLoaderGone(false);
+    }
+  }
   usePauseWhileFullView(playerRef, fullView);
   const branded = projectTitle.toLowerCase().includes("водоканал");
   const brand = videoBrand(projectTitle, address);
@@ -187,10 +203,11 @@ export function BrowserVideoMock({
                 <ExpandVideoButton onClick={() => setFullView(true)} />
               )}
               {!loaderGone && brand && (
-                <BrandVideoLoader brand={brand} fading={loaderFading} />
+                <BrandVideoLoader key={round} brand={brand} fading={loaderFading} />
               )}
               {!loaderGone && !brand && (
                 <div
+                  key={round}
                   className={cn(
                     styles.loader,
                     branded && styles.vkLoader,

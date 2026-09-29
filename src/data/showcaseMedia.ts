@@ -33,10 +33,14 @@ export const showcaseMedia: Record<string, ShowcaseMedia> = {
     address: "avangardstyle.kg",
     // Full-width capture, recorder's tabs + bookmarks bar on the top 11%.
     videoCrop: { scale: 1.13, top: 12.9 },
+    // Веер на главной берёт три средних: там остаются прежние кадры,
+    // первый экран и каталог объектов видны в кейсе и в просмотрщике.
     mobileScreens: [
+      { src: "/project/avangard-mob4.png", width: 1170, height: 2532 },
       { src: "/project/avangard-mob1.png", width: 430, height: 932 },
       { src: "/project/avangard-mob2.png", width: 370, height: 772 },
       { src: "/project/avangard-mob3.png", width: 370, height: 715 },
+      { src: "/project/avangard-mob5.png", width: 1170, height: 2532 },
     ],
   },
   toolor: {
@@ -69,6 +73,20 @@ export const showcaseMedia: Record<string, ShowcaseMedia> = {
       { src: "/pr/10.jpg", width: 1316, height: 2560 },
       { src: "/pr/9.jpg", width: 1290, height: 2560 },
       { src: "/pr/7.jpg", width: 1280, height: 2560 },
+    ],
+  },
+  abamed: {
+    kind: "browser-video",
+    video: "7xnfVtpiT40",
+    address: "abamedical.netlify.app",
+    // Та же запись на чёрном, что у Alybaev: тот же кроп.
+    videoCrop: { scale: 1.16, top: 2.7 },
+    mobileScreens: [
+      { src: "/aba-medical/mob2.png", width: 1170, height: 2532 },
+      { src: "/aba-medical/mob3.png", width: 1170, height: 2532 },
+      { src: "/aba-medical/mob1.png", width: 1170, height: 2532 },
+      { src: "/aba-medical/mob4.png", width: 1170, height: 2532 },
+      { src: "/aba-medical/mob5.png", width: 1170, height: 2532 },
     ],
   },
   alybaev: {

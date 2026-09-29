@@ -416,6 +416,17 @@ export function LaptopVideoMock({
   const reduced = useReducedMotion();
   const [viewRef, seen] = useInView<HTMLDivElement>("0px");
   const inView = seen && active;
+  // Проект ушёл из центра: плеер выгружен, а заставка при возврате должна
+  // проиграться заново, поэтому её состояние сбрасывается.
+  const [wasInView, setWasInView] = useState(inView);
+  if (wasInView !== inView) {
+    setWasInView(inView);
+    if (!inView) {
+      setVideoLoaded(false);
+      setIntroComplete(false);
+      setLoaderHidden(false);
+    }
+  }
   const photoStageRef = useRef<HTMLDivElement>(null);
   const mobileStageRef = useRef<HTMLDivElement>(null);
   const phoneRefs = useRef<(HTMLDivElement | null)[]>([]);
