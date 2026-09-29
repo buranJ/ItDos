@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Expand, Laptop, Smartphone } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
@@ -328,10 +328,30 @@ function BilmontLoader({ fading }: { fading: boolean }) {
   );
 }
 
-/** Dr. Alybaev: знак проявляется снизу вверх, как проявляется снимок,
- *  под ним тонкая линия в цвете бренда. Логотип растровый внутри SVG,
- *  поэтому рисуем маской, а не обводкой контура. */
+/** Пунктир вдоль профиля в знаке Dr. Alybaev: лоб, нос, губы, подбородок,
+ *  шея. Снят с их логотипа, координаты в его системе 1080×1080. */
+const ALYBAEV_MARKING =
+  "M502 245 L490 270 L481 290 L471 310 L467 335 L467 355 L462 375 " +
+  "L448 390 L432 410 L445 422 L449 440 L453 462 L460 480 L457 497 " +
+  "L465 510 L455 530 L438 552";
+
+/** Dr. Alybaev: разметка перед операцией. Маркер прорисовывает пунктир
+ *  по профилю, от конца линии раскрывается буква с лицом, и нарисованная
+ *  линия ложится на пунктир логотипа. Затем выезжает имя и подпись.
+ *  Логотип растровый, поэтому его части показываются окнами одной
+ *  картинки: знак, имя, подпись. */
 function AlybaevLoader({ fading }: { fading: boolean }) {
+  // Id маски без двоеточий и кавычек, которые ломают url(#…).
+  const maskId = `alybaev-marking-${useId().replace(/[^\w-]/g, "")}`;
+  const logo = (
+    <Image
+      src="/logos/alybaev.svg"
+      alt=""
+      width={1080}
+      height={1080}
+      className={styles.alybaevLogo}
+    />
+  );
   return (
     <div
       className={cn(
@@ -343,22 +363,114 @@ function AlybaevLoader({ fading }: { fading: boolean }) {
       aria-label="Загружается видео проекта Dr. Alybaev"
     >
       <div className={styles.alybaevStage} aria-hidden="true">
-        <span className={styles.alybaevMarkWrap}>
-          <Image
-            src="/logos/alybaev.svg"
-            alt=""
-            width={220}
-            height={220}
-            className={styles.alybaevMark}
+        <div className={cn(styles.alybaevPart, styles.alybaevMarkPart)}>
+          <div className={styles.alybaevMarkReveal}>{logo}</div>
+        </div>
+        <div className={cn(styles.alybaevPart, styles.alybaevNamePart)}>
+          <div className={styles.alybaevNameRise}>{logo}</div>
+        </div>
+        <div className={cn(styles.alybaevPart, styles.alybaevRolePart)}>
+          <div className={styles.alybaevRoleFade}>{logo}</div>
+        </div>
+        <svg viewBox="170 150 740 640" className={styles.alybaevMarking}>
+          <defs>
+            <mask id={maskId} maskUnits="userSpaceOnUse" x="170" y="150" width="740" height="640">
+              <path
+                d={ALYBAEV_MARKING}
+                pathLength={1}
+                className={styles.alybaevMarkingDraw}
+              />
+            </mask>
+          </defs>
+          <path
+            d={ALYBAEV_MARKING}
+            mask={`url(#${maskId})`}
+            className={styles.alybaevMarkingLine}
           />
-        </span>
-        <span className={styles.alybaevTrack} />
+          <circle
+            r="9"
+            className={styles.alybaevMarkingTip}
+            style={{ offsetPath: `path("${ALYBAEV_MARKING}")` }}
+          />
+        </svg>
       </div>
     </div>
   );
 }
 
-export type VideoBrand = "avangard" | "toolor" | "bilmont" | "alybaev";
+/** Плитки знака ABA Medical: ромбы сердца из их логотипа, от нижнего
+ *  кончика вверх, в этом порядке они и падают. Координаты центров в
+ *  системе 196×147, полудиагональ плитки 24.5. */
+const ABA_TILES = [
+  { x: 98, y: 122.5, fill: "#6371a6" },
+  { x: 73.5, y: 98, fill: "#727eb6" },
+  { x: 122.5, y: 98, fill: "#727eb6" },
+  { x: 49, y: 73.5, fill: "#8b9bcb" },
+  { x: 98, y: 73.5, fill: "#8b9bcb" },
+  { x: 147, y: 73.5, fill: "#8b9bcb" },
+  { x: 24.5, y: 49, fill: "#96c7e1" },
+  { x: 73.5, y: 49, fill: "#c9e4f9" },
+  { x: 122.5, y: 49, fill: "#eec8b3" },
+  { x: 171.5, y: 49, fill: "#df8a76" },
+  { x: 49, y: 24.5, fill: "#b6dcf3" },
+  { x: 147, y: 24.5, fill: "#e6a58f" },
+] as const;
+
+/** ABA Medical: плитки падают по одной и собирают сердце, оно делает один
+ *  удар, проявляется надпись, а под ней бежит кардиограмма, пока грузится
+ *  видео. */
+function AbaLoader({ fading }: { fading: boolean }) {
+  return (
+    <div
+      className={cn(
+        styles.videoLoader,
+        styles.abaLoader,
+        fading && styles.videoLoaderFading,
+      )}
+      role="status"
+      aria-label="Загружается видео проекта ABA Medical"
+    >
+      <div className={styles.abaStage} aria-hidden="true">
+        <div className={styles.abaLogo}>
+          <svg viewBox="0 0 196 147" className={styles.abaHeart}>
+            {ABA_TILES.map((tile, index) => (
+              <polygon
+                key={`${tile.x}-${tile.y}`}
+                className={styles.abaTile}
+                style={{ "--tile": index } as React.CSSProperties}
+                fill={tile.fill}
+                points={`${tile.x},${tile.y - 24.5} ${tile.x + 24.5},${tile.y} ${tile.x},${tile.y + 24.5} ${tile.x - 24.5},${tile.y}`}
+              />
+            ))}
+          </svg>
+          {/* Надпись берётся из их SVG: окно показывает только её часть. */}
+          <span className={styles.abaWord}>
+            <Image
+              src="/logos/aba-medical.svg"
+              alt=""
+              width={720}
+              height={148}
+              className={styles.abaWordImage}
+            />
+          </span>
+        </div>
+        <svg viewBox="0 0 400 40" className={styles.abaPulse} preserveAspectRatio="none">
+          <path
+            className={styles.abaPulseBase}
+            d="M0 22 H150 L160 22 L166 12 L172 30 L180 3 L188 38 L195 22 H400"
+          />
+          <path
+            className={styles.abaPulseBeat}
+            pathLength={100}
+            d="M0 22 H150 L160 22 L166 12 L172 30 L180 3 L188 38 L195 22 H400"
+          />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+export type VideoBrand = "avangard" | "toolor" | "bilmont" | "alybaev" | "aba";
 
 /** Which project gets its own branded intro. Matched loosely: the home
  *  slider calls it "Bilmont", the portfolio "Bilmont School". */
@@ -368,6 +480,7 @@ export function videoBrand(title = "", address = ""): VideoBrand | null {
   if (key.includes("toolor")) return "toolor";
   if (key.includes("bilmont")) return "bilmont";
   if (key.includes("alybaev")) return "alybaev";
+  if (key.includes("aba med") || key.includes("abamed")) return "aba";
   return null;
 }
 
@@ -383,6 +496,7 @@ export function BrandVideoLoader({
   if (brand === "avangard") return <AvangardLoader fading={fading} />;
   if (brand === "toolor") return <ToolorLoader fading={fading} />;
   if (brand === "alybaev") return <AlybaevLoader fading={fading} />;
+  if (brand === "aba") return <AbaLoader fading={fading} />;
   return <BilmontLoader fading={fading} />;
 }
 

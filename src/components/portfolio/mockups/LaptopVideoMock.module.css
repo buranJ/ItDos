@@ -241,7 +241,144 @@
   animation: toolorTrack 1.35s ease-in-out 520ms forwards;
 }
 
-/* ── Dr. Alybaev: знак проявляется снизу вверх, как проявляется снимок ── */
+/* ── ABA Medical: плитки собирают сердце, удар, надпись, кардиограмма ── */
+.abaLoader {
+  container-type: size;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(139, 155, 203, 0.2), transparent 60%),
+    #f6f8fc;
+}
+
+.abaStage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7cqh;
+  width: min(66%, 34rem);
+}
+
+/* Пропорции как в их логотипе: знак 196, надпись 514 из 720. */
+.abaLogo {
+  display: grid;
+  grid-template-columns: 196fr 514fr;
+  align-items: center;
+  width: 100%;
+}
+
+.abaHeart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+  animation: abaBeat 560ms cubic-bezier(0.3, 0, 0.3, 1) 1150ms both;
+}
+
+.abaTile {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  transform: translateY(-160%) rotate(-45deg) scale(0.6);
+  animation: abaDrop 460ms cubic-bezier(0.2, 0.9, 0.3, 1.2)
+    calc(100ms + var(--tile) * 55ms) forwards;
+}
+
+.abaWord {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 514 / 148;
+  -webkit-clip-path: inset(0 100% 0 0);
+  clip-path: inset(0 100% 0 0);
+  animation: abaWrite 650ms cubic-bezier(0.16, 1, 0.3, 1) 1000ms forwards;
+}
+
+/* Окно на правую часть их SVG: знак слева остаётся за краем. */
+.abaWordImage {
+  display: block;
+  width: 140.08%;
+  max-width: none;
+  height: auto;
+  margin-left: -40.08%;
+}
+
+.abaPulse {
+  width: 100%;
+  height: 7cqh;
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.abaPulseBase {
+  stroke: rgba(115, 125, 179, 0.18);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: abaFadeIn 400ms ease-out 1150ms forwards;
+}
+
+.abaPulseBeat {
+  stroke: #737db3;
+  stroke-width: 2.2;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 18 100;
+  stroke-dashoffset: 18;
+  opacity: 0;
+  animation:
+    abaFadeIn 200ms ease-out 1300ms forwards,
+    abaTrace 1.4s linear 1300ms infinite;
+}
+
+@keyframes abaDrop {
+  60% {
+    opacity: 1;
+    transform: translateY(8%) rotate(0deg) scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Один удар: сжатие, толчок, возврат. */
+@keyframes abaBeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.94);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  75% {
+    transform: scale(0.99);
+  }
+}
+
+@keyframes abaWrite {
+  to {
+    -webkit-clip-path: inset(0 0 0 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes abaFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes abaTrace {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+/* ── Dr. Alybaev: разметка перед операцией ── */
 .alybaevLoader {
   container-type: size;
   background:
@@ -249,79 +386,152 @@
     #f4f6f5;
 }
 
+/* Окно на область логотипа 740×640 (x 170–910, y 150–790 из 1080):
+   знак, имя и подпись без пустых полей картинки. */
 .alybaevStage {
   position: relative;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 6cqh;
-  width: min(46%, 20rem);
+  width: min(40%, 22rem, calc(78cqh * 740 / 640));
+  aspect-ratio: 740 / 640;
 }
 
-.alybaevMarkWrap {
-  display: block;
-  width: 100%;
-  overflow: hidden;
-  -webkit-clip-path: inset(100% 0 0 0);
-  clip-path: inset(100% 0 0 0);
-  animation: alybaevReveal 900ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
-}
-
-.alybaevMark {
-  display: block;
-  width: 100%;
-  height: auto;
-  opacity: 0;
-  transform: scale(1.04);
-  animation: alybaevSettle 1100ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
-}
-
-.alybaevTrack {
-  position: relative;
-  width: 62%;
-  height: max(1px, 0.4cqh);
-  overflow: hidden;
-  background: rgba(74, 107, 93, 0.16);
-}
-
-.alybaevTrack::after {
+.alybaevPart {
   position: absolute;
   inset: 0;
-  content: "";
-  background: linear-gradient(90deg, transparent, #4a6b5d, transparent);
+}
+
+.alybaevPart > div {
+  position: absolute;
+  inset: 0;
+}
+
+.alybaevLogo {
+  position: absolute;
+  top: -23.44%;
+  left: -22.97%;
+  width: 145.95%;
+  max-width: none;
+  height: auto;
+}
+
+/* Буква с лицом: y 150–570. */
+.alybaevMarkPart {
+  -webkit-clip-path: inset(0 0 34.38% 0);
+  clip-path: inset(0 0 34.38% 0);
+}
+
+/* Раскрывается кругом из конца разметки, как от кончика скальпеля. */
+.alybaevMarkReveal {
+  -webkit-clip-path: circle(0% at 36.2% 62.8%);
+  clip-path: circle(0% at 36.2% 62.8%);
+  animation: alybaevOpen 700ms cubic-bezier(0.65, 0, 0.35, 1) 950ms forwards;
+}
+
+/* Имя: y 578–732. */
+.alybaevNamePart {
+  -webkit-clip-path: inset(66.88% 0 9.06% 0);
+  clip-path: inset(66.88% 0 9.06% 0);
+}
+
+/* Слой сам обрезан по имени и едет вместе с обрезкой, иначе при сдвиге
+   в окно попадал бы низ буквы. */
+.alybaevNameRise {
+  -webkit-clip-path: inset(66.88% 0 9.06% 0);
+  clip-path: inset(66.88% 0 9.06% 0);
+  transform: translateY(26%);
+  animation: alybaevRise 650ms cubic-bezier(0.16, 1, 0.3, 1) 1350ms forwards;
+}
+
+/* Подпись «Пластический хирург»: y 734–790. */
+.alybaevRolePart {
+  -webkit-clip-path: inset(90.63% 0 0 0);
+  clip-path: inset(90.63% 0 0 0);
+}
+
+.alybaevRoleFade {
   opacity: 0;
-  transform: translateX(-100%);
-  animation: alybaevScan 1.5s ease-in-out 620ms infinite;
+  transform: translateY(3%);
+  animation: alybaevRole 500ms ease-out 1650ms forwards;
 }
 
-@keyframes alybaevReveal {
+.alybaevMarking {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Маска проявляет пунктир по ходу маркера. */
+.alybaevMarkingDraw {
+  stroke: #fff;
+  stroke-width: 24;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  animation: alybaevDraw 850ms cubic-bezier(0.45, 0, 0.25, 1) 100ms forwards;
+}
+
+/* Зелёная разметка, у логотипа на этом месте белый пунктир: линия
+   бледнеет, когда буква раскрылась под ней. */
+.alybaevMarkingLine {
+  stroke: #4a6b5d;
+  stroke-width: 5;
+  stroke-dasharray: 13 10;
+  animation: alybaevHandOver 450ms ease-in 1300ms forwards;
+}
+
+.alybaevMarkingTip {
+  fill: #4a6b5d;
+  offset-rotate: 0deg;
+  offset-distance: 0%;
+  opacity: 0;
+  animation:
+    alybaevTip 850ms cubic-bezier(0.45, 0, 0.25, 1) 100ms forwards,
+    alybaevHandOver 300ms ease-in 950ms forwards;
+}
+
+@keyframes alybaevDraw {
   to {
-    -webkit-clip-path: inset(0 0 0 0);
-    clip-path: inset(0 0 0 0);
+    stroke-dashoffset: 0;
   }
 }
 
-@keyframes alybaevSettle {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes alybaevScan {
+@keyframes alybaevTip {
   0% {
-    opacity: 0;
-    transform: translateX(-100%);
-  }
-  20% {
     opacity: 1;
-  }
-  80% {
-    opacity: 1;
+    offset-distance: 0%;
   }
   100% {
+    opacity: 1;
+    offset-distance: 100%;
+  }
+}
+
+@keyframes alybaevHandOver {
+  to {
     opacity: 0;
-    transform: translateX(100%);
+  }
+}
+
+@keyframes alybaevOpen {
+  to {
+    -webkit-clip-path: circle(150% at 36.2% 62.8%);
+    clip-path: circle(150% at 36.2% 62.8%);
+  }
+}
+
+@keyframes alybaevRise {
+  to {
+    transform: none;
+  }
+}
+
+@keyframes alybaevRole {
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -943,20 +1153,34 @@
     transform: none;
   }
 
-  .alybaevMarkWrap,
-  .alybaevMark,
-  .alybaevTrack::after {
+  .abaHeart,
+  .abaTile,
+  .abaWord,
+  .abaPulseBase,
+  .abaPulseBeat {
     animation: none;
-  }
-
-  .alybaevMarkWrap {
+    opacity: 1;
+    transform: none;
     -webkit-clip-path: none;
     clip-path: none;
   }
 
-  .alybaevMark {
+  .abaPulseBeat {
+    opacity: 0;
+  }
+
+  .alybaevMarkReveal,
+  .alybaevNameRise,
+  .alybaevRoleFade {
+    animation: none;
     opacity: 1;
     transform: none;
+    -webkit-clip-path: none;
+    clip-path: none;
+  }
+
+  .alybaevMarking {
+    display: none;
   }
 
   .bilmontBowlTop,
