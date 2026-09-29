@@ -71,6 +71,20 @@ export const showcaseMedia: Record<string, ShowcaseMedia> = {
       { src: "/pr/7.jpg", width: 1280, height: 2560 },
     ],
   },
+  alybaev: {
+    kind: "browser-video",
+    video: "S0kEAOcA79Y",
+    address: "alybaev.netlify.app",
+    // Чистая запись сайта на чёрном: 1.16 убирает поля по бокам и сверху.
+    videoCrop: { scale: 1.16, top: 2.7 },
+    mobileScreens: [
+      { src: "/alybaev/mob3.png", width: 1170, height: 2532 },
+      { src: "/alybaev/mob2.png", width: 1170, height: 2532 },
+      { src: "/alybaev/mob1.png", width: 1170, height: 2532 },
+      { src: "/alybaev/mob4.png", width: 1170, height: 2532 },
+      { src: "/alybaev/mob5.png", width: 1170, height: 2532 },
+    ],
+  },
   bishkekvodokanal: {
     kind: "browser-video",
     video: "z5q2Siv12X0",

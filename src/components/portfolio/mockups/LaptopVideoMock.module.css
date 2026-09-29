@@ -241,6 +241,90 @@
   animation: toolorTrack 1.35s ease-in-out 520ms forwards;
 }
 
+/* ── Dr. Alybaev: знак проявляется снизу вверх, как проявляется снимок ── */
+.alybaevLoader {
+  container-type: size;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(74, 107, 93, 0.12), transparent 58%),
+    #f4f6f5;
+}
+
+.alybaevStage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 6cqh;
+  width: min(46%, 20rem);
+}
+
+.alybaevMarkWrap {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  -webkit-clip-path: inset(100% 0 0 0);
+  clip-path: inset(100% 0 0 0);
+  animation: alybaevReveal 900ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
+}
+
+.alybaevMark {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  transform: scale(1.04);
+  animation: alybaevSettle 1100ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
+}
+
+.alybaevTrack {
+  position: relative;
+  width: 62%;
+  height: max(1px, 0.4cqh);
+  overflow: hidden;
+  background: rgba(74, 107, 93, 0.16);
+}
+
+.alybaevTrack::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg, transparent, #4a6b5d, transparent);
+  opacity: 0;
+  transform: translateX(-100%);
+  animation: alybaevScan 1.5s ease-in-out 620ms infinite;
+}
+
+@keyframes alybaevReveal {
+  to {
+    -webkit-clip-path: inset(0 0 0 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes alybaevSettle {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes alybaevScan {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
 /* ── Bilmont: cream ground, olive mark, serif wordmark (as on their site) ── */
 .bilmontLoader {
   container-type: size;
@@ -855,6 +939,22 @@
   }
 
   .toolorLetter {
+    opacity: 1;
+    transform: none;
+  }
+
+  .alybaevMarkWrap,
+  .alybaevMark,
+  .alybaevTrack::after {
+    animation: none;
+  }
+
+  .alybaevMarkWrap {
+    -webkit-clip-path: none;
+    clip-path: none;
+  }
+
+  .alybaevMark {
     opacity: 1;
     transform: none;
   }

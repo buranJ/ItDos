@@ -78,7 +78,7 @@ export default async function BlogPostPage({ params }: Props) {
 
           <FadeIn delay={0.3}>
             <div className="mt-10">
-              <PostCover post={post} className="aspect-16/9 rounded-[1.75rem]" />
+              <PostCover post={post} className="aspect-video rounded-[1.75rem]" />
             </div>
           </FadeIn>
         </Container>

@@ -31,10 +31,13 @@ function inkOn(hex: string) {
 export function LiveWindow({
   item,
   interactive = false,
+  active = true,
   className,
 }: {
   item: LiveItem;
   interactive?: boolean;
+  /** False — плеер не создаётся, а созданный выгружается. */
+  active?: boolean;
   className?: string;
 }) {
   const { project, media } = item;
@@ -49,6 +52,7 @@ export function LiveWindow({
         accent={accentOf(project)}
         videoCrop={media.videoCrop}
         controls={interactive}
+        active={active}
       />
     </div>
   );

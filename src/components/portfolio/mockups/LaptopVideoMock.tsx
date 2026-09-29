@@ -328,7 +328,37 @@ function BilmontLoader({ fading }: { fading: boolean }) {
   );
 }
 
-export type VideoBrand = "avangard" | "toolor" | "bilmont";
+/** Dr. Alybaev: знак проявляется снизу вверх, как проявляется снимок,
+ *  под ним тонкая линия в цвете бренда. Логотип растровый внутри SVG,
+ *  поэтому рисуем маской, а не обводкой контура. */
+function AlybaevLoader({ fading }: { fading: boolean }) {
+  return (
+    <div
+      className={cn(
+        styles.videoLoader,
+        styles.alybaevLoader,
+        fading && styles.videoLoaderFading,
+      )}
+      role="status"
+      aria-label="Загружается видео проекта Dr. Alybaev"
+    >
+      <div className={styles.alybaevStage} aria-hidden="true">
+        <span className={styles.alybaevMarkWrap}>
+          <Image
+            src="/logos/alybaev.svg"
+            alt=""
+            width={220}
+            height={220}
+            className={styles.alybaevMark}
+          />
+        </span>
+        <span className={styles.alybaevTrack} />
+      </div>
+    </div>
+  );
+}
+
+export type VideoBrand = "avangard" | "toolor" | "bilmont" | "alybaev";
 
 /** Which project gets its own branded intro. Matched loosely: the home
  *  slider calls it "Bilmont", the portfolio "Bilmont School". */
@@ -337,6 +367,7 @@ export function videoBrand(title = "", address = ""): VideoBrand | null {
   if (key.includes("avangard")) return "avangard";
   if (key.includes("toolor")) return "toolor";
   if (key.includes("bilmont")) return "bilmont";
+  if (key.includes("alybaev")) return "alybaev";
   return null;
 }
 
@@ -351,6 +382,7 @@ export function BrandVideoLoader({
 }) {
   if (brand === "avangard") return <AvangardLoader fading={fading} />;
   if (brand === "toolor") return <ToolorLoader fading={fading} />;
+  if (brand === "alybaev") return <AlybaevLoader fading={fading} />;
   return <BilmontLoader fading={fading} />;
 }
 

@@ -179,7 +179,7 @@ function Block({ block }: { block: Block }) {
     case "image":
       return (
         <figure className="my-2">
-          <div className="relative aspect-16/9 overflow-hidden rounded-2xl border border-line bg-panel">
+          <div className="relative aspect-video overflow-hidden rounded-2xl border border-line bg-panel">
             <Image
               src={block.src}
               alt={block.caption}

@@ -66,7 +66,7 @@ export default async function CasePage({ params }: Props) {
       </div>
 
       {/* Hero */}
-      <Section spacing="md">
+      <Section spacing="none" className="pb-12 pt-8 sm:pb-16 sm:pt-10">
         <Container>
           <TextReveal
             as="h1"
@@ -240,9 +240,9 @@ export default async function CasePage({ params }: Props) {
           {/* На телефоне три блока едут слайдером — иначе это одна очень
               длинная колонка текста. На планшете и шире — обычная сетка. */}
           <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-1 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-12 sm:overflow-visible sm:px-0">
-            <GroupColumn title="Цели" items={project.goals} marker="→" />
-            <GroupColumn title="Вызовы" items={project.challenges} marker="—" />
-            <GroupColumn title="Решения" items={project.solutions} marker="✓" accent />
+            <GroupColumn title="Цели" items={project.goals} />
+            <GroupColumn title="Вызовы" items={project.challenges} />
+            <GroupColumn title="Решения" items={project.solutions} />
           </div>
           <p className="mt-5 text-sm text-fg-muted sm:hidden">
             Листайте вбок, чтобы увидеть вызовы и решения.
@@ -294,30 +294,21 @@ export default async function CasePage({ params }: Props) {
   );
 }
 
-function GroupColumn({
-  title,
-  items,
-  marker,
-  accent,
-}: {
-  title: string;
-  items: string[];
-  marker: string;
-  accent?: boolean;
-}) {
+function GroupColumn({ title, items }: { title: string; items: string[] }) {
   return (
     <div className="w-[85%] shrink-0 snap-start rounded-2xl border border-line bg-panel p-6 sm:w-auto sm:shrink sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0">
       <h2 className="mb-6 font-display text-2xl font-semibold tracking-tight text-fg">
         {title}
       </h2>
-      <ul className="flex flex-col gap-5">
+      {/* Без маркера перед текстом: пункты начинаются от той же вертикали,
+          что и заголовок колонки, а разделяют их тонкие линии. */}
+      <ul className="flex flex-col divide-y divide-line border-y border-line">
         {items.map((item) => (
           <li
             key={item}
-            className="flex gap-3 text-base leading-relaxed text-fg-secondary sm:text-[1.0625rem]"
+            className="py-4 text-base leading-relaxed text-fg-secondary sm:text-[1.0625rem]"
           >
-            <span className={accent ? "text-m" : "text-fg-faint"}>{marker}</span>
-            <span>{item}</span>
+            {item}
           </li>
         ))}
       </ul>
